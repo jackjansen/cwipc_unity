@@ -7,7 +7,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class PointCloudPreparer
+    public class PointCloudPreparerUNUSED
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> currentByteArray;
@@ -19,7 +19,7 @@ namespace Cwipc
         float cellSizeFactor;
         protected QueueThreadSafe InQueue;
 
-        public PointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0)
+        public PointCloudPreparerUNUSED(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0)
         {
             InQueue = _InQueue;
             defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.01f;
