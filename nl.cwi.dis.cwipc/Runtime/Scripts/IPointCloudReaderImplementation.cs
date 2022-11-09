@@ -1,4 +1,4 @@
-namespace cwipc
+namespace Cwipc
 {
     public interface IPointCloudReaderImplementation
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace cwipc
+namespace Cwipc
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
