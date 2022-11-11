@@ -17,7 +17,7 @@ namespace Cwipc
         int pointCount = 0;
         [Header("Settings")]
         [Tooltip("Source of pointclouds")]
-        public IPointCloudPreparer preparer;
+        public AbstractPointCloudPreparer preparer;
         [Tooltip("Material (to be cloned) to use to render pointclouds")]
         public Material baseMaterial;
         [Tooltip("After how many seconds without data pointcloud becomes ghosted")]

@@ -6,7 +6,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    abstract public class BasePointCloudReader : IPointCloudPreparer, IPointCloudReaderImplementation
+    abstract public class BasePointCloudReader : AbstractPointCloudPreparer, IPointCloudReaderImplementation
     {
         protected cwipc.source reader = null;
         protected cwipc.pointcloud currentPointcloud = null;
