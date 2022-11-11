@@ -458,11 +458,12 @@ namespace Cwipc
                 if (_obj == IntPtr.Zero) throw new Exception("cwipc.decoder: constructor called with null pointer");
             }
 
+          
             /// <summary>
-            /// Feed a compressed pointcloud databuffer into the decoder.
-            /// </summary>
-            /// <param name="compFrame">Native pointer to the data buffer</param>
-            /// <param name="len">Size in bytes of <c>compFrame</c></param>
+             /// Feed a compressed pointcloud databuffer into the decoder.
+             /// </summary>
+             /// <param name="compFrame">Native pointer to the data buffer</param>
+             /// <param name="len">Size in bytes of <c>compFrame</c></param>
             public void feed(IntPtr compFrame, int len)
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.decoder.feed called with NULL pointer");
@@ -490,18 +491,19 @@ namespace Cwipc
         /// 
         /// Note: you should not call the <c>get()</c> method on objects of this type.
         /// </summary>
-        public class encoder : source
+        public class encoder : BaseMemoryChunk
         {
             internal encoder(IntPtr _obj) : base(_obj)
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder called with NULL pointer argument");
             }
 
-            /* xxxjack need to check how this works with BaseMemoryChunk
-                    ~encoder() {
-                        free();
-                    }
-            */
+            protected override void onfree()
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.onfree called with NULL pointer");
+                _API_cwipc_codec.cwipc_encoder_free(pointer);
+            }
+
             /// <summary>
             /// Feed a pointcloud into the compressor.
             /// The compressor will add a refcount on the native data buffer, so it is safe to delete to <c>pc</c> object after this call.
@@ -592,11 +594,12 @@ namespace Cwipc
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.encodergroup called with NULL pointer argument");
             }
 
-            /* xxxjack need to check how this works with BaseMemoryChunk
-                    ~encodergroup() {
-                        free();
-                    }
-            */
+            protected override void onfree()
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.onfree called with NULL pointer");
+                _API_cwipc_codec.cwipc_encodergroup_free(pointer);
+            }
+
             /// <summary>
             /// Feed a pointcloud into the compressors.
             /// The compressors will add a refcount on the native data buffer, so it is safe to delete to <c>pc</c> object after this call.
