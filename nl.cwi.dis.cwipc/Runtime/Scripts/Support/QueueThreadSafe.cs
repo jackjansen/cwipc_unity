@@ -8,6 +8,13 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
+    /// <summary>
+    /// A queue of BaseMemoryChunk objects. Used by AsyncWorker classes to transfer frame data between
+    /// thread without copying large volumes of memory.
+    ///
+    /// The queues have a fixed maximum size, and it it configurable whether a full queue
+    /// will result in a dropped frame or wait until space becomes available.
+    /// </summary>
     public class QueueThreadSafe
     {
        
@@ -25,6 +32,12 @@ namespace Cwipc
         // Enqueue semantics depend on _dropWhenFull: for _dropWhenFull=true the item
         // will be discarded, for _dropWhenFull the call will wait until space is available.
         // Dequeue always waits for an item to become available.
+        /// <summary>
+        /// Create q QueueThreadSafe.
+        /// </summary>
+        /// <param name="name">Name of the queue (mainly for debug log messages and statistics)</param>
+        /// <param name="_size">Maximum size of the queue</param>
+        /// <param name="_dropWhenFull">Drop frame on push when queue is full</param>
         public QueueThreadSafe(string name, int _size = 2, bool _dropWhenFull = false)
         {
             this.name = name;
@@ -41,7 +54,10 @@ namespace Cwipc
             return $"{GetType().Name}#{name}";
         }
 
-        // Close the queue for further pushes, signals to consumers that we are about to stop
+        /// <summary>
+        /// Called by the producer to signal that no more frame will be Enqueue()ed.
+        /// Any frames still in the queue will be discarded.
+        /// </summary>
         public void Close()
         {
             if (isClosed.Token.IsCancellationRequested)
@@ -61,13 +77,19 @@ namespace Cwipc
             }
         }
 
-        // Return true if the queue is closed and we are about to stop
+        /// <summary>
+        /// Return true if the queue has been closed.
+        /// </summary>
+        /// <returns></returns>
         public bool IsClosed()
         {
             return isClosed.Token.IsCancellationRequested;
         }
 
-        // Return true if we can probably enqueue something (but note that there is no guarantee if we have multiple producers)
+        /// <summary>
+        /// Return true if we can probably enqueue something (but note that there is no guarantee if we have multiple producers)
+        /// </summary>
+        /// <returns>True if there is currently space in the queue</returns>
         public bool _CanEnqueue()
         {
             try
@@ -85,7 +107,10 @@ namespace Cwipc
             return false;
         }
 
-        // Return true if we can probably dequeue something (but note that there is no guarantee if we have multiple consumers) 
+        /// <summary>
+        /// Return true if we can probably dequeue something (but note that there is no guarantee if we have multiple consumers)
+        /// </summary>
+        /// <returns>True if there are curretnly frames in the queue</returns>
         public bool _CanDequeue()
         {
             try
@@ -103,7 +128,9 @@ namespace Cwipc
             return false;
         }
 
-        // Return number of items in the queue (but note that active producers or consumers can cause this value to change quickly)
+        /// <summary>
+        /// Return number of items in the queue (but note that active producers or consumers can cause this value to change quickly)
+        /// </summary>
         public int _Count
         {
             get
@@ -123,7 +150,11 @@ namespace Cwipc
             }
         }
 
-        // Return the item that will probably be returned by the next Dequeue (but unsafe if we have multiple consumers)
+        /// <summary>
+        /// Return the item that will probably be returned by the next Dequeue (but unsafe if we have multiple consumers).
+        /// Returns null if there are no frames in the queue.
+        /// </summary>
+        /// <returns>a BaseMemoryChunk or null</returns>
         public BaseMemoryChunk _Peek()
         {
             lock (queue)
@@ -133,8 +164,14 @@ namespace Cwipc
             }
         }
 
-        // Return timestamp of next frame, or zeroReturn if frame has no timestamp, or 0 if there is nothing in
-        // the queue. Potentially unsafe.
+        /// <summary>
+        /// Return timestamp of next frame, or zeroReturn if frame has no timestamp, or 0 if there is nothing in
+        /// the queue. Potentially unsafe.
+        /// This method is used by the synchronizing IPreparer implementations to determine their possible
+        /// range of timestamps.
+        /// </summary>
+        /// <param name="zeroReturn">Value to return if the queue is empty</param>
+        /// <returns>a timestamp</returns>
         public Timestamp _PeekTimestamp(Timestamp zeroReturn = 0)
         {
             BaseMemoryChunk head = _Peek();
@@ -147,13 +184,22 @@ namespace Cwipc
             return 0;
         }
 
-        // Return timestamp of most recent item pushed into the queue.
+        /// <summary>
+        /// Return timestamp of most recently pushed frame, or 0 if there is nothing in
+        /// the queue. Potentially unsafe.
+        /// This method is used by the synchronizing IPreparer implementations to determine their possible
+        /// range of timestamps.
+        /// </summary>
+        /// <returns>a timestamp</returns>
         public Timestamp LatestTimestamp()
         {
             return latestTimestamp;
         }
 
-        // Return the time span of the queue (difference of timestamps of earliest and latest timestamps)
+        /// <summary>
+        /// Return the time span of the queue (difference of timestamps of earliest and latest timestamps)
+        /// </summary>
+        /// <returns>A timestamp difference in milliseconds.</returns>
         public Timedelta QueuedDuration()
         {
             if (latestTimestampReturned == 0 || latestTimestamp == 0 || latestTimestampReturned > latestTimestamp)
@@ -164,15 +210,23 @@ namespace Cwipc
             return latestTimestamp - latestTimestampReturned;
         }
 
+        /// <summary>
+        /// Return how many frames there are currently in the queue.
+        /// </summary>
+        /// <returns></returns>
         public int Count()
         {
             return queue.Count;
         }
 
-        // Get the next item from the queue.
-        // Wait semantics: waits until something is available.
-        // The caller gets ownership of the returned object.
-        // If the queue was closed null will be returned. 
+
+        /// <summary>
+        /// Get the next item from the queue.
+        /// Wait semantics: waits until something is available.
+        /// The caller gets ownership of the returned object.
+        /// If the queue was closed null will be returned.
+        /// </summary>
+        /// <returns>A BaseMemoryChunk or null</returns>
         public virtual BaseMemoryChunk Dequeue()
         {
             try
@@ -193,10 +247,14 @@ namespace Cwipc
             return null;
         }
 
-        // Get the next item from the queue, waiting at most millisecondsTimeout
-        // (which can be 0) for an item to become available.
-        // Ownership of the item is transferred to the caller.
-        // If no item is available in time null is returned.
+        /// <summary>
+        /// Get the next item from the queue, waiting at most millisecondsTimeout
+        /// (which can be 0) for an item to become available.
+        /// Ownership of the item is transferred to the caller.
+        /// If no item is available in time null is returned.
+        /// </summary>
+        /// <param name="millisecondsTimeout">timeout in milliseconds</param>
+        /// <returns>The frame or null</returns>
         public virtual BaseMemoryChunk TryDequeue(int millisecondsTimeout)
         {
             try
@@ -220,11 +278,19 @@ namespace Cwipc
             return null;
         }
 
-        // Put an item in the queue.
-        // If there is no space this call waits until there is space available.
-        // The ownership of the item is transferred to the queue. If the item cannot be
-        // put in the queue (if the queue is leaky, or if the queue has been closed) the item will be
-        // freed.
+        /// <summary>
+        /// Put an item in the queue.
+        /// If there is no space this call waits until there is space available.
+        /// The ownership of the item is transferred to the queue. If the item cannot be
+        /// put in the queue (if the queue is leaky, or if the queue has been closed) the item will be
+        /// freed.
+        ///
+        /// Note that this item will be dropped if the queue was full, not the head of the queue.
+        /// That would seem better, but it messes up the timestamp handling for ISynchronizer because the
+        /// queue can change in incompatible ways while the calculations are taking place.
+        /// </summary>
+        /// <param name="item">The frame to put in the queue</param>
+        /// <returns>True if the item was deposited in the queue false if it was dropped</returns>
         public virtual bool Enqueue(BaseMemoryChunk item)
         {
             if (dropWhenFull)

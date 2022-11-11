@@ -3,7 +3,10 @@ using Cwipc;
 
 namespace Cwipc
 {
-   
+
+    /// <summary>
+    /// Implementation of BaseMemoryChunk using AllocHGlobal.
+    /// </summary>
     public class NativeMemoryChunk : BaseMemoryChunk
     {
         public NativeMemoryChunk(int len) : base(AllocMemory(len))
