@@ -48,7 +48,7 @@ namespace Cwipc
     }
 
     
-    public class BaseMemoryChunk
+    public abstract class BaseMemoryChunk
     {
 
         protected IntPtr _pointer;
@@ -118,8 +118,6 @@ namespace Cwipc
             }
         }
 
-        protected virtual void onfree()
-        {
-        }
+        protected abstract void onfree();
     }
 }
