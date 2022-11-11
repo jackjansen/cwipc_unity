@@ -529,7 +529,7 @@ namespace Cwipc
             /// Test whether more data buffers can ever be read from this source.
             /// </summary>
             /// <returns>True if at end of pointclouds</returns>
-            public new bool eof()
+            public bool eof()
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.eof called with NULL pointer argument");
                 return _API_cwipc_codec.cwipc_encoder_eof(pointer);
@@ -540,7 +540,7 @@ namespace Cwipc
             /// </summary>
             /// <param name="wait">True if the caller is willing to wait a short while for a data buffer to become available</param>
             /// <returns>True if a data buffer is available</returns>
-            new public bool available(bool wait)
+            public bool available(bool wait)
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.available called with NULL pointer argument");
                 return _API_cwipc_codec.cwipc_encoder_available(pointer, wait);
