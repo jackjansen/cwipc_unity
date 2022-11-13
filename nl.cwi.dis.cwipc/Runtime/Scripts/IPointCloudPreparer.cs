@@ -7,7 +7,7 @@ namespace Cwipc
 
 
     /// <summary>
-    /// Provide pointclouds to a renderer (or other consumer).
+    /// Interface implemented by objects that provide pointclouds to a renderer (or other consumer).
     /// </summary>
     public interface IPointcloudPreparer : IPreparer
     {
@@ -25,8 +25,16 @@ namespace Cwipc
         /// </summary>
         /// <returns>Size of a cell</returns>
         public float GetPointSize();
+
+        /// <summary>
+        /// Timestamp of current frame (for debugging and statistics, mainly)
+        /// </summary>
+        public Timestamp currentTimestamp { get; }
     }
 
+    /// <summary>
+    /// Abstract baseclass for MonoBehaviour that implements IPointcloudPreparer.
+    /// </summary>
     abstract public class AbstractPointCloudPreparer : MonoBehaviour, IPointcloudPreparer
     {
         abstract public void Synchronize();
@@ -34,5 +42,6 @@ namespace Cwipc
         abstract public int GetComputeBuffer(ref ComputeBuffer computeBuffer);
         abstract public float GetPointSize();
         abstract public Timedelta getQueueDuration();
+        abstract public Timestamp currentTimestamp { get; }
     }
 }

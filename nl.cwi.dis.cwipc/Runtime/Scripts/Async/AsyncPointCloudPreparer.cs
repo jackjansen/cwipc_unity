@@ -18,7 +18,8 @@ namespace Cwipc
         Unity.Collections.NativeArray<byte> byteArray;
         System.IntPtr currentBuffer;
         int currentSize;
-        public Timestamp currentTimestamp;
+        Timestamp _currentTimestamp;
+        public Timestamp currentTimestamp {  get { return _currentTimestamp;  } }
         float currentCellSize = 0.008f;
         float defaultCellSize;
         float cellSizeFactor;
@@ -52,12 +53,12 @@ namespace Cwipc
                 if (synchronizer != null)
                 {
                     bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
-                    if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
+                    if (bestTimestamp != 0 &&  bestTimestamp <= _currentTimestamp)
                     {
-                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp-bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
+                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {_currentTimestamp-bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={_currentTimestamp}");
                         return false;
                     }
-                    if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp-currentTimestamp} ms too late");
+                    if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={_currentTimestamp}, {bestTimestamp-_currentTimestamp} ms too late");
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
@@ -65,7 +66,7 @@ namespace Cwipc
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
                 if (pc == null)
                 {
-                    if (currentTimestamp != 0 && synchronizer != null && synchronizer.debugSynchronizer)
+                    if (_currentTimestamp != 0 && synchronizer != null && synchronizer.debugSynchronizer)
                     {
                         Debug.Log($"{Name()}: no pointcloud available");
                     }
@@ -88,7 +89,7 @@ namespace Cwipc
                 unsafe
                 {
                     currentSize = pc.get_uncompressed_size();
-                    currentTimestamp = pc.timestamp();
+                    _currentTimestamp = pc.timestamp();
                     currentCellSize = pc.cellsize();
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                     if (currentSize > byteArray.Length)
@@ -121,17 +122,17 @@ namespace Cwipc
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer != null)
             {
-                Timestamp earliestTimestamp = currentTimestamp;
+                Timestamp earliestTimestamp = _currentTimestamp;
                 if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();
-                while (earliestTimestamp != 0 && earliestTimestamp < currentTimestamp)
+                while (earliestTimestamp != 0 && earliestTimestamp < _currentTimestamp)
                 {
                     // This can happen when DASH switches streams: the newly selected stream produces
                     // a packet from earlier than the last packet of the previous stream.
                     // This looks very ugly, so we drop it.
                     var frameToDrop = InQueue.TryDequeue(0);
-                    if (true) Debug.LogWarning($"{Name()}: Drop frame {earliestTimestamp} <= previous {currentTimestamp}, {currentTimestamp- earliestTimestamp}ms too late");
+                    if (true) Debug.LogWarning($"{Name()}: Drop frame {earliestTimestamp} <= previous {_currentTimestamp}, {_currentTimestamp- earliestTimestamp}ms too late");
                     frameToDrop.free();
-                    earliestTimestamp = InQueue._PeekTimestamp(currentTimestamp);
+                    earliestTimestamp = InQueue._PeekTimestamp(_currentTimestamp);
                 }
                 Timestamp latestTimestamp = InQueue.LatestTimestamp();
                 synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);

@@ -18,7 +18,8 @@ namespace Cwipc
         [Tooltip("Size of current pointcloud (in bytes)")]
         public int currentSize;
         [Tooltip("Timestamp of current pointcloud")]
-        [SerializeField] protected Timestamp currentTimestamp;
+        [SerializeField] protected Timestamp _currentTimestamp;
+        public override Timestamp currentTimestamp { get { return _currentTimestamp; } }
         [Tooltip("Cell size of current pointcloud cell (in meters)")]
         [SerializeField] protected float currentCellSize = 0;
         [Tooltip("How many pointclouds have been read")]
@@ -153,7 +154,7 @@ namespace Cwipc
                 unsafe
                 {
                     currentSize = pc.get_uncompressed_size();
-                    currentTimestamp = pc.timestamp();
+                    _currentTimestamp = pc.timestamp();
                     currentCellSize = pc.cellsize();
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                     if (currentSize > currentByteArray.Length)

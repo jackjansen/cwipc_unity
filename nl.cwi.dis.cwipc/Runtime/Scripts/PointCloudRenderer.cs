@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
+using Cwipc;
 
 namespace Cwipc
 {
@@ -17,7 +21,7 @@ namespace Cwipc
         int pointCount = 0;
         [Header("Settings")]
         [Tooltip("Source of pointclouds")]
-        public AbstractPointCloudPreparer preparer;
+        public IPointcloudPreparer preparer;
         [Tooltip("Material (to be cloned) to use to render pointclouds")]
         public Material baseMaterial;
         [Tooltip("After how many seconds without data pointcloud becomes ghosted")]
@@ -44,10 +48,8 @@ namespace Cwipc
 
         public bool isSupported()
         {
-            if (baseMaterial == null)
-            {
-                baseMaterial = Resources.Load<Material>("PointCloud");
-            }
+            if (baseMaterial != null) return true;
+            baseMaterial = Resources.Load<Material>("PointCloud");
             if (baseMaterial == null) return false;
             return baseMaterial.shader.isSupported;
         }
@@ -57,16 +59,31 @@ namespace Cwipc
         {
             if (!isSupported())
             {
-                Debug.LogError($"{Name()}: uses shader that is not supported on this graphics card.");
+                Debug.LogError($"{Name()}: uses shader that is not supported on this graphics card");
             }
             material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
+#if VRT_WITH_STATS
+            stats = new Stats(Name());
+#endif
             pointBuffer = new ComputeBuffer(1, sizeof(float) * 4);
+        }
+
+        public void SetPreparer(AsyncPointCloudPreparer _preparer)
+        {
+            if (preparer != null)
+            {
+                Debug.LogError($"Programmer error: {Name()}: attempt to set second preparer");
+            }
+            preparer = _preparer;
         }
 
         private void Update()
         {
-            if (preparer == null) return;
+            if (preparer == null) {
+            	Debug.Log($"{Name()}: Update() called but no preparer set");
+            	return;
+			}
             preparer.Synchronize();
         }
 
@@ -102,7 +119,7 @@ namespace Cwipc
             } 
             else
             {
-                if (timeoutBeforeGhosting != 0 && now > lastDataReceived + (int)(timeoutBeforeGhosting*1000) && !dataIsMissing)
+                if (now > lastDataReceived + (int)(CwipcConfig.Instance.timeoutBeforeGhosting*1000) && !dataIsMissing)
                 {
 #if CWIPC_WITH_LOGGING
                     Debug.Log($"{Name()}: No pointcloud received for {timeoutBeforeGhosting} seconds, ghosting with pointsize=0.2");
@@ -122,6 +139,9 @@ namespace Cwipc
             }
             block.SetMatrix("_Transform", pcMatrix);
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
+#if VRT_WITH_STATS
+            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueDuration(), fresh);
+#endif
         }
 
         public void OnDestroy()
@@ -129,5 +149,64 @@ namespace Cwipc
             if (pointBuffer != null) { pointBuffer.Release(); pointBuffer = null; }
             if (material != null) { material = null; }
         }
+
+
+#if VRT_WITH_STATS
+        protected class Stats : Statistics
+        {
+            public Stats(string name) : base(name) { }
+
+            double statsTotalPointcloudCount = 0;
+            double statsTotalDisplayCount = 0;
+            double statsTotalPointCount = 0;
+            double statsTotalDisplayPointCount = 0;
+            double statsTotalPointSize = 0;
+            double statsTotalQueueDuration = 0;
+            Timedelta statsMinLatency = 0;
+            Timedelta statsMaxLatency = 0;
+
+            public void statsUpdate(int pointCount, float pointSize, Timestamp timestamp, Timedelta queueDuration, bool fresh)
+            {
+    
+                statsTotalDisplayPointCount += pointCount;
+                statsTotalDisplayCount += 1;
+                if (!fresh)
+                {
+                    // If this was just a re-display of a previously received pointcloud we don't need the rest of the data.
+                    return;
+                }
+                statsTotalPointcloudCount += 1;
+                statsTotalPointCount += pointCount;
+                statsTotalPointSize += pointSize;
+                statsTotalQueueDuration += queueDuration;
+
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                if (timestamp > 0)
+                {
+                    Timedelta latency = (Timestamp)sinceEpoch.TotalMilliseconds - timestamp;
+                    if (latency < statsMinLatency || statsMinLatency == 0) statsMinLatency = latency;
+                    if (latency > statsMaxLatency) statsMaxLatency = latency;
+                }
+
+                if (ShouldOutput())
+                {
+                    double factor = statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount;
+                    double display_factor = statsTotalDisplayCount == 0 ? 1 : statsTotalDisplayCount;
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={statsMinLatency}, latency_max_ms={statsMaxLatency}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / factor)}, points_per_display={(int)(statsTotalDisplayPointCount / display_factor)}, avg_pointsize={(statsTotalPointSize / factor):G4}, renderer_queue_ms={(int)(statsTotalQueueDuration / factor)}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
+                    Clear();
+                    statsTotalPointcloudCount = 0;
+                    statsTotalDisplayCount = 0;
+                    statsTotalDisplayPointCount = 0;
+                    statsTotalPointCount = 0;
+                    statsTotalPointSize = 0;
+                    statsTotalQueueDuration = 0;
+                    statsMinLatency = 0;
+                    statsMaxLatency = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
+#endif
     }
 }
