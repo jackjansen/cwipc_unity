@@ -42,7 +42,10 @@ namespace Cwipc
         /// </summary>
         public int encoderParallelism = 0;
         /// <summary>
-        /// If non-zero sets how many threads can be used in the decoder.
+        /// If non-zero sets how many threads can be used in the decoder. This will decode subsequent pointclouds
+        /// in different threads, potentially leading to higher throughput (but not lower latency).
+        ///
+        /// This will *not* work for decoders with inter-frame coding.
         /// </summary>
         public int decoderParallelism = 0;
 

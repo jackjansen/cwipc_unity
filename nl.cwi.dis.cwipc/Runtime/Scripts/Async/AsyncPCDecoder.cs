@@ -11,7 +11,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncPCDecoder : AsyncWorker
+    public class AsyncPCDecoder : AsyncFilter
     {
         /// <summary>
         /// Set this to true to colorize all points, making it easier to see where each tile is displayed.
@@ -21,31 +21,19 @@ namespace Cwipc
         protected int nParallel = 1;
         protected int inDecoderIndex = 0;
         protected int outDecoderIndex = 0;
-        protected QueueThreadSafe inQueue;
-        protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         System.DateTime[] mostRecentFeeds;
 
-        public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
+        public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(_inQueue, _outQueue)
         {
             nParallel = CwipcConfig.Instance.decoderParallelism;
             if (nParallel == 0) nParallel = 1;
-            if (_inQueue == null)
-            {
-                throw new System.Exception("PCDecoder: inQueue is null");
-            }
-            if (_outQueue == null)
-            {
-                throw new System.Exception("PCDecoder: outQueue is null");
-            }
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
             try
             {
-                inQueue = _inQueue;
-                outQueue = _outQueue;
                 decoders = new cwipc.decoder[nParallel];
                 mostRecentFeeds = new System.DateTime[nParallel];
                 for(int i=0; i<nParallel; i++)

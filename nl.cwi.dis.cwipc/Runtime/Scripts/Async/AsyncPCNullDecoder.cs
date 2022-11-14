@@ -11,26 +11,13 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncPCNullDecoder : AsyncWorker
+    public class AsyncPCNullDecoder : AsyncFilter
     {
-        protected QueueThreadSafe inQueue;
-        protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        public AsyncPCNullDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
+        public AsyncPCNullDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(_inQueue, _outQueue)
         {
-            if (_inQueue == null)
-            {
-                throw new System.Exception("NULLDecoder: inQueue is null");
-            }
-            if (_outQueue == null)
-            {
-                throw new System.Exception("NULLDecoder: outQueue is null");
-            }
-            inQueue = _inQueue;
-            outQueue = _outQueue;
             Start();
-            Debug.Log($"{Name()} Inited");
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
