@@ -77,7 +77,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af6ebb6b8112642ee8f5af0bcc376e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentTimestamp: 0
+  currentSize: 0
+  _currentTimestamp: 0
+  currentCellSize: 0
+  nRead: 0
+  nDropped: 0
   voxelSize: 0
   defaultCellSize: 0.01
   cellSizeFactor: 1
@@ -124,9 +128,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8672829700311196926}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a411431a551842afb8c5cea2ea69b40, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ee0a2e5b3db3432996166faa4dfc160, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preparer: {fileID: 4089730585797677243}
-  baseMaterial: {fileID: 0}
+  baseMaterial: {fileID: 2100000, guid: 1ea68d9ebfc1c704b8d72164da860d9d, type: 2}
+  timeoutBeforeGhosting: 5
+  pcMirrorX: 1
   material: {fileID: 0}
+  dataIsMissing: 0
+  lastDataReceived: 0
