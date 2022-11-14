@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Cwipc
 {
-    public class AsyncKinectReader : AsyncPointcloudReader
+    public class AsyncKinectReader : AsyncPointCloudReader
     {
 
         public AsyncKinectReader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)

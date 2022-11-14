@@ -11,7 +11,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncPointCloudPreparer : AsyncPreparer, IPointcloudPreparer
+    public class AsyncPointCloudPreparer : AsyncPreparer, IPointCloudPreparer
     {
         const float allocationFactor = 1.3f; // Must be >= 1: How much size to allocate. Bigger means fewer re-allocations.
         bool isReady = false;

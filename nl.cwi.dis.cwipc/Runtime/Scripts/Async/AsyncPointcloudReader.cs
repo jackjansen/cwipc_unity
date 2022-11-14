@@ -10,7 +10,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public abstract class AsyncPointcloudReader : AsyncTiledWorker
+    public abstract class AsyncPointCloudReader : AsyncTiledWorker
     {
         protected cwipc.source reader;
         protected float voxelSize;
@@ -21,7 +21,7 @@ namespace Cwipc
         protected bool dontWait = false;
         protected float[] bbox;
 
-        protected AsyncPointcloudReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
+        protected AsyncPointCloudReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             if (_outQueue == null)
             {

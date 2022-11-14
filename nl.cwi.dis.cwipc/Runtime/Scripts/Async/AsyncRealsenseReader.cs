@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Cwipc
 {
-    public class AsyncRealsenseReader : AsyncPointcloudReader
+    public class AsyncRealsenseReader : AsyncPointCloudReader
     {
 
         public AsyncRealsenseReader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)

@@ -22,7 +22,7 @@ namespace Cwipc
         [Header("Settings")]
         [Tooltip("Source of pointclouds. Can (and must) be empty if set dynamically through script.")]
         public AbstractPointCloudPreparer pointcloudSource;
-        public IPointcloudPreparer preparer;
+        public IPointCloudPreparer preparer;
         [Tooltip("Material (to be cloned) to use to render pointclouds")]
         public Material baseMaterial;
         [Tooltip("After how many seconds without data pointcloud becomes ghosted")]
@@ -74,7 +74,7 @@ namespace Cwipc
             }
         }
 
-        public void SetPreparer(IPointcloudPreparer _preparer)
+        public void SetPreparer(IPointCloudPreparer _preparer)
         {
             if (_preparer == null)
             {

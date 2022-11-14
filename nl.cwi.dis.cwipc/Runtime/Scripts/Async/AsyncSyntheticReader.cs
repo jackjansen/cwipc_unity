@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Cwipc
 {
-    public class AsyncSyntheticReader : AsyncPointcloudReader
+    public class AsyncSyntheticReader : AsyncPointCloudReader
     {
 
         public AsyncSyntheticReader(float _frameRate, int nPoints, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)

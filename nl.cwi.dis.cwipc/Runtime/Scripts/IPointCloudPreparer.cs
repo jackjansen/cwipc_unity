@@ -9,7 +9,7 @@ namespace Cwipc
     /// <summary>
     /// Interface implemented by objects that provide pointclouds to a renderer (or other consumer).
     /// </summary>
-    public interface IPointcloudPreparer : IPreparer
+    public interface IPointCloudPreparer : IPreparer
     {
         /// <summary>
         /// Store pointcloud data of frame locked by LatchFrame in a ComputeBuffer.
@@ -35,7 +35,7 @@ namespace Cwipc
     /// <summary>
     /// Abstract baseclass for MonoBehaviour that implements IPointcloudPreparer.
     /// </summary>
-    abstract public class AbstractPointCloudPreparer : MonoBehaviour, IPointcloudPreparer
+    abstract public class AbstractPointCloudPreparer : MonoBehaviour, IPointCloudPreparer
     {
         abstract public void Synchronize();
         abstract public bool LatchFrame();

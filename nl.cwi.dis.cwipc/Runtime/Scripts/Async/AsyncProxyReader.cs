@@ -5,7 +5,7 @@ using Cwipc;
 
 namespace Cwipc
 {
-    public class ProxyReader : AsyncPointcloudReader
+    public class ProxyReader : AsyncPointCloudReader
     {
 
         public ProxyReader(string ip, int port, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)
