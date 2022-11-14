@@ -6,7 +6,7 @@ namespace Cwipc
 {
     public class PointCloudOutput : MonoBehaviour
     {
-        enum SourceType
+        public enum SourceType
         {
             Synthetic,
             Realsense,
@@ -15,40 +15,41 @@ namespace Cwipc
             TCP,
         };
         [Tooltip("Type of source to create")]
-        [SerializeField] private SourceType sourceType;
+        [SerializeField] public SourceType sourceType;
         [Tooltip("Renderer to use")]
         [SerializeField] protected PointCloudRenderer PCrenderer;
 
         [Header("Settings shared by (some) sources")]
         [Tooltip("Frame rate wanted")]
-        [SerializeField] private float framerate = 15;
+        [SerializeField] protected float framerate = 15;
         [Tooltip("Rendering cellsize, if not specified in pointcloud")]
-        [SerializeField] private float Preparer_DefaultCellSize = 1.0f;
+        [SerializeField] protected float Preparer_DefaultCellSize = 1.0f;
         [Tooltip("Multiplication factor for pointcloud cellsize")]
-        [SerializeField] private float Preparer_CellSizeFactor = 1.0f;
+        [SerializeField] protected float Preparer_CellSizeFactor = 1.0f;
 
-        [Header("Type: Synthetic settings")]
+        [Header("Source type: Synthetic settings")]
         [Tooltip("Number of points per cloud")]
-        [SerializeField] private int Synthetic_NPoints = 8000;
+        [SerializeField] protected int Synthetic_NPoints = 8000;
 
-        [Header("Type: Realsense/Kinect settings")]
+        [Header("Source type: Realsense/Kinect settings")]
         [Tooltip("Camera configuration filename")]
-        [SerializeField] private string configFileName;
+        [SerializeField] protected string configFileName;
         [Tooltip("If non-zero: voxelize captured pointclouds to this cellsize")]
-        [SerializeField] private float voxelSize;
+        [SerializeField] protected float voxelSize;
 
-        [Header("Type: prerecorded")]
+        [Header("Source type: prerecorded")]
         [Tooltip("Path of directory with pointcloud files")]
-        [SerializeField] private string directoryPath;
+        [SerializeField] protected string directoryPath;
 
-        [Header("Type: TCP")]
-        [Tooltip("Specifies TCP server, in the form tcp://host:port")]
-        [SerializeField] private string url;
+        [Header("Source type: TCP")]
+        [Tooltip("Specifies TCP server to contact for source, in the form tcp://host:port")]
+        [SerializeField] protected string inputUrl;
         [Tooltip("Insert a compressed pointcloud decoder into the stream")]
-        public bool compressedStream;
+        public bool compressedInputStream;
 
-        QueueThreadSafe ReaderOutputQueue;
-        QueueThreadSafe RendererInputQueue;
+        protected QueueThreadSafe ReaderRenderQueue;
+        protected QueueThreadSafe RendererInputQueue;
+        protected QueueThreadSafe ReaderEncoderQueue = null;
         protected AsyncPointCloudReader PCcapturer;
         protected AsyncReader PCreceiver;
         protected AsyncFilter PCdecoder;
@@ -61,16 +62,22 @@ namespace Cwipc
             InitializePipeline(); 
         }
 
-        void InitializePipeline()
+        protected virtual void InitializePipeline()
         {
-            ReaderOutputQueue = new QueueThreadSafe("ReaderOutputQueue", 2, true);
+            ReaderRenderQueue = new QueueThreadSafe("ReaderRenderQueue", 2, true);
+            InitializeTransmitter();
             InitializeReader();
             if (RendererInputQueue == null)
             {
-                RendererInputQueue = ReaderOutputQueue;
+                RendererInputQueue = ReaderRenderQueue;
             }
             PCpreparer = new AsyncPointCloudPreparer(RendererInputQueue, Preparer_DefaultCellSize, Preparer_CellSizeFactor);
             PCrenderer.SetPreparer(PCpreparer);
+        }
+
+        protected virtual void InitializeTransmitter()
+        {
+
         }
 
         void InitializeReader()
@@ -78,34 +85,40 @@ namespace Cwipc
             switch(sourceType)
             {
                 case SourceType.Synthetic:
-                    PCcapturer = new AsyncSyntheticReader(framerate, Synthetic_NPoints, ReaderOutputQueue);
+                    PCcapturer = new AsyncSyntheticReader(framerate, Synthetic_NPoints, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Realsense:
-                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderOutputQueue);
+                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Kinect:
-                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderOutputQueue);
+                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Prerecorded:
-                    //PCreceiver = new AsyncPrerecordedReader(directoryPath, voxelSize, framerate, ReaderOutputQueue);
+                    //PCreceiver = new AsyncPrerecordedReader(directoryPath, voxelSize, framerate, ReaderOutputQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.TCP:
-                    string fourcc = compressedStream ? "cwi1" : "cwi0";
-                    RendererInputQueue = new QueueThreadSafe("DecoderOutputQueue", 2, false);
-                    PCreceiver = new AsyncTCPReader(url, fourcc, ReaderOutputQueue);
-                    if (compressedStream)
-                    {
-                        PCdecoder = new AsyncPCDecoder(ReaderOutputQueue, RendererInputQueue);
-                    }
-                    else
-                    {
-                        PCdecoder = new AsyncPCNullDecoder(ReaderOutputQueue, RendererInputQueue);
-                    }
+                    InitializeDecoder();
                     break;
             }
         }
 
-        private void OnDestroy()
+        void InitializeDecoder()
+        {
+            string fourcc = compressedInputStream ? "cwi1" : "cwi0";
+            RendererInputQueue = new QueueThreadSafe("DecoderOutputQueue", 2, false);
+            PCreceiver = new AsyncTCPReader(inputUrl, fourcc, ReaderRenderQueue);
+            if (compressedInputStream)
+            {
+                PCdecoder = new AsyncPCDecoder(ReaderRenderQueue, RendererInputQueue);
+            }
+            else
+            {
+                PCdecoder = new AsyncPCNullDecoder(ReaderRenderQueue, RendererInputQueue);
+            }
+
+        }
+
+        protected virtual void OnDestroy()
         {
             PCcapturer?.StopAndWait();
             PCreceiver?.StopAndWait();
