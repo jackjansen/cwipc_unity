@@ -69,7 +69,7 @@ namespace Cwipc
             {
                 RendererInputQueue = ReaderOutputQueue;
             }
-            PCpreparer = new AsyncPointCloudPreparer(ReaderOutputQueue, Preparer_DefaultCellSize, Preparer_CellSizeFactor);
+            PCpreparer = new AsyncPointCloudPreparer(RendererInputQueue, Preparer_DefaultCellSize, Preparer_CellSizeFactor);
             PCrenderer.SetPreparer(PCpreparer);
         }
 

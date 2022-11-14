@@ -156,7 +156,7 @@ namespace Cwipc
                         int fourccReceived = BitConverter.ToInt32(hdr, 0);
                         if (fourccReceived != receiverInfo.fourcc)
                         {
-                            Debug.LogWarning($"{Name()}: expected 4CC 0x{receiverInfo.fourcc:x} got 0x{fourccReceived:x}");
+                            Debug.LogError($"{Name()}: expected 4CC 0x{receiverInfo.fourcc:x} got 0x{fourccReceived:x}");
                         } 
                         int dataSize = BitConverter.ToInt32(hdr, 4);
                         Timestamp timestamp = BitConverter.ToInt64(hdr, 8);
@@ -164,7 +164,7 @@ namespace Cwipc
                         int actualDataSize = _ReceiveAll(socket, data);
                         if (actualDataSize != dataSize)
                         {
-                            Debug.LogWarning($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
+                            if (actualDataSize != 0) Debug.LogWarning($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
                             socket.Close();
                             socket = null;
                             continue;
