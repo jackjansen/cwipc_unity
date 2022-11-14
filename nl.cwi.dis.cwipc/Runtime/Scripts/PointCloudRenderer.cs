@@ -11,6 +11,9 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
+    /// <summary>
+    /// MonoBehaviour that renders pointclouds.
+    /// </summary>
     public class PointCloudRenderer : MonoBehaviour
     {
         // For reasons I don't understand pointclouds need to be mirrored in the X direction.
