@@ -37,8 +37,7 @@ namespace Cwipc
 
         protected System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
         protected System.DateTime earliestNextCapture;    // Earliest time we want to do the next capture, if non-null.
-        const bool dontWait = false;
-      
+        
         public virtual string Name()
         {
             return $"{GetType().Name}";
@@ -99,9 +98,6 @@ namespace Cwipc
             if (frameInterval != null)
             {
                 earliestNextCapture = System.DateTime.Now + frameInterval;
-            }
-            if (dontWait) {
-            	if (!reader.available(false)) return;
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;

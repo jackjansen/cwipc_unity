@@ -331,8 +331,10 @@ namespace Cwipc
                 System.DateTime downsampleStopTime = System.DateTime.Now;
                 downsampleDuration = (Timedelta)(downsampleStopTime - downsampleStartTime).TotalMilliseconds;
             }
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool didDropSelfView = false;
             bool didDropEncoder = false;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
             Timedelta encoderQueuedDuration = 0;
             if (outQueue == null || outQueue.IsClosed())
             {
