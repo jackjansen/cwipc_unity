@@ -29,9 +29,7 @@ namespace Cwipc
             }
             catch (System.Exception e)
             {
-#if CWIPC_WITH_LOGGING
                 Debug.Log($"{Name()}: exception {e.ToString()}");
-#endif
                 throw;
             }
         }
