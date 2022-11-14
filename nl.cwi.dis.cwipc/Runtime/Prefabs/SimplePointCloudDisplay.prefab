@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2942035106827000207}
   m_Layer: 0
-  m_Name: PointCloudDisplay
+  m_Name: SimplePointCloudDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
