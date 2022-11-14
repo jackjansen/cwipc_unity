@@ -20,7 +20,8 @@ namespace Cwipc
         ComputeBuffer pointBuffer = null;
         int pointCount = 0;
         [Header("Settings")]
-        [Tooltip("Source of pointclouds")]
+        [Tooltip("Source of pointclouds. Can (and must) be empty if set dynamically through script.")]
+        public AbstractPointCloudPreparer pointcloudSource;
         public IPointcloudPreparer preparer;
         [Tooltip("Material (to be cloned) to use to render pointclouds")]
         public Material baseMaterial;
@@ -67,10 +68,18 @@ namespace Cwipc
             stats = new Stats(Name());
 #endif
             pointBuffer = new ComputeBuffer(1, sizeof(float) * 4);
+            if (pointcloudSource != null)
+            {
+                SetPreparer(pointcloudSource);
+            }
         }
 
-        public void SetPreparer(AsyncPointCloudPreparer _preparer)
+        public void SetPreparer(IPointcloudPreparer _preparer)
         {
+            if (_preparer == null)
+            {
+                Debug.LogError($"Programmer error: {Name()}: attempt to set null preparer");
+            }
             if (preparer != null)
             {
                 Debug.LogError($"Programmer error: {Name()}: attempt to set second preparer");
