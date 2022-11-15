@@ -5,11 +5,11 @@ namespace Cwipc
 {
     public class AsyncPrerecordedReader : AsyncPrerecordedBaseReader
     {
-        TileInfo[] tileInfo;
+        PointCloudTileDescription[] tileInfo;
         [Serializable]
         class _Config
         {
-            public TileInfo[] tileInfo;
+            public PointCloudTileDescription[] tileInfo;
         }
 
         public AsyncPrerecordedReader(string _dirname, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
@@ -41,7 +41,7 @@ namespace Cwipc
             Debug.Log($"{Name()}: _initTileInfo: {tileInfo?.Length} tiles");
 
         }
-        public override TileInfo[] getTiles()
+        public override PointCloudTileDescription[] getTiles()
         {
             return tileInfo;
         }

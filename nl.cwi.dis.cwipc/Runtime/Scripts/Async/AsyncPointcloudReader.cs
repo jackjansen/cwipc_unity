@@ -35,12 +35,12 @@ namespace Cwipc
         }
 
 
-        public override TileInfo[] getTiles()
+        public override PointCloudTileDescription[] getTiles()
         {
             cwipc.tileinfo[] origTileInfo = reader.get_tileinfo();
             if (origTileInfo == null || origTileInfo.Length <= 1) return null;
             int nTile = origTileInfo.Length;
-            TileInfo[] rv = new TileInfo[nTile];
+            PointCloudTileDescription[] rv = new PointCloudTileDescription[nTile];
             for (int i = 0; i < nTile; i++)
             {
                 rv[i].normal = new Vector3((float)origTileInfo[i].normal.x, (float)origTileInfo[i].normal.y, (float)origTileInfo[i].normal.z);
