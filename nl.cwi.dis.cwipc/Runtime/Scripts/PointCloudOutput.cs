@@ -123,7 +123,7 @@ namespace Cwipc
             PCcapturer?.StopAndWait();
             PCreceiver?.StopAndWait();
             PCdecoder?.StopAndWait();
-            PCpreparer.StopAndWait();
+            PCpreparer?.StopAndWait();
         }
 
         // Update is called once per frame

@@ -10,6 +10,7 @@ namespace Cwipc
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
 
     public class AsyncPCNullEncoder : AsyncWorker
     {
@@ -19,9 +20,9 @@ namespace Cwipc
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        AsyncPCEncoder.EncoderStreamDescription[] outputs;
+        EncoderStreamDescription[] outputs;
 
-        public AsyncPCNullEncoder(QueueThreadSafe _inQueue, AsyncPCEncoder.EncoderStreamDescription[] _outputs) : base()
+        public AsyncPCNullEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {

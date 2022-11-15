@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Cwipc
 {
+    using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
+    using OutgoingStreamDescription = StreamSupport.OutgoingStreamDescription;
+
     public class PointCloudInput : PointCloudOutput
     {
         protected QueueThreadSafe TransmitterInputQueue;
@@ -32,9 +35,9 @@ namespace Cwipc
             //
             string fourcc = compressedOutputStream ? "cwi1" : "cwi0";
 
-            StreamSupport.OutgoingStreamDescription[] transmitterDescriptions = new StreamSupport.OutgoingStreamDescription[1]
+            OutgoingStreamDescription[] transmitterDescriptions = new OutgoingStreamDescription[1]
             {
-                new StreamSupport.OutgoingStreamDescription
+                new OutgoingStreamDescription
                 {
                     name="single",
                     tileNumber=0,
@@ -43,9 +46,9 @@ namespace Cwipc
                     inQueue=TransmitterInputQueue
                 }
             };
-            AsyncPCEncoder.EncoderStreamDescription[] encoderDescriptions = new AsyncPCEncoder.EncoderStreamDescription[1]
+            EncoderStreamDescription[] encoderDescriptions = new EncoderStreamDescription[1]
             {
-                new AsyncPCEncoder.EncoderStreamDescription
+                new EncoderStreamDescription
                 {
                     octreeBits=octreeBits,
                     tileNumber=0,

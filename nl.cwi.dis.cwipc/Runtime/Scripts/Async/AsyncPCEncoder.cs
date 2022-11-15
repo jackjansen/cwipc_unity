@@ -1,16 +1,15 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
-using Cwipc;
 
 namespace Cwipc
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
 
     public class AsyncPCEncoder : AsyncWorker
     {
@@ -25,13 +24,7 @@ namespace Cwipc
         Queue<System.DateTime> mostRecentFeedTimes = new Queue<System.DateTime>();
         Queue<Timestamp> mostRecentFeedTimestamps = new Queue<Timestamp>();
         int nParallel = 0;
-        
-        public struct EncoderStreamDescription
-        {
-            public int octreeBits;
-            public int tileNumber;
-            public QueueThreadSafe outQueue;
-        };
+
         EncoderStreamDescription[] outputs;
 
         public class PCEncoderOutputPusher

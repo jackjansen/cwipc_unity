@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using Cwipc;
 
 namespace Cwipc
 {
@@ -28,6 +26,7 @@ namespace Cwipc
         /// Structure describing a single outgoing (tile) stream.
         /// Can really only be used for tiled pointclouds.
         /// </summary>
+        [Serializable]
         public struct OutgoingStreamDescription
         {
             /// <summary>
@@ -53,9 +52,31 @@ namespace Cwipc
         }
 
         /// <summary>
+        /// Structure describing the parameters of a single encoder (possibly part of a multi-tile, multi-quality
+        /// encoder group).
+        /// </summary>
+        [Serializable]
+        public struct EncoderStreamDescription
+        {
+            /// <summary>
+            /// Encoder parameter. Depth of the octree used during encoding. Compressed pointcloud will have at most 8**octreeBits points.
+            /// </summary>
+            public int octreeBits;
+            /// <summary>
+            /// Tile number to filter pointcloud on before encoding. 0 means no filtering.
+            /// </summary>
+            public int tileNumber;
+            /// <summary>
+            /// Output queue for this encoder, will usually be shared with the corresponding transmitter (as its input queue).
+            /// </summary>
+            public QueueThreadSafe outQueue;
+        }
+
+        /// <summary>
         /// Structure describing a single incoming (tiled, single quality) stream.
         /// Can really only be used for pointclouds.
         /// </summary>
+        [Serializable]
         public struct IncomingStreamDescription
         {
             /// <summary>
@@ -75,6 +96,7 @@ namespace Cwipc
         /// <summary>
         /// Structure describing a set of multi-quality streams for a single tile.
         /// </summary>
+        [Serializable]
         public struct IncomingTileDescription
         {
             /// <summary>
