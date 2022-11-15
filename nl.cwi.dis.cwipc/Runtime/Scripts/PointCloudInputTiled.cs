@@ -68,7 +68,11 @@ namespace Cwipc
             for(int i= 0; i < transmitterDescriptions.Length; i++)
             {
                 var name = transmitterDescriptions[i].name;
-                var queue = new QueueThreadSafe($"TransmitterInputQueue#{name}", 2, false);
+                // Note that it is a bit unclear whether to drop or not for the transmitter queue.
+                // Not dropping means that all encoders and transmitters will hang if there is no
+                // consumer for a specific tile. But dropping means that we may miss (on the receiver side)
+                // one tile, and therefore have done a lot of encoding and decoding and transmission for nothing.
+                var queue = new QueueThreadSafe($"TransmitterInputQueue#{name}", 2, true);
                 TransmitterInputQueues[i] = queue;
                 transmitterDescriptions[i].inQueue = queue;
                 encoderDescriptions[i].outQueue = queue;
