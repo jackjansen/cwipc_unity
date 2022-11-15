@@ -15,17 +15,70 @@ namespace Cwipc
         [Header("Transmission settings")]
         [Tooltip("Specifies TCP server to create as sink, in the form tcp://host:port, for first tile stream. Subsequent tiles get port incremented.")]
         [SerializeField] protected string outputUrl;
-        [Tooltip("Insert a compressed pointcloud encoder into the output stream")]
-        [SerializeField] protected bool compressedOutputStream;
+        [Tooltip("Get tile information from source (overrides encoderDescriptions and transmitterDescriptions")]
+        [SerializeField] protected bool tiled = true;
+        [Tooltip("Insert compressed pointcloud encodesr into the output streams")]
+        [SerializeField] protected bool compressedOutputStreams;
         [Tooltip("Default octreeBits for compressor (if not overridden by encoderDescriptions")]
         [SerializeField] protected int defaultOctreeBits;
         [Tooltip("Output Stream Descriptions")]
         [SerializeField] protected OutgoingStreamDescription[] transmitterDescriptions;
         [Tooltip("Output encoder parameters. Number and order must match transmitterDescriptions")]
         [SerializeField] protected EncoderStreamDescription[] encoderDescriptions;
-        
+
+        protected override void InitializeTransmitterQueue()
+        {
+            //
+            // Create queue from reader to encoder.
+            // Iis declared in our base class, and will be picked up by its
+            // Initialize method.
+            //
+            ReaderEncoderQueue = new QueueThreadSafe("ReaderEncoderQueue", 2, true);
+        }
+
         protected override void InitializeTransmitter()
         {
+            //
+            // Override tile information from source.
+            //
+            if (tiled)
+            {
+                PointCloudTileDescription[] tileDescriptions = PCcapturer.getTiles();
+                transmitterDescriptions = null;
+                encoderDescriptions = null;
+                if (tileDescriptions != null && tileDescriptions.Length > 0)
+                {
+                    if (tileDescriptions.Length > 1 && tileDescriptions[0].cameraMask == 0)
+                    {
+                        // Workaround for design issue in tile filtering: tile zero
+                        // is the unfiltered pointcloud. So if it is described in the
+                        // tile descriptions we skip it.
+                        tileDescriptions = tileDescriptions[1..];
+                    }
+                    int nTile = tileDescriptions.Length;
+                    transmitterDescriptions = new OutgoingStreamDescription[nTile];
+                    encoderDescriptions = new EncoderStreamDescription[nTile];
+                    for(int i=0; i<nTile; i++)
+                    {
+                        transmitterDescriptions[i] = new OutgoingStreamDescription()
+                        {
+                            name = tileDescriptions[i].cameraName,
+                            tileNumber = (uint)tileDescriptions[i].cameraMask,
+                            qualityIndex = 0,
+                            orientation = tileDescriptions[i].normal
+                        };
+                        encoderDescriptions[i] = new EncoderStreamDescription()
+                        {
+                            octreeBits = defaultOctreeBits,
+                            tileNumber = tileDescriptions[i].cameraMask
+                        };
+                    }
+                }
+                else
+                {
+                    Debug.Log($"PointCloudInputTiled: source {PCcapturer.Name()} is not tiled.");
+                }
+            }
             //
             // Override descriptions if not already initialized.
             //
@@ -57,13 +110,10 @@ namespace Cwipc
                 };
             }
             //
-            // Create queue from reader to encoder and queues from encoder to transmitter.
-            // The first one is declared in our base class, and will be picked up by its
-            // Initialize method.
+            // Create queues from encoder to transmitter.
             //
             // The encoders and transmitters are tied together using their unique queue.
             //
-            ReaderEncoderQueue = new QueueThreadSafe("ReaderEncoderQueue", 2, true);
             TransmitterInputQueues = new QueueThreadSafe[transmitterDescriptions.Length];
             for(int i= 0; i < transmitterDescriptions.Length; i++)
             {
@@ -80,11 +130,11 @@ namespace Cwipc
             //
             // Create transmitter.
             //
-            string fourcc = compressedOutputStream ? "cwi1" : "cwi0";
+            string fourcc = compressedOutputStreams ? "cwi1" : "cwi0";
             //
             // Create Encoder
             //
-            if (compressedOutputStream)
+            if (compressedOutputStreams)
             {
                 PCencoder = new AsyncPCEncoder(ReaderEncoderQueue, encoderDescriptions);
             }

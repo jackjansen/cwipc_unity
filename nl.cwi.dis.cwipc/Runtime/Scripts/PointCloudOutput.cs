@@ -65,14 +65,20 @@ namespace Cwipc
         protected virtual void InitializePipeline()
         {
             ReaderRenderQueue = new QueueThreadSafe("ReaderRenderQueue", 2, true);
-            InitializeTransmitter();
+            InitializeTransmitterQueue();
             InitializeReader();
+            InitializeTransmitter();
             if (RendererInputQueue == null)
             {
                 RendererInputQueue = ReaderRenderQueue;
             }
             PCpreparer = new AsyncPointCloudPreparer(RendererInputQueue, Preparer_DefaultCellSize, Preparer_CellSizeFactor);
             PCrenderer.SetPreparer(PCpreparer);
+        }
+
+        protected virtual void InitializeTransmitterQueue()
+        {
+
         }
 
         protected virtual void InitializeTransmitter()
