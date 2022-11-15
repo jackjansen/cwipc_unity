@@ -30,6 +30,12 @@ namespace Cwipc
         /// Timestamp of current frame (for debugging and statistics, mainly)
         /// </summary>
         public Timestamp currentTimestamp { get; }
+
+        /// <summary>
+        /// Return name (for logging and statistics)
+        /// </summary>
+        /// <returns></returns>
+        public string Name();
     }
 
     /// <summary>
@@ -43,5 +49,6 @@ namespace Cwipc
         abstract public float GetPointSize();
         abstract public Timedelta getQueueDuration();
         abstract public Timestamp currentTimestamp { get; }
+        abstract public string Name();
     }
 }

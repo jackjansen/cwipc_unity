@@ -23,10 +23,6 @@ namespace Cwipc
 
         protected AsyncPointCloudReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
-            if (_outQueue == null)
-            {
-                throw new System.Exception("{Name()}: outQueue is null");
-            }
             outQueue = _outQueue;
             out2Queue = _out2Queue;
 #if VRT_WITH_STATS
@@ -132,8 +128,7 @@ namespace Cwipc
             Timedelta encoderQueuedDuration = 0;
             if (outQueue == null)
             {
-                Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
-                didDrop = true;
+                //Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
             }
             else
             {

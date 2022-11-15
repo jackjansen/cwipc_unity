@@ -38,7 +38,7 @@ namespace Cwipc
         protected System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
         protected System.DateTime earliestNextCapture;    // Earliest time we want to do the next capture, if non-null.
         
-        public virtual string Name()
+        public override string Name()
         {
             return $"{GetType().Name}";
         }

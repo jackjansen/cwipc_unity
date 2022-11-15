@@ -34,6 +34,10 @@ namespace Cwipc
         [SerializeField] protected bool pcMirrorX = true;
 
         [Header("Introspection (for debugging)")]
+        [Tooltip("Renderer name (logging and statistics)")]
+        [SerializeField] private string _RendererName;
+        [Tooltip("Preparer name (logging and statistics)")]
+        [SerializeField] private string _PreparerName;
         [Tooltip("Private clone of Material used by this renderer instance")]
         [SerializeField] protected Material material;
         [SerializeField] protected MaterialPropertyBlock block;
@@ -61,6 +65,7 @@ namespace Cwipc
         // Start is called before the first frame update
         void Start()
         {
+            _RendererName = Name();
             if (!isSupported())
             {
                 Debug.LogError($"{Name()}: uses shader that is not supported on this graphics card");
@@ -96,6 +101,7 @@ namespace Cwipc
             	Debug.Log($"{Name()}: Update() called but no preparer set");
             	return;
 			}
+            _PreparerName = preparer.Name();
             preparer.Synchronize();
         }
 

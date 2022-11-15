@@ -11,8 +11,13 @@ namespace Cwipc
         protected QueueThreadSafe[] TransmitterInputQueues;
         protected AsyncWorker PCencoder;
         protected AsyncTCPWriter PCtransmitter;
-
+        [Header("Self-view settings")]
+        [Tooltip("Enable pointcloud display")]
+        [SerializeField] protected bool _enableSelfView = true;
+        protected override bool enableOutput { get { return _enableSelfView; } }
         [Header("Transmission settings")]
+        [Tooltip("Enable transmission")]
+        [SerializeField] bool enableTransmission = true;
         [Tooltip("Specifies TCP server to create as sink, in the form tcp://host:port, for first tile stream. Subsequent tiles get port incremented.")]
         [SerializeField] protected string outputUrl;
         [Tooltip("Get tile information from source (overrides encoderDescriptions and transmitterDescriptions")]
@@ -28,6 +33,7 @@ namespace Cwipc
 
         protected override void InitializeTransmitterQueue()
         {
+            if (!enableTransmission) return;
             //
             // Create queue from reader to encoder.
             // Iis declared in our base class, and will be picked up by its
@@ -38,6 +44,7 @@ namespace Cwipc
 
         protected override void InitializeTransmitter()
         {
+            if (!enableTransmission) return;
             //
             // Override tile information from source.
             //
