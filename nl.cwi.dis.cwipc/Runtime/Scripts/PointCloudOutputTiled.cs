@@ -4,42 +4,26 @@ using UnityEngine;
 
 namespace Cwipc
 {
+    using IncomingTileDescription = StreamSupport.IncomingTileDescription;
+    using IncomingStreamDescription = StreamSupport.IncomingStreamDescription;
     public class PointCloudOutputTiled : MonoBehaviour
     {
         public enum SourceType
         {
-            Synthetic,
-            Realsense,
-            Kinect,
-            Prerecorded,
             TCP,
         };
         [Tooltip("Type of source to create")]
         [SerializeField] public SourceType sourceType;
-        [Tooltip("Renderer to use")]
+        [Tooltip("Number of tiles to receive. Should match the number on the other side")]
+        [SerializeField] protected int nTiles = 1;
+        [Tooltip("Renderer to clone, one for each tile")]
         [SerializeField] protected GameObject PCrendererPrefab;
         
         [Header("Settings shared by (some) sources")]
-        [Tooltip("Frame rate wanted")]
-        [SerializeField] protected float framerate = 15;
         [Tooltip("Rendering cellsize, if not specified in pointcloud")]
         [SerializeField] protected float Preparer_DefaultCellSize = 1.0f;
         [Tooltip("Multiplication factor for pointcloud cellsize")]
         [SerializeField] protected float Preparer_CellSizeFactor = 1.0f;
-
-        [Header("Source type: Synthetic settings")]
-        [Tooltip("Number of points per cloud")]
-        [SerializeField] protected int Synthetic_NPoints = 8000;
-
-        [Header("Source type: Realsense/Kinect settings")]
-        [Tooltip("Camera configuration filename")]
-        [SerializeField] protected string configFileName;
-        [Tooltip("If non-zero: voxelize captured pointclouds to this cellsize")]
-        [SerializeField] protected float voxelSize;
-
-        [Header("Source type: prerecorded")]
-        [Tooltip("Path of directory with pointcloud files")]
-        [SerializeField] protected string directoryPath;
 
         [Header("Source type: TCP")]
         [Tooltip("Specifies TCP server to contact for source, in the form tcp://host:port")]
@@ -51,13 +35,10 @@ namespace Cwipc
         [Tooltip("Renderers created")]
         [SerializeField] protected PointCloudRenderer[] PCrenderers;
 
-        protected virtual bool enableOutput { get { return true; } }
-        protected QueueThreadSafe ReaderRenderQueue;
-        protected QueueThreadSafe RendererInputQueue;
-        protected QueueThreadSafe ReaderEncoderQueue = null;
-        protected AsyncPointCloudReader PCcapturer;
+        protected QueueThreadSafe[] ReaderDecoderQueues;
+        protected QueueThreadSafe[] DecoderPreparerQueues;
         protected AsyncReader PCreceiver;
-        protected AsyncFilter PCdecoder;
+        protected AsyncFilter[] PCdecoders;
         protected AsyncPointCloudPreparer[] PCpreparers;
 
         // Start is called before the first frame update
@@ -69,91 +50,84 @@ namespace Cwipc
 
         protected virtual void InitializePipeline()
         {
-            int nTiles = 1;
-
-            if (enableOutput)
+            //
+            // Create the queues
+            //
+            ReaderDecoderQueues = new QueueThreadSafe[nTiles];
+            DecoderPreparerQueues = new QueueThreadSafe[nTiles];
+            //
+            // Create the incoming tile/stream descriptions
+            //
+            string fourcc = compressedInputStream ? "cwi1" : "cwi0";
+            IncomingTileDescription[] tileDescription = new IncomingTileDescription[nTiles];
+            for (int i=0; i<nTiles; i++)
             {
-                ReaderRenderQueue = new QueueThreadSafe("ReaderRenderQueue", 2, true);
+                ReaderDecoderQueues[i] = new QueueThreadSafe($"ReaderDecoderQueue#{i}", 2, true);
+                DecoderPreparerQueues[i] = new QueueThreadSafe($"DecoderPreparerQueue#{i}", 2, false);
+                // xxxjack we make this up for now
+                IncomingStreamDescription[] sds = new IncomingStreamDescription[1]
+                {
+                    new IncomingStreamDescription
+                    {
+                        streamIndex = i,
+                        tileNumber = i,
+                        orientation = Vector3.zero
+                    }
+                };
+                tileDescription[i] = new IncomingTileDescription()
+                {
+                    name = $"tile#{i}",
+                    tileNumber = i,
+                    outQueue = ReaderDecoderQueues[i],
+                    streamDescriptors = sds
+                };
             }
-            InitializeTransmitterQueue();
-            InitializeReader();
-            InitializeTransmitter();
-            if (RendererInputQueue == null)
+            //
+            // Create the receiver
+            //
+            PCreceiver = new AsyncTCPPCReader(inputUrl, fourcc, tileDescription);
+            //
+            // Create the decoders, preparers and renderers
+            //
+           
+            PCpreparers = new AsyncPointCloudPreparer[nTiles];
+            PCrenderers = new PointCloudRenderer[nTiles];
+            for (int tileIndex = 0; tileIndex < nTiles; tileIndex++)
             {
-                RendererInputQueue = ReaderRenderQueue;
-            }
-            if (enableOutput)
-            {
-                PCpreparers = new AsyncPointCloudPreparer[nTiles];
-                PCrenderers = new PointCloudRenderer[nTiles];
-                int tileIndex = 0;
-                // Instantiate
+                AsyncFilter newDecoderObject = CreateDecoder(ReaderDecoderQueues[tileIndex], DecoderPreparerQueues[tileIndex]);
                 GameObject newGameObject = Instantiate<GameObject>(PCrendererPrefab, transform);
-                //newGameObject.SetActive(true);
                 PointCloudRenderer newRendererObject = newGameObject.GetComponent<PointCloudRenderer>();
-                AsyncPointCloudPreparer newPreparerObject = new AsyncPointCloudPreparer(RendererInputQueue, Preparer_DefaultCellSize, Preparer_CellSizeFactor);
+                AsyncPointCloudPreparer newPreparerObject = new AsyncPointCloudPreparer(DecoderPreparerQueues[tileIndex], Preparer_DefaultCellSize, Preparer_CellSizeFactor);
                 PCpreparers[tileIndex] = newPreparerObject;
                 PCrenderers[tileIndex] = newRendererObject;
                 newRendererObject.SetPreparer(newPreparerObject);
             }
-            else
-            {
-            }
         }
 
-        protected virtual void InitializeTransmitterQueue()
+        
+        AsyncFilter CreateDecoder(QueueThreadSafe inQueue, QueueThreadSafe outQueue)
         {
-
-        }
-
-        protected virtual void InitializeTransmitter()
-        {
-
-        }
-
-        void InitializeReader()
-        {
-            switch(sourceType)
-            {
-                case SourceType.Synthetic:
-                    PCcapturer = new AsyncSyntheticReader(framerate, Synthetic_NPoints, ReaderRenderQueue, ReaderEncoderQueue);
-                    break;
-                case SourceType.Realsense:
-                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
-                    break;
-                case SourceType.Kinect:
-                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
-                    break;
-                case SourceType.Prerecorded:
-                    //PCreceiver = new AsyncPrerecordedReader(directoryPath, voxelSize, framerate, ReaderOutputQueue, ReaderEncoderQueue);
-                    break;
-                case SourceType.TCP:
-                    InitializeDecoder();
-                    break;
-            }
-        }
-
-        void InitializeDecoder()
-        {
-            string fourcc = compressedInputStream ? "cwi1" : "cwi0";
-            RendererInputQueue = new QueueThreadSafe("DecoderOutputQueue", 2, false);
-            PCreceiver = new AsyncTCPReader(inputUrl, fourcc, ReaderRenderQueue);
             if (compressedInputStream)
             {
-                PCdecoder = new AsyncPCDecoder(ReaderRenderQueue, RendererInputQueue);
+                return new AsyncPCDecoder(inQueue, outQueue);
             }
             else
             {
-                PCdecoder = new AsyncPCNullDecoder(ReaderRenderQueue, RendererInputQueue);
+                return new AsyncPCNullDecoder(inQueue, outQueue);
             }
 
         }
 
         protected virtual void OnDestroy()
         {
-            PCcapturer?.StopAndWait();
             PCreceiver?.StopAndWait();
-            PCdecoder?.StopAndWait();
+            if (PCdecoders != null)
+            {
+                foreach(var d in PCdecoders)
+                {
+                    d.StopAndWait();
+                }
+            }
             if (PCpreparers != null)
             {
                 foreach(var p in PCpreparers)
