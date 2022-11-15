@@ -49,6 +49,20 @@ namespace Cwipc
             isClosed = new CancellationTokenSource();
         }
 
+        ~QueueThreadSafe()
+        {
+            if (!IsClosed())
+            {
+                UnityEngine.Debug.LogWarning($"{Name()}: Not closed before finalizer called. Deleting items.");
+                while (true)
+                {
+                    BaseMemoryChunk item = TryDequeue(0);
+                    if (item == null) break;
+                    item.free();
+                }
+            }
+        }
+
         public string Name()
         {
             return $"{GetType().Name}#{name}";
