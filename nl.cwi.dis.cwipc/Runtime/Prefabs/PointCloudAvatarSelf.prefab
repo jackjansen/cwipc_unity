@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2942035106827000207}
   - component: {fileID: 2957662068441337146}
+  - component: {fileID: 3740342231849927843}
   m_Layer: 0
   m_Name: PointCloudAvatarSelf
   m_TagString: Untagged
@@ -57,6 +58,23 @@ MonoBehaviour:
   directoryPath: 
   inputUrl: 
   compressedInputStream: 0
+  transmitter: {fileID: 3740342231849927843}
+  outputUrl: 
+  compressedOutputStream: 0
+  octreeBits: 8
+--- !u!114 &3740342231849927843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2942035106827000202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3f732ad29bb349f4b42351e99d230b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sinkType: 0
   outputUrl: tcp://localhost:4303
   compressedOutputStream: 0
   octreeBits: 8
@@ -192,6 +210,8 @@ MonoBehaviour:
   baseMaterial: {fileID: 2100000, guid: 1ea68d9ebfc1c704b8d72164da860d9d, type: 2}
   timeoutBeforeGhosting: 5
   pcMirrorX: 1
+  _RendererName: 
+  _PreparerName: 
   material: {fileID: 0}
   dataIsMissing: 0
   lastDataReceived: 0

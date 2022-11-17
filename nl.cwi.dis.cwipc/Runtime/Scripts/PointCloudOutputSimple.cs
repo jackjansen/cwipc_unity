@@ -47,6 +47,8 @@ namespace Cwipc
         [Tooltip("Insert a compressed pointcloud decoder into the stream")]
         public bool compressedInputStream;
 
+        protected virtual PointCloudTransmitSimple transmitter { get { return null; } }
+
         protected virtual bool enableOutput { get { return true; } }
         protected QueueThreadSafe ReaderRenderQueue;
         protected QueueThreadSafe RendererInputQueue;
@@ -69,9 +71,15 @@ namespace Cwipc
             {
                 ReaderRenderQueue = new QueueThreadSafe("ReaderRenderQueue", 2, true);
             }
-            InitializeTransmitterQueue();
+            if (transmitter != null)
+            {
+                ReaderEncoderQueue = transmitter.InitializeTransmitterQueue();
+            }
             InitializeReader();
-            InitializeTransmitter();
+            if (transmitter != null)
+            {
+                transmitter.InitializeTransmitter();
+            }
             if (RendererInputQueue == null)
             {
                 RendererInputQueue = ReaderRenderQueue;
@@ -87,9 +95,10 @@ namespace Cwipc
             }
         }
 
-        protected virtual void InitializeTransmitterQueue()
+        protected virtual QueueThreadSafe InitializeTransmitterQueue()
         {
-
+            if (transmitter == null) return null;
+            return transmitter.InitializeTransmitterQueue();
         }
 
         protected virtual void InitializeTransmitter()

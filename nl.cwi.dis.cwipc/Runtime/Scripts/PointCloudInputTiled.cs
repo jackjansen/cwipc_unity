@@ -31,15 +31,15 @@ namespace Cwipc
         [Tooltip("Output encoder parameters. Number and order must match transmitterDescriptions")]
         [SerializeField] protected EncoderStreamDescription[] encoderDescriptions;
 
-        protected override void InitializeTransmitterQueue()
+        protected override QueueThreadSafe InitializeTransmitterQueue()
         {
-            if (!enableTransmission) return;
+            if (!enableTransmission) return null;
             //
             // Create queue from reader to encoder.
             // Iis declared in our base class, and will be picked up by its
             // Initialize method.
             //
-            ReaderEncoderQueue = new QueueThreadSafe("ReaderEncoderQueue", 2, true);
+            return new QueueThreadSafe("ReaderEncoderQueue", 2, true);
         }
 
         protected override void InitializeTransmitter()
