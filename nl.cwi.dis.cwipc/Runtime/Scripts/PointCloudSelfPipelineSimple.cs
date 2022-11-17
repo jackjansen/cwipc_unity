@@ -8,7 +8,7 @@ namespace Cwipc
     using OutgoingStreamDescription = StreamSupport.OutgoingStreamDescription;
 
 
-    public class PointCloudInputSimple : PointCloudOutputSimple
+    public class PointCloudSelfPipelineSimple : PointCloudPipelineSimple
     {
         [Header("Transmission settings")]
         [Tooltip("Transmitter to use (if any)")]

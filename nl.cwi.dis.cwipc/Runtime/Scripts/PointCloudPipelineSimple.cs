@@ -4,7 +4,13 @@ using UnityEngine;
 
 namespace Cwipc
 {
-    public class PointCloudOutputSimple : MonoBehaviour
+    /// <summary>
+    /// MonoBehaviour that controls a pointcloud pipeline.
+    /// There is always a source (volumetric camera, network source, something else).
+    /// There is always a renderer (MonoBehaviour), but it may be disabled.
+    /// There is an optional transmitter.
+    /// </summary>
+    public class PointCloudPipelineSimple : MonoBehaviour
     {
         public enum SourceType
         {

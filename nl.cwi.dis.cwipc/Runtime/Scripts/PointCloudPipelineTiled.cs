@@ -6,7 +6,7 @@ namespace Cwipc
 {
     using IncomingTileDescription = StreamSupport.IncomingTileDescription;
     using IncomingStreamDescription = StreamSupport.IncomingStreamDescription;
-    public class PointCloudOutputTiled : MonoBehaviour
+    public class PointCloudPipelineTiled : MonoBehaviour
     {
         public enum SourceType
         {
