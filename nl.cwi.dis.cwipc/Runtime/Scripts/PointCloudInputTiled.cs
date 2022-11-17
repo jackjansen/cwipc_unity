@@ -6,7 +6,7 @@ namespace Cwipc
 {
     using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
     using OutgoingStreamDescription = StreamSupport.OutgoingStreamDescription;
-    public class PointCloudInputTiled : PointCloudOutput
+    public class PointCloudInputTiled : PointCloudOutputSimple
     {
         protected QueueThreadSafe[] TransmitterInputQueues;
         protected AsyncWorker PCencoder;
