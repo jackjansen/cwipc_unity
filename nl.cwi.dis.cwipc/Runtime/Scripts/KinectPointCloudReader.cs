@@ -6,7 +6,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class KinectPointCloudReader : BasePointCloudReader
+    public class KinectPointCloudReader : AbstractPointCloudSource
     {
         [Header("Kinect reader specific fields")]
         [Tooltip("Filename of cameraconfig.xml file")]

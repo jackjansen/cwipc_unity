@@ -7,7 +7,12 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    abstract public class BasePointCloudTransmitter : MonoBehaviour
+    /// <summary>
+    /// Base class for a MonoBehaviour that is a sink of pointclouds.
+    /// A class that transmits pointclouds (possibly after compressing them).
+    /// Concrete implementation subclasses for either tiled or untiled streams exist.
+    /// </summary>
+    abstract public class AbstractPointCloudSink : MonoBehaviour
     {
         public enum SinkType
         {

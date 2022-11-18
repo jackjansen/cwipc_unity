@@ -6,7 +6,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class SyntheticPointCloudReader : BasePointCloudReader
+    public class SyntheticPointCloudReader : AbstractPointCloudSource
     {
         [Header("Synthetic reader specific fields")]
         [Tooltip("Produce pointclouds at this number of frames per second (if nonzero)")]

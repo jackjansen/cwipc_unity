@@ -6,7 +6,10 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    abstract public class BasePointCloudReader : AbstractPointCloudPreparer, IPointCloudReaderImplementation
+    /// <summary>
+    /// Base class for MonoBehaviour that is a source of pointclouds.
+    /// </summary>
+    abstract public class AbstractPointCloudSource : AbstractPointCloudPreparer, IPointCloudReaderImplementation
     {
         protected cwipc.source reader = null;
         protected cwipc.pointcloud currentPointcloud = null;

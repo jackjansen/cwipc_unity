@@ -7,7 +7,7 @@ namespace Cwipc
     using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
     using OutgoingStreamDescription = StreamSupport.OutgoingStreamDescription;
 
-    public class PointCloudTransmitTiled : BasePointCloudTransmitter
+    public class PointCloudTransmitTiled : AbstractPointCloudSink
     {
         [Tooltip("Ignore tiling of source, always send untiled streams")]
         [SerializeField] protected bool forceUntiled;

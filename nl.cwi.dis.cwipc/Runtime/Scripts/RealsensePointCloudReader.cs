@@ -6,7 +6,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class RealsensePointCloudReader : BasePointCloudReader
+    public class RealsensePointCloudReader : AbstractPointCloudSource
     {
         [Header("Realsense reader specific fields")]
         [Tooltip("Filename of cameraconfig.xml file")]

@@ -25,8 +25,8 @@ namespace Cwipc
         protected override bool enableOutput { get { return _enableSelfView; } }
         [Header("Transmission settings")]
         [Tooltip("Transmitter to use (if any)")]
-        [SerializeField] protected BasePointCloudTransmitter _transmitter;
-        protected override BasePointCloudTransmitter transmitter { get { return _transmitter; } }
+        [SerializeField] protected AbstractPointCloudSink _transmitter;
+        protected override AbstractPointCloudSink transmitter { get { return _transmitter; } }
         [Tooltip("Enable transmission")]
         [SerializeField] bool enableTransmission = true;
         

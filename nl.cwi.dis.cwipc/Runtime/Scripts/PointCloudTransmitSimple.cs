@@ -7,7 +7,7 @@ namespace Cwipc
     using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
     using OutgoingStreamDescription = StreamSupport.OutgoingStreamDescription;
 
-    public class PointCloudTransmitSimple : BasePointCloudTransmitter
+    public class PointCloudTransmitSimple : AbstractPointCloudSink
     {
       
         protected QueueThreadSafe TransmitterInputQueue;
