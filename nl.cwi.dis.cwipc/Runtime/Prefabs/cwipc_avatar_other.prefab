@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 2942035106827000207}
   - component: {fileID: 3238466466019172238}
   m_Layer: 0
-  m_Name: PointCloudTiledAvatarOther
+  m_Name: cwipc_avatar_other
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

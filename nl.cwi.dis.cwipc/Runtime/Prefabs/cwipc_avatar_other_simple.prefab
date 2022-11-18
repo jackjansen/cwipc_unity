@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2942035106827000207}
-  - component: {fileID: 1810360447061419718}
+  - component: {fileID: 1755912576949709281}
   m_Layer: 0
-  m_Name: PointCloudDisplay
+  m_Name: cwipc_avatar_other_simple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1810360447061419718
+--- !u!114 &1755912576949709281
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,11 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dda5a0a9c30f4a8385c8a2cec02d551, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sourceType: 4
   PCrenderer: {fileID: 4770916539198233020}
+  framerate: 0
   Preparer_DefaultCellSize: 1
   Preparer_CellSizeFactor: 1
-  Synthetic_Framerate: 15
-  Synthetic_NPoints: 8000
+  Synthetic_NPoints: 0
+  configFileName: 
+  voxelSize: 0
+  directoryPath: 
+  inputUrl: tcp://localhost:4303
+  compressedInputStream: 0
 --- !u!1 &8672829700311196926
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,6 +104,8 @@ MonoBehaviour:
   baseMaterial: {fileID: 2100000, guid: 1ea68d9ebfc1c704b8d72164da860d9d, type: 2}
   timeoutBeforeGhosting: 5
   pcMirrorX: 1
+  _RendererName: 
+  _PreparerName: 
   material: {fileID: 0}
   dataIsMissing: 0
   lastDataReceived: 0

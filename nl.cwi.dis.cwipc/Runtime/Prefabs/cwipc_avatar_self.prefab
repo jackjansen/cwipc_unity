@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2942035106827000207}
-  - component: {fileID: 2957662068441337146}
-  - component: {fileID: 3740342231849927843}
+  - component: {fileID: 6707972400606089489}
+  - component: {fileID: 6051466313898402052}
   m_Layer: 0
-  m_Name: PointCloudAvatarSelf
+  m_Name: cwipc_avatar_self
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +35,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2957662068441337146
+--- !u!114 &6707972400606089489
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2942035106827000202}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4b93a43d3b5a48389d7fbf9d5098418, type: 3}
+  m_Script: {fileID: 11500000, guid: 28ea6baabaf6c4e55889a771f62e2621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sourceType: 0
@@ -58,11 +58,10 @@ MonoBehaviour:
   directoryPath: 
   inputUrl: 
   compressedInputStream: 0
-  transmitter: {fileID: 3740342231849927843}
-  outputUrl: 
-  compressedOutputStream: 0
-  octreeBits: 8
---- !u!114 &3740342231849927843
+  _enableSelfView: 1
+  _transmitter: {fileID: 6051466313898402052}
+  enableTransmission: 1
+--- !u!114 &6051466313898402052
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,13 +70,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2942035106827000202}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3f732ad29bb349f4b42351e99d230b4, type: 3}
+  m_Script: {fileID: 11500000, guid: b8d7912c41ea246cab350310a99c361b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sinkType: 0
-  outputUrl: tcp://localhost:4303
-  compressedOutputStream: 0
-  octreeBits: 8
+  outputUrl: tcp://localhost:9303
+  compressedOutputStreams: 1
+  defaultOctreeBits: 10
+  forceUntiled: 0
+  transmitterDescriptions: []
+  encoderDescriptions: []
 --- !u!1 &4869906821256954691
 GameObject:
   m_ObjectHideFlags: 0
