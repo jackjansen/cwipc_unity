@@ -79,15 +79,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sourceType: 4
   PCrendererPrefab: {fileID: 8672829700311196926}
-  framerate: 0
-  Preparer_DefaultCellSize: 1
+  Preparer_DefaultCellSize: 0
   Preparer_CellSizeFactor: 1
-  Synthetic_NPoints: 0
-  configFileName: 
-  voxelSize: 0
-  directoryPath: 
-  inputUrl: tcp://localhost:4303
-  compressedInputStream: 0
+  inputUrl: 
+  compressedInputStream: 1
+  nTiles: 0
+  tileDescription: []
   PCrenderers: []
 --- !u!1 &8672829700311196926
 GameObject:
@@ -141,4 +138,6 @@ MonoBehaviour:
   _PreparerName: 
   material: {fileID: 0}
   dataIsMissing: 0
-  lastDataReceived: 0
+  timestampMostRecentReception: 0
+  pointCountMostRecentReception: 0
+  pointSizeMostRecentReception: 0

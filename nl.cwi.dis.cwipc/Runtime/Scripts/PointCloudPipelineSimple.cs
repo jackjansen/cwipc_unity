@@ -50,14 +50,14 @@ namespace Cwipc
 
         [Header("Source type: TCP")]
         [Tooltip("Specifies TCP server to contact for source, in the form tcp://host:port")]
-        [SerializeField] protected string inputUrl;
+        [SerializeField] public string inputUrl;
         [Tooltip("Insert a compressed pointcloud decoder into the stream")]
         public bool compressedInputStream;
 
         /// <summary>
         /// Overridden by subclasses that want to transmit the pointcloud stream.
         /// </summary>
-        protected virtual AbstractPointCloudSink transmitter { get { return null; } }
+        public virtual AbstractPointCloudSink transmitter { get { return null; } }
 
         /// <summary>
         /// Overridden by subclasses that want to disable display of the pointclouds.

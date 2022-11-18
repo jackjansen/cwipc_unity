@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -215,8 +215,58 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &257575381
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 257575383}
+  - component: {fileID: 257575382}
+  m_Layer: 0
+  m_Name: Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &257575382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257575381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d95f7be840cac4c00ab847e780ecc9c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  singleMachineSession: 1
+  firstHost: 
+  secondHost: 
+  selfPipeline: {fileID: 1415948878}
+  otherPipeline: {fileID: 1924368168}
+  useCompression: 1
+--- !u!4 &257575383
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257575381}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.39320517, y: 0.14461643, z: 2.4661262}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &623658355
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,7 +363,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1415948877
 PrefabInstance:
@@ -328,7 +378,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000207, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000207, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -370,57 +420,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2957662068441337146, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: sourceType
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2957662068441337146, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: _transmitter
-      value: 
-      objectReference: {fileID: 1913172989}
-    - target: {fileID: 2957662068441337146, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: configFileName
-      value: cameraconfig.xml
-      objectReference: {fileID: 0}
-    - target: {fileID: 2957662068441337146, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: compressedInputStream
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2957662068441337146, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: Preparer_DefaultCellSize
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: outputUrl
-      value: tcp://vrtiny.local:4303
-      objectReference: {fileID: 0}
-    - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: octreeBits
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: defaultOctreeBits
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: compressedOutputStream
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
-      propertyPath: compressedOutputStreams
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
---- !u!114 &1913172989 stripped
+--- !u!114 &1415948878 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2957662068441337146, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
   m_PrefabInstance: {fileID: 1415948877}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3f732ad29bb349f4b42351e99d230b4, type: 3}
+  m_Script: {fileID: 11500000, guid: f4b93a43d3b5a48389d7fbf9d5098418, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1924368167
@@ -430,21 +440,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1755912576949709281, guid: c8bcb01b5264b4b81a91509b227c519a, type: 3}
-      propertyPath: inputUrl
-      value: tcp://sap.local:4303
-      objectReference: {fileID: 0}
-    - target: {fileID: 1755912576949709281, guid: c8bcb01b5264b4b81a91509b227c519a, type: 3}
-      propertyPath: compressedInputStream
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000202, guid: c8bcb01b5264b4b81a91509b227c519a, type: 3}
       propertyPath: m_Name
       value: PointCloudAvatarOther
       objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000207, guid: c8bcb01b5264b4b81a91509b227c519a, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000207, guid: c8bcb01b5264b4b81a91509b227c519a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -488,3 +490,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8bcb01b5264b4b81a91509b227c519a, type: 3}
+--- !u!114 &1924368168 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1755912576949709281, guid: c8bcb01b5264b4b81a91509b227c519a, type: 3}
+  m_PrefabInstance: {fileID: 1924368167}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dda5a0a9c30f4a8385c8a2cec02d551, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

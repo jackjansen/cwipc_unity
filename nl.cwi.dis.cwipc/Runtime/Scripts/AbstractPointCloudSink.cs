@@ -19,11 +19,11 @@ namespace Cwipc
             TCP,
         }
         [Tooltip("Type of output sink (protocol)")]
-        [SerializeField] protected SinkType sinkType;
+        [SerializeField] public SinkType sinkType;
         [Tooltip("Specifies TCP server to create as sink, in the form tcp://host:port")]
-        [SerializeField] protected string outputUrl;
+        [SerializeField] public string outputUrl;
         [Tooltip("Insert a compressed pointcloud encoder into the output stream")]
-        [SerializeField] protected bool compressedOutputStreams;
+        [SerializeField] public bool compressedOutputStreams;
         [Tooltip("For compressed streams: how many bits in the octree. Higher numbers are higher quality")]
         [SerializeField] protected int defaultOctreeBits;
 

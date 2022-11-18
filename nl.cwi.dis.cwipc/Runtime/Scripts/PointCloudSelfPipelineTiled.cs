@@ -19,14 +19,14 @@ namespace Cwipc
     /// </summary>
     public class PointCloudSelfPipelineTiled : PointCloudPipelineSimple
     {
-         [Header("Self-view settings")]
+        [Header("Self-view settings")]
         [Tooltip("Enable pointcloud display")]
         [SerializeField] protected bool _enableSelfView = true;
         protected override bool enableOutput { get { return _enableSelfView; } }
         [Header("Transmission settings")]
         [Tooltip("Transmitter to use (if any)")]
         [SerializeField] protected AbstractPointCloudSink _transmitter;
-        protected override AbstractPointCloudSink transmitter { get { return _transmitter; } }
+        public override AbstractPointCloudSink transmitter { get { return _transmitter; } }
         [Tooltip("Enable transmission")]
         [SerializeField] bool enableTransmission = true;
         

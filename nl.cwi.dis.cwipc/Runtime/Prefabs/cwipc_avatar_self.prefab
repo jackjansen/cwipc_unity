@@ -50,14 +50,14 @@ MonoBehaviour:
   sourceType: 0
   PCrenderer: {fileID: 4770916539198233020}
   framerate: 15
-  Preparer_DefaultCellSize: 1
+  Preparer_DefaultCellSize: 0
   Preparer_CellSizeFactor: 1
   Synthetic_NPoints: 8000
-  configFileName: 
+  configFileName: cameraconfig.xml
   voxelSize: 0
-  directoryPath: 
+  directoryPath: ../prerecorded_pointclouds
   inputUrl: 
-  compressedInputStream: 0
+  compressedInputStream: 1
   _enableSelfView: 1
   _transmitter: {fileID: 6051466313898402052}
   enableTransmission: 1
@@ -216,4 +216,6 @@ MonoBehaviour:
   _PreparerName: 
   material: {fileID: 0}
   dataIsMissing: 0
-  lastDataReceived: 0
+  timestampMostRecentReception: 0
+  pointCountMostRecentReception: 0
+  pointSizeMostRecentReception: 0

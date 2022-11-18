@@ -48,14 +48,14 @@ MonoBehaviour:
   sourceType: 4
   PCrenderer: {fileID: 4770916539198233020}
   framerate: 0
-  Preparer_DefaultCellSize: 1
+  Preparer_DefaultCellSize: 0
   Preparer_CellSizeFactor: 1
   Synthetic_NPoints: 0
   configFileName: 
   voxelSize: 0
   directoryPath: 
-  inputUrl: tcp://localhost:4303
-  compressedInputStream: 0
+  inputUrl: 
+  compressedInputStream: 1
 --- !u!1 &8672829700311196926
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,4 +108,6 @@ MonoBehaviour:
   _PreparerName: 
   material: {fileID: 0}
   dataIsMissing: 0
-  lastDataReceived: 0
+  timestampMostRecentReception: 0
+  pointCountMostRecentReception: 0
+  pointSizeMostRecentReception: 0
