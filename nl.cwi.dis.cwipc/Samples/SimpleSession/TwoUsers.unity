@@ -246,9 +246,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d95f7be840cac4c00ab847e780ecc9c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singleMachineSession: 1
-  firstHost: 
-  secondHost: 
+  singleMachineSession: 0
+  firstHost: vrtiny.local
+  secondHost: sap.local
   selfPipeline: {fileID: 1415948878}
   otherPipeline: {fileID: 1924368168}
   useCompression: 1
@@ -260,7 +260,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 257575381}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.39320517, y: 0.14461643, z: 2.4661262}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

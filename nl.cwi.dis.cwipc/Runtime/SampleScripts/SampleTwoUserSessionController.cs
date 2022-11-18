@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 using Cwipc;
 
@@ -23,29 +23,62 @@ public class SampleTwoUserSessionController : MonoBehaviour
     void Start()
     {
         Initialize();
+        InitializeSelf();
+        InitializeOther();
     }
 
-    private void Initialize()
+    protected void Initialize()
     {
         if (singleMachineSession)
         {
             firstHost = "localhost";
             secondHost = "localhost";
         }
+        // See if we need to swap the hostnames (if we are second)
+        IPHostEntry ourHostEntry = Dns.GetHostEntry(Dns.GetHostName());
+        IPHostEntry secondHostEntry = Dns.GetHostEntry(secondHost);
+        bool secondIsOurs = false;
+        foreach(var ip1 in ourHostEntry.AddressList)
+        {
+            foreach(var ip2 in secondHostEntry.AddressList)
+            {
+                if (ip1.Equals(ip2))
+                {
+                    secondIsOurs = true;
+                }
+            }
+        }
+        if (secondIsOurs)
+        {
+            string swap = secondHost;
+            secondHost = firstHost;
+            firstHost = swap;
+        }
+        // Disable other until we have all the information needed.
+        otherPipeline.gameObject.SetActive(false);
+    }
 
+    protected void InitializeSelf()
+    {
         AbstractPointCloudSink transmitter = selfPipeline.transmitter;
         if (transmitter == null) Debug.LogError($"SampleTowUserSessionController: transmitter is null for {selfPipeline}");
         transmitter.sinkType = AbstractPointCloudSink.SinkType.TCP;
         transmitter.outputUrl = $"tcp://{firstHost}:4303";
         transmitter.compressedOutputStreams = useCompression;
-        Debug.Log($"SampleTwoUserSessionController: initialized transmitter for {firstHost}");
+        Debug.Log($"SampleTwoUserSessionController: initialized self: transmitter on {firstHost}");
+
+    }
+
+    protected void InitializeOther()
+    {
 
         PointCloudPipelineSimple receiver = otherPipeline;
         if (receiver == null) Debug.LogError($"SampleTowUserSessionController: receiver is null for {otherPipeline}");
         receiver.sourceType = PointCloudPipelineSimple.SourceType.TCP;
         receiver.inputUrl = $"tcp://{secondHost}:4303";
         receiver.compressedInputStream = useCompression;
-        Debug.Log($"SampleTwoUserSessionController: initialized receiver for {secondHost}");
+        Debug.Log($"SampleTwoUserSessionController: initialized other: receiver for {secondHost}");
+        otherPipeline.gameObject.SetActive(true);
     }
 
     // Update is called once per frame
