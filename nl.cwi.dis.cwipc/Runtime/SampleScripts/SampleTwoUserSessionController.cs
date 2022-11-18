@@ -3,21 +3,29 @@ using System.Net;
 using UnityEngine;
 using Cwipc;
 
+/// <summary>
+/// Very simple session controller for two-user pointcloud session.
+/// If singleMachineSession is true we set both users to localhost (so you are essentially
+/// seeing yourself twice: once directly as self-view and once via a network connection to localhost).
+/// Otherwise the script checks which of the two given hostnames refers to this machine, and starts a
+/// transmission server for sending out our point clouds on that IP address and a receiver for the
+/// other IP address.
+/// </summary>
 public class SampleTwoUserSessionController : MonoBehaviour
 {
     [Tooltip("Single machine session: use localhost for sender and receiver")]
-    [SerializeField] bool singleMachineSession = true;
+    [SerializeField] protected bool singleMachineSession = true;
     [Header("For 2-machine sessions give both hostnames. Each instance will find its own.")]
     [Tooltip("Host name or IP address")]
-    [SerializeField] string firstHost;
+    [SerializeField] protected string firstHost;
     [Tooltip("Host name or IP address")]
-    [SerializeField] string secondHost;
+    [SerializeField] protected string secondHost;
     [Tooltip("Self: capturer, self-view, compressor, transmitter GameObject")]
-    [SerializeField] PointCloudPipelineSimple selfPipeline;
+    [SerializeField] protected GameObject selfPipeline;
     [Tooltip("Other:, receiver, decompressor, view GameObject")]
-    [SerializeField] PointCloudPipelineSimple otherPipeline;
+    [SerializeField] protected GameObject otherPipeline;
     [Tooltip("Whether to use compression in this session")]
-    [SerializeField] bool useCompression = true;
+    [SerializeField] protected bool useCompression = true;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +35,10 @@ public class SampleTwoUserSessionController : MonoBehaviour
         InitializeOther();
     }
 
-    protected void Initialize()
+    /// <summary>
+    /// Early initialization: fix up host names, and disable the other pointcloud pipeline.
+    /// </summary>
+    protected virtual void Initialize()
     {
         if (singleMachineSession)
         {
@@ -55,12 +66,16 @@ public class SampleTwoUserSessionController : MonoBehaviour
             firstHost = swap;
         }
         // Disable other until we have all the information needed.
-        otherPipeline.gameObject.SetActive(false);
+        otherPipeline.SetActive(false);
     }
 
-    protected void InitializeSelf()
+    /// <summary>
+    /// Initialize our pointcloud pipeline.
+    /// </summary>
+    protected virtual void InitializeSelf()
     {
-        AbstractPointCloudSink transmitter = selfPipeline.transmitter;
+        PointCloudSelfPipelineSimple pipeline = selfPipeline.GetComponent<PointCloudSelfPipelineSimple>();
+        AbstractPointCloudSink transmitter = pipeline?.transmitter;
         if (transmitter == null) Debug.LogError($"SampleTowUserSessionController: transmitter is null for {selfPipeline}");
         transmitter.sinkType = AbstractPointCloudSink.SinkType.TCP;
         transmitter.outputUrl = $"tcp://{firstHost}:4303";
@@ -69,21 +84,18 @@ public class SampleTwoUserSessionController : MonoBehaviour
 
     }
 
-    protected void InitializeOther()
+    /// <summary>
+    /// Initialize the other pointcloud pipeline and enable it.
+    /// </summary>
+    protected virtual void InitializeOther()
     {
 
-        PointCloudPipelineSimple receiver = otherPipeline;
+        PointCloudPipelineSimple receiver = otherPipeline.GetComponent<PointCloudPipelineSimple>();
         if (receiver == null) Debug.LogError($"SampleTowUserSessionController: receiver is null for {otherPipeline}");
         receiver.sourceType = PointCloudPipelineSimple.SourceType.TCP;
         receiver.inputUrl = $"tcp://{secondHost}:4303";
         receiver.compressedInputStream = useCompression;
         Debug.Log($"SampleTwoUserSessionController: initialized other: receiver for {secondHost}");
         otherPipeline.gameObject.SetActive(true);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

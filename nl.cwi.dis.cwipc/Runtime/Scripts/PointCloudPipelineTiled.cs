@@ -37,7 +37,7 @@ namespace Cwipc
 
         [Header("Source type: TCP")]
         [Tooltip("Specifies TCP server to contact for source, in the form tcp://host:port")]
-        [SerializeField] protected string inputUrl;
+        [SerializeField] public string inputUrl;
         [Tooltip("Insert a compressed pointcloud decoder into the stream")]
         public bool compressedInputStream;
 
