@@ -26,13 +26,26 @@ public class SampleTwoUserSessionController : MonoBehaviour
     [SerializeField] protected GameObject otherPipeline;
     [Tooltip("Whether to use compression in this session")]
     [SerializeField] protected bool useCompression = true;
+    [Tooltip("Introspection: have we received the information for the second host?")]
+    [SerializeField] protected bool streamDescriptionReceived = true;
+    [Tooltip("Introspection: have we initialized the receiver for the other host?")]
+    [SerializeField] protected bool otherInitialized = false;
 
     // Start is called before the first frame update
     void Start()
     {
         Initialize();
         InitializeSelf();
-        InitializeOther();
+    }
+
+    private void Update()
+    {
+        if (otherInitialized) return;
+        if (streamDescriptionReceived)
+        {
+            InitializeOther();
+            otherInitialized = true;
+        }
     }
 
     /// <summary>

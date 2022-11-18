@@ -37,7 +37,7 @@ namespace Cwipc
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        TCPStreamDescription[] descriptions;
+        protected TCPStreamDescription[] descriptions;
 
         protected class TCPPushThread
         {
@@ -218,6 +218,11 @@ namespace Cwipc
         }
  
         TCPPushThread[] pusherThreads;
+
+        protected AsyncTCPWriter() : base()
+        {
+           
+        }
 
         /// <summary>
         /// Create a frame server (or a set of frame server for multi-tile usage).
