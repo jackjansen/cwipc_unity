@@ -63,6 +63,9 @@ namespace Cwipc
                 listenSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 listenSocket.Bind(localEndpoint);
                 listenSocket.Listen(4);
+#if CWIPC_WITH_LOGGING
+                Debug.Log($"{Name()}: Start server on ({localEndpoint})");
+#endif
             }
 
             public string Name()

@@ -383,7 +383,15 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
+      propertyPath: defaultOctreeBits
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
       propertyPath: compressedOutputStream
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3740342231849927843, guid: d3e7c86ccc6324b40b67f231efc64bc0, type: 3}
+      propertyPath: compressedOutputStreams
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

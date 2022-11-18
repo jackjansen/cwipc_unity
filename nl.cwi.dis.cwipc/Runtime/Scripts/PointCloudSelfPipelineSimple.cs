@@ -16,8 +16,8 @@ namespace Cwipc
     {
         [Header("Transmission settings")]
         [Tooltip("Transmitter to use (if any)")]
-        [SerializeField] protected PointCloudTransmitSimple _transmitter;
-        protected override PointCloudTransmitSimple transmitter { get { return _transmitter; } }
+        [SerializeField] protected BasePointCloudTransmitter _transmitter;
+        protected override BasePointCloudTransmitter transmitter { get { return _transmitter; } }
 
         // Update is called once per frame
         void Update()

@@ -57,7 +57,7 @@ namespace Cwipc
         /// <summary>
         /// Overridden by subclasses that want to transmit the pointcloud stream.
         /// </summary>
-        protected virtual PointCloudTransmitSimple transmitter { get { return null; } }
+        protected virtual BasePointCloudTransmitter transmitter { get { return null; } }
 
         /// <summary>
         /// Overridden by subclasses that want to disable display of the pointclouds.
@@ -95,7 +95,8 @@ namespace Cwipc
             InitializeReader();
             if (transmitter != null)
             {
-                transmitter.InitializeTransmitter();
+                PointCloudTileDescription[] tileDescriptions = PCcapturer.getTiles();
+                transmitter.InitializeTransmitter(tileDescriptions);
             }
             if (RendererInputQueue == null)
             {
