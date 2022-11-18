@@ -30,7 +30,7 @@ namespace Cwipc
         [Tooltip("Frame rate wanted")]
         [SerializeField] protected float framerate = 15;
         [Tooltip("Rendering cellsize, if not specified in pointcloud")]
-        [SerializeField] protected float Preparer_DefaultCellSize = 1.0f;
+        [SerializeField] protected float Preparer_DefaultCellSize = 0;
         [Tooltip("Multiplication factor for pointcloud cellsize")]
         [SerializeField] protected float Preparer_CellSizeFactor = 1.0f;
 

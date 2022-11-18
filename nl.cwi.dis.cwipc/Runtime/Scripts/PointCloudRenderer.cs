@@ -44,7 +44,11 @@ namespace Cwipc
         [Tooltip("True if no pointcloud data is being received")]
         [SerializeField] bool dataIsMissing = false;
         [Tooltip("Timestamp of most recent pointcloud (system clock)")]
-        [SerializeField] Timestamp lastDataReceived;
+        [SerializeField] Timestamp timestampMostRecentReception;
+        [Tooltip("Number of points in most recent pointcloud")]
+        [SerializeField] int pointCountMostRecentReception;
+        [Tooltip("Number of points in most recent pointcloud")]
+        [SerializeField] float pointSizeMostRecentReception;
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -115,7 +119,7 @@ namespace Cwipc
 
             if (fresh)
             {
-                lastDataReceived = now;
+                timestampMostRecentReception = now;
                 if (dataIsMissing)
                 {
 #if CWIPC_WITH_LOGGING
@@ -126,7 +130,13 @@ namespace Cwipc
                 }
                 dataIsMissing = false;
                 pointCount = preparer.GetComputeBuffer(ref pointBuffer);
+                pointCountMostRecentReception = pointCount;
                 pointSize = preparer.GetPointSize();
+                pointSizeMostRecentReception = pointSize;
+                if (pointSize == 0)
+                {
+                    Debug.LogWarning($"{Name()}: pointSize == 0");
+                }
                 if (pointBuffer == null || !pointBuffer.IsValid())
                 {
                     Debug.LogError($"{Name()}: Invalid pointBuffer");
@@ -137,7 +147,7 @@ namespace Cwipc
             } 
             else
             {
-                if (now > lastDataReceived + (int)(CwipcConfig.Instance.timeoutBeforeGhosting*1000) && !dataIsMissing)
+                if (now > timestampMostRecentReception + (int)(CwipcConfig.Instance.timeoutBeforeGhosting*1000) && !dataIsMissing)
                 {
 #if CWIPC_WITH_LOGGING
                     Debug.Log($"{Name()}: No pointcloud received for {timeoutBeforeGhosting} seconds, ghosting with pointsize=0.2");
