@@ -6,6 +6,18 @@ namespace Cwipc
 {
     using IncomingTileDescription = StreamSupport.IncomingTileDescription;
     using IncomingStreamDescription = StreamSupport.IncomingStreamDescription;
+    /// MonoBehaviour that controls a pointcloud pipeline for tiled streams: capture/reception and display.
+    /// This is the only class for controlling the display of pointcloud streams.
+    /// There is always a source (network source, multi-file tiled playback).
+    /// Renderers are created on initialization, one per tile stream, based on a prefab.
+    /// 
+    /// There is always a renderer (MonoBehaviour), but it may be disabled by subclasses (before Start() is called).
+    /// There is never a transmitter, but subclasses (such as PointCloudSelfPipelineSimple) may override that.
+    ///
+    /// Usually an application will override InitializeTileAndStreamDescriptions, because
+    /// it will use some out-of-band method whereby the sender application tells the receiver application which tiles (and which qualities per
+    /// tile) can be expected. The receiver application will then set the descriptors for the PointCloudPipelineTiled
+    /// that shows the pointclouds from that sender app.
     public class PointCloudPipelineTiled : MonoBehaviour
     {
         public enum SourceType
@@ -14,8 +26,6 @@ namespace Cwipc
         };
         [Tooltip("Type of source to create")]
         [SerializeField] public SourceType sourceType;
-        [Tooltip("Number of tiles to receive. Should match the number on the other side")]
-        [SerializeField] protected int nTiles = 1;
         [Tooltip("Renderer to clone, one for each tile")]
         [SerializeField] protected GameObject PCrendererPrefab;
         
@@ -31,6 +41,12 @@ namespace Cwipc
         [Tooltip("Insert a compressed pointcloud decoder into the stream")]
         public bool compressedInputStream;
 
+        [Header("Tile and per-tile stream descriptions")]
+        [Tooltip("Number of tiles to receive. Should match the number on the other side")]
+        [SerializeField] protected int nTiles = 1;
+        [Tooltip("The tiles that are expected")]
+        [SerializeField] protected IncomingTileDescription[] tileDescription;
+
         [Header("Introspection/debugging")]
         [Tooltip("Renderers created")]
         [SerializeField] protected PointCloudRenderer[] PCrenderers;
@@ -45,26 +61,29 @@ namespace Cwipc
 
         void Start()
         {
+            InitializeTileAndStreamDescriptions();
             InitializePipeline(); 
         }
 
-        protected virtual void InitializePipeline()
+        /// <summary>
+        /// Initialize nTiles and tileDescription.
+        /// Usually overridden to implement application business logic.
+        /// </summary>
+        protected virtual void InitializeTileAndStreamDescriptions()
         {
-            //
-            // Create the queues
-            //
-            ReaderDecoderQueues = new QueueThreadSafe[nTiles];
-            DecoderPreparerQueues = new QueueThreadSafe[nTiles];
-            //
-            // Create the incoming tile/stream descriptions
-            //
-            string fourcc = compressedInputStream ? "cwi1" : "cwi0";
-            IncomingTileDescription[] tileDescription = new IncomingTileDescription[nTiles];
-            for (int i=0; i<nTiles; i++)
+            if (tileDescription != null && tileDescription.Length != 0)
             {
-                ReaderDecoderQueues[i] = new QueueThreadSafe($"ReaderDecoderQueue#{i}", 2, true);
-                DecoderPreparerQueues[i] = new QueueThreadSafe($"DecoderPreparerQueue#{i}", 2, false);
-                // xxxjack we make this up for now
+                // descriptions have been initialized already. Use that information.
+                nTiles = tileDescription.Length;
+                return;
+            }
+            if (nTiles == 0) nTiles = 1;
+            tileDescription = new IncomingTileDescription[nTiles];
+            for (int i = 0; i < nTiles; i++)
+            {
+                //
+                // If tiles are "invented" we assume one quality stream per tile.
+                // We also assume tiles have no orientation.
                 IncomingStreamDescription[] sds = new IncomingStreamDescription[1]
                 {
                     new IncomingStreamDescription
@@ -78,16 +97,34 @@ namespace Cwipc
                 {
                     name = $"tile#{i}",
                     tileNumber = i,
-                    outQueue = ReaderDecoderQueues[i],
                     streamDescriptors = sds
                 };
+            }
+        }
+
+        protected virtual void InitializePipeline()
+        {
+            //
+            // Create the queues
+            //
+            ReaderDecoderQueues = new QueueThreadSafe[nTiles];
+            DecoderPreparerQueues = new QueueThreadSafe[nTiles];
+            //
+            // Create the queues and store the per-tile decoded output queue into the tile description.
+            //
+            string fourcc = compressedInputStream ? "cwi1" : "cwi0";
+            for (int tileIndex=0; tileIndex<nTiles; tileIndex++)
+            {
+                ReaderDecoderQueues[tileIndex] = new QueueThreadSafe($"ReaderDecoderQueue#{tileIndex}", 2, true);
+                DecoderPreparerQueues[tileIndex] = new QueueThreadSafe($"DecoderPreparerQueue#{tileIndex}", 2, false);
+                tileDescription[tileIndex].outQueue = ReaderDecoderQueues[tileIndex];
             }
             //
             // Create the receiver
             //
             PCreceiver = new AsyncTCPPCReader(inputUrl, fourcc, tileDescription);
             //
-            // Create the decoders, preparers and renderers
+            // Create the decoders, preparers and renderers. Tie them together using the correct queues.
             //
            
             PCpreparers = new AsyncPointCloudPreparer[nTiles];

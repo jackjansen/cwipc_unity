@@ -6,6 +6,17 @@ namespace Cwipc
 {
     using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
     using OutgoingStreamDescription = StreamSupport.OutgoingStreamDescription;
+
+    /// <summary>
+    /// Subclass of PointCloudPipelineSimple that not only displays a pointcloud stream
+    /// (for self view) but also transmits it (so others can see you). Transmission may be tiled.
+    /// This is a subclass of PointCloudPipelineSimple because the self-view is never tiled: the whole
+    /// pointcloud is always shown. The only thing that is (optionally) tiled is the transmission.
+    ///
+    /// Both transmission and self-view can be disabled (before Start() is called), for example if you have a use case that does
+    /// not need either of them.
+    ///
+    /// </summary>
     public class PointCloudSelfPipelineTiled : PointCloudPipelineSimple
     {
         protected QueueThreadSafe[] TransmitterInputQueues;
@@ -22,7 +33,7 @@ namespace Cwipc
         [SerializeField] protected string outputUrl;
         [Tooltip("Get tile information from source (overrides encoderDescriptions and transmitterDescriptions")]
         [SerializeField] protected bool tiled = true;
-        [Tooltip("Insert compressed pointcloud encodesr into the output streams")]
+        [Tooltip("Insert compressed pointcloud encoders into the output streams")]
         [SerializeField] protected bool compressedOutputStreams;
         [Tooltip("Default octreeBits for compressor (if not overridden by encoderDescriptions")]
         [SerializeField] protected int defaultOctreeBits;

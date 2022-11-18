@@ -5,10 +5,11 @@ using UnityEngine;
 namespace Cwipc
 {
     /// <summary>
-    /// MonoBehaviour that controls a pointcloud pipeline.
+    /// MonoBehaviour that controls a pointcloud pipeline: capture/reception, display and optionally transmission.
+    /// This is the main class for controlling the display of pointcloud streams.
     /// There is always a source (volumetric camera, network source, something else).
-    /// There is always a renderer (MonoBehaviour), but it may be disabled.
-    /// There is an optional transmitter.
+    /// There is always a renderer (MonoBehaviour), but it may be disabled by subclasses (before Start() is called).
+    /// There is never a transmitter, but subclasses (such as PointCloudSelfPipelineSimple) may override that.
     /// </summary>
     public class PointCloudPipelineSimple : MonoBehaviour
     {
@@ -53,8 +54,14 @@ namespace Cwipc
         [Tooltip("Insert a compressed pointcloud decoder into the stream")]
         public bool compressedInputStream;
 
+        /// <summary>
+        /// Overridden by subclasses that want to transmit the pointcloud stream.
+        /// </summary>
         protected virtual PointCloudTransmitSimple transmitter { get { return null; } }
 
+        /// <summary>
+        /// Overridden by subclasses that want to disable display of the pointclouds.
+        /// </summary>
         protected virtual bool enableOutput { get { return true; } }
         protected QueueThreadSafe ReaderRenderQueue;
         protected QueueThreadSafe RendererInputQueue;
@@ -71,6 +78,10 @@ namespace Cwipc
             InitializePipeline(); 
         }
 
+        /// <summary>
+        /// Initialize the full pipeline.
+        /// Usually not overridden, unless there is special application logic needed.
+        /// </summary>
         protected virtual void InitializePipeline()
         {
             if (enableOutput)
@@ -101,17 +112,29 @@ namespace Cwipc
             }
         }
 
+        /// <summary>
+        /// Allocate the queue between the point cloud source and the transmitter (if there is a transmitter).
+        /// </summary>
+        /// <returns></returns>
         protected virtual QueueThreadSafe InitializeTransmitterQueue()
         {
             if (transmitter == null) return null;
             return transmitter.InitializeTransmitterQueue();
         }
 
+        /// <summary>
+        /// Initialize the transmitter (if there is one).
+        /// Separate call from InitializeTransmitterQueue, because the source needs to be iniaitlized before the transmitter
+        /// (because the transmitter may need to query the source for things like number of tiles).
+        /// </summary>
         protected virtual void InitializeTransmitter()
         {
 
         }
 
+        /// <summary>
+        /// Initialize the source.
+        /// </summary>
         void InitializeReader()
         {
             switch(sourceType)

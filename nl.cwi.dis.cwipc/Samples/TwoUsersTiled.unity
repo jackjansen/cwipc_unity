@@ -386,6 +386,10 @@ PrefabInstance:
       propertyPath: enableTransmission
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6707972400606089489, guid: 787b3d04f04eb490b8458fe5871c4b93, type: 3}
+      propertyPath: compressedOutputStreams
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 787b3d04f04eb490b8458fe5871c4b93, type: 3}
 --- !u!1001 &2057174263
@@ -442,6 +446,10 @@ PrefabInstance:
     - target: {fileID: 2942035106827000207, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3238466466019172238, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
+      propertyPath: compressedInputStream
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
