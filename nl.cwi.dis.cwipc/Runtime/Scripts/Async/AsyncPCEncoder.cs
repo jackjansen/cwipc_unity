@@ -11,7 +11,7 @@ namespace Cwipc
     using Timedelta = System.Int64;
     using EncoderStreamDescription = StreamSupport.EncoderStreamDescription;
 
-    public class AsyncPCEncoder : AsyncWorker
+    public class AsyncPCEncoder : AbstractPointCloudEncoder
     {
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;

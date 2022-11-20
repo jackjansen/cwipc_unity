@@ -23,7 +23,7 @@ namespace Cwipc
     /// quality-assessment experiments.
     ///
     /// </summary>
-    public abstract class AsyncPrerecordedBaseReader : AsyncTiledWorker
+    public abstract class AsyncPrerecordedBaseReader : AsyncPointCloudReader
     {
         [Serializable]
         public class _PrerecordedReaderConfig
@@ -53,7 +53,7 @@ namespace Cwipc
         public bool loop = true;
         public bool multireader = false;
         
-        public AsyncPrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base()
+        public AsyncPrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base(null)
         {
             voxelSize = _voxelSize;
             frameRate = _frameRate;
