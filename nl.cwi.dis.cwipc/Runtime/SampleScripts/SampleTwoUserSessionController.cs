@@ -78,8 +78,12 @@ public class SampleTwoUserSessionController : MonoBehaviour
             secondHost = firstHost;
             firstHost = swap;
         }
-        // Disable other until we have all the information needed.
-        otherPipeline.SetActive(false);
+        // Ensure other pipeline is not active yet (we need to set its tile information before its
+        // Start() is called).
+        if (otherPipeline.activeInHierarchy)
+        {
+            Debug.LogWarning("SampleTwoUserSessionController: otherPipeline is already active, this will lead to problems.");
+        }
     }
 
     /// <summary>

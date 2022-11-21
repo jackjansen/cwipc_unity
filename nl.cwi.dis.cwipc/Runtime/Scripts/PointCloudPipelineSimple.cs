@@ -79,6 +79,16 @@ namespace Cwipc
         }
 
         /// <summary>
+        /// Return an array of TileDescriptions that describes the available tiles from the capturer of this pipeline.
+        /// </summary>
+        /// <returns></returns>
+        public PointCloudTileDescription[] getTiles()
+        {
+            PointCloudTileDescription[] tileDescriptions = PCcapturer?.getTiles();
+            return tileDescriptions;
+        }
+
+        /// <summary>
         /// Initialize the full pipeline.
         /// Usually not overridden, unless there is special application logic needed.
         /// </summary>

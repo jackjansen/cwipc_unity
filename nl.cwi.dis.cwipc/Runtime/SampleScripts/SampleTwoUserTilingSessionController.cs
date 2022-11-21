@@ -10,8 +10,24 @@ using System.Runtime.InteropServices;
 
 public class SampleTwoUserTilingSessionController : SampleTwoUserSessionController
 {
+    [Tooltip("Disable tiling for this session")]
+    [SerializeField] protected bool untiledSession = false;
+    [Tooltip("For compressed session: levels of octree depth to compress to")]
+    [SerializeField] protected int[] octreeDepths = new int[] { 10 };
+    [Header("Introspection")]
+    [SerializeField] private StreamSupport.PointCloudNetworkTileDescription ourTileDescription;
+    [SerializeField] private StreamSupport.PointCloudNetworkTileDescription theirTileDescription;
+
     protected SimpleSocketReceiver controlReceiver;
     protected SimpleSocketSender controlSender;
+
+    private void OnDestroy()
+    {
+        controlSender?.Stop();
+        controlSender = null;
+        controlReceiver?.Stop();
+        controlReceiver = null;
+    }
 
     private void Update()
     {
@@ -21,14 +37,15 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
             if (msg != null) {
                 // xxxjack handle message
                 Debug.Log($"SampleTwoUserTilingSessionController: Received message \"{msg}\"");
+                theirTileDescription = JsonUtility.FromJson<StreamSupport.PointCloudNetworkTileDescription>(msg);
                 streamDescriptionReceived = true;
             }
         }
         if (otherInitialized) return;
         if (streamDescriptionReceived)
         {
-            InitializeOther();
             otherInitialized = true;
+            InitializeOther();
         }
     }
 
@@ -58,8 +75,36 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         transmitter.outputUrl = $"tcp://{firstHost}:4303";
         transmitter.compressedOutputStreams = useCompression;
         Debug.Log($"SampleTwoUserSessionController: initialized self: transmitter on {firstHost}");
-        // Send message to other side
-        string message = "Ready-xxxjack";
+        //
+        // Send message to other side, describg our tiling and compression streams
+        //
+        PointCloudTileDescription[] tilesToTransmit = pipeline.getTiles();
+        if (tilesToTransmit == null)
+        {
+            // If there is no tile information we assume a single tile.
+            tilesToTransmit = new PointCloudTileDescription[1]
+            {
+                new PointCloudTileDescription()
+                {
+                    cameraMask=0,
+                    cameraName="untiled",
+                    normal=Vector3.zero
+                }
+            };
+        }
+        if (untiledSession)
+        {
+            // If we want an untiled session we assume tile 0 is the untiled pointcloud stream.
+            tilesToTransmit = tilesToTransmit[..1];
+        }
+        else if(tilesToTransmit.Length > 1)
+        {
+            // We assume tile 0 is the untiled representation and remove it.
+            tilesToTransmit = tilesToTransmit[1..];
+        }
+        ourTileDescription = StreamSupport.CreateNetworkTileDescription(tilesToTransmit, octreeDepths);
+        string message = JsonUtility.ToJson(ourTileDescription);
+        Debug.Log($"xxxjack send message: {message}");
         controlSender.Send(message);
 
     }
@@ -75,6 +120,8 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         receiver.sourceType = PointCloudPipelineTiled.SourceType.TCP;
         receiver.inputUrl = $"tcp://{secondHost}:4303";
         receiver.compressedInputStream = useCompression;
+        StreamSupport.IncomingTileDescription[] incomingTileDescription = StreamSupport.CreateIncomingTileDescription(theirTileDescription);
+        receiver.SetTileDescription(incomingTileDescription);
         Debug.Log($"SampleTwoUserSessionController: initialized other: receiver for {secondHost}");
         otherPipeline.gameObject.SetActive(true);
     }
@@ -125,6 +172,15 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
                 }
             };
             Start();
+        }
+
+        public override void Stop()
+        {
+            if (!mySendQueue.IsClosed())
+            {
+                mySendQueue.Close();
+            }
+            base.StopAndWait();
         }
 
         public void Send(string message)

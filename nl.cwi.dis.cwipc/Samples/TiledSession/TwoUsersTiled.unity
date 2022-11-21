@@ -350,6 +350,14 @@ MonoBehaviour:
   selfPipeline: {fileID: 1584311960}
   otherPipeline: {fileID: 2057174264}
   useCompression: 1
+  streamDescriptionReceived: 1
+  otherInitialized: 0
+  untiledSession: 0
+  octreeDepths: 0a00000005000000
+  ourTileDescription:
+    tiles: []
+  theirTileDescription:
+    tiles: []
 --- !u!4 &839301504
 Transform:
   m_ObjectHideFlags: 0
@@ -462,6 +470,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PointCloudTiledAvatarOther
       objectReference: {fileID: 0}
+    - target: {fileID: 2942035106827000202, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000207, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -505,14 +517,6 @@ PrefabInstance:
     - target: {fileID: 2942035106827000207, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3238466466019172238, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
-      propertyPath: nTiles
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3238466466019172238, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
-      propertyPath: compressedInputStream
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}

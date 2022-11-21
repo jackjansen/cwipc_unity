@@ -61,15 +61,16 @@ namespace Cwipc
 
         void Start()
         {
-            InitializeTileAndStreamDescriptions();
+            InitializeTileDescription();
             InitializePipeline(); 
         }
 
         /// <summary>
         /// Initialize nTiles and tileDescription.
-        /// Usually overridden to implement application business logic.
+        /// Usually overridden to implement application business logic, unless the business logic uses SetTileDescription
+        /// to set the tiling information.
         /// </summary>
-        protected virtual void InitializeTileAndStreamDescriptions()
+        protected virtual void InitializeTileDescription()
         {
             if (tileDescription != null && tileDescription.Length != 0)
             {
@@ -89,6 +90,25 @@ namespace Cwipc
                     streamDescriptors = null
                 };
             }
+        }
+
+        /// <summary>
+        /// Set the information on incoming tiles. Must be called before Start().
+        /// Alternatively a subclass can override InitializeTileDescription.
+        /// </summary>
+        /// <param name="descr"></param>
+        /// <exception cref="System.Exception"></exception>
+        public void SetTileDescription(IncomingTileDescription[] descr)
+        {
+            if (tileDescription != null && tileDescription.Length != 0)
+            {
+                throw new System.Exception("PointCloudPipelineTiled: attempting to override SetTileDescription");
+            }
+            if (descr == null || descr.Length == 0)
+            {
+                throw new System.Exception("PointCloudPipelineTiled: attempting to set empty SetTileDescription");
+            }
+            tileDescription = descr;
         }
 
         protected virtual void InitializePipeline()
@@ -115,7 +135,8 @@ namespace Cwipc
             //
             // Create the decoders, preparers and renderers. Tie them together using the correct queues.
             //
-           
+
+            PCdecoders = new AsyncFilter[nTiles];
             PCpreparers = new AsyncPointCloudPreparer[nTiles];
             PCrenderers = new PointCloudRenderer[nTiles];
             for (int tileIndex = 0; tileIndex < nTiles; tileIndex++)
@@ -124,6 +145,7 @@ namespace Cwipc
                 GameObject newGameObject = Instantiate<GameObject>(PCrendererPrefab, transform);
                 PointCloudRenderer newRendererObject = newGameObject.GetComponent<PointCloudRenderer>();
                 AsyncPointCloudPreparer newPreparerObject = new AsyncPointCloudPreparer(DecoderPreparerQueues[tileIndex], Preparer_DefaultCellSize, Preparer_CellSizeFactor);
+                PCdecoders[tileIndex] = newDecoderObject;
                 PCpreparers[tileIndex] = newPreparerObject;
                 PCrenderers[tileIndex] = newRendererObject;
                 newRendererObject.SetPreparer(newPreparerObject);

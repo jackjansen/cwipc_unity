@@ -22,7 +22,8 @@ namespace Cwipc
                     ReceiverInfo ri = new ReceiverInfo();
                     ri.tileNumber = ti;
                     ri.host = url.Host;
-                    ri.port = url.Port + _tileDescriptors[ti].tileNumber;
+                    // ri.port = url.Port + _tileDescriptors[ti].tileNumber;
+                    ri.port = url.Port + ti;
                     IncomingTileDescription td = _tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.outQueue = _tileDescriptors[ti].outQueue;

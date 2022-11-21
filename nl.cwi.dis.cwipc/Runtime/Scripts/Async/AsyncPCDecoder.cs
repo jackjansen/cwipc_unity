@@ -41,7 +41,7 @@ namespace Cwipc
                     var d = cwipc.new_decoder();
                     if (d == null)
                     {
-                        throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
+                        throw new System.Exception($"{Name()}: cwipc.new_decoder creation failed"); // Should not happen, should throw exception
                     }
                     decoders[i] = d;
                     mostRecentFeeds[i] = System.DateTime.MinValue;
