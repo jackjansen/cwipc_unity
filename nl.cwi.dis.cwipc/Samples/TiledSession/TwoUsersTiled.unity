@@ -352,7 +352,6 @@ MonoBehaviour:
   useCompression: 1
   streamDescriptionReceived: 1
   otherInitialized: 0
-  untiledSession: 0
   octreeDepths: 0a00000005000000
   ourTileDescription:
     tiles: []

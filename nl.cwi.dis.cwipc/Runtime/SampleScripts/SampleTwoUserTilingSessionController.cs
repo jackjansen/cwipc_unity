@@ -10,8 +10,6 @@ using System.Runtime.InteropServices;
 
 public class SampleTwoUserTilingSessionController : SampleTwoUserSessionController
 {
-    [Tooltip("Disable tiling for this session")]
-    [SerializeField] protected bool untiledSession = false;
     [Tooltip("For compressed session: levels of octree depth to compress to")]
     [SerializeField] protected int[] octreeDepths = new int[] { 10 };
     [Header("Introspection")]
@@ -92,11 +90,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
                 }
             };
         }
-        if (untiledSession)
-        {
-            // If we want an untiled session we assume tile 0 is the untiled pointcloud stream.
-            tilesToTransmit = tilesToTransmit[..1];
-        }
+     
         else if(tilesToTransmit.Length > 1)
         {
             // We assume tile 0 is the untiled representation and remove it.
