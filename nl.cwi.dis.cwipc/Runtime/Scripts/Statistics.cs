@@ -48,16 +48,16 @@ namespace Cwipc
                     Debug.LogWarning("BaseStats: call to Initialize() is too late");
                 }
             }
-            if (defaultStatsInterval >= 0)
+            if (_defaultStatsInterval >= 0)
             {
                 defaultStatsInterval = _defaultStatsInterval;
             }
+            DateTime now = DateTime.Now;
+            globalStatsLastTime = now;
             if (statsOutputFile != null && statsOutputFile != "")
             {
                 string sfn = statsOutputFile;
                 string host = Environment.MachineName;
-                DateTime now = DateTime.Now;
-                globalStatsLastTime = now + System.TimeSpan.FromSeconds(defaultStatsInterval);
                 string ts = now.ToString("yyyyMMdd-HHmm");
                 sfn = sfn.Replace("{host}", host);
                 sfn = sfn.Replace("{ts}", ts);
