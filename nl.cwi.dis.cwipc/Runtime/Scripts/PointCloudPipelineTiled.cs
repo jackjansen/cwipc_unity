@@ -81,23 +81,12 @@ namespace Cwipc
             tileDescription = new IncomingTileDescription[nTiles];
             for (int i = 0; i < nTiles; i++)
             {
-                //
-                // If tiles are "invented" we assume one quality stream per tile.
-                // We also assume tiles have no orientation.
-                IncomingStreamDescription[] sds = new IncomingStreamDescription[1]
-                {
-                    new IncomingStreamDescription
-                    {
-                        streamIndex = i,
-                        tileNumber = i,
-                        orientation = Vector3.zero
-                    }
-                };
+                
                 tileDescription[i] = new IncomingTileDescription()
                 {
                     name = $"tile#{i}",
                     tileNumber = i,
-                    streamDescriptors = sds
+                    streamDescriptors = null
                 };
             }
         }

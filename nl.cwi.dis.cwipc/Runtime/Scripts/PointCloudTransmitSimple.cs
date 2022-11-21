@@ -44,7 +44,7 @@ namespace Cwipc
                 new EncoderStreamDescription
                 {
                     octreeBits=defaultOctreeBits,
-                    tileNumber=0,
+                    tileFilter=0,
                     outQueue=TransmitterInputQueue
                 }
             };

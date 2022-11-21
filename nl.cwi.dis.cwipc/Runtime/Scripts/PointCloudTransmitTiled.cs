@@ -62,7 +62,7 @@ namespace Cwipc
                         encoderDescriptions[i] = new EncoderStreamDescription()
                         {
                             octreeBits = defaultOctreeBits,
-                            tileNumber = tileNumber
+                            tileFilter = tileNumber
                         };
                     }
                 }
@@ -93,7 +93,7 @@ namespace Cwipc
                 new EncoderStreamDescription
                 {
                     octreeBits=defaultOctreeBits,
-                    tileNumber=0
+                    tileFilter=0
                 }
                 };
             }

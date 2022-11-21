@@ -69,7 +69,7 @@ namespace Cwipc
             /// <summary>
             /// Tile number to filter pointcloud on before encoding. 0 means no filtering.
             /// </summary>
-            public int tileNumber;
+            public int tileFilter;
             /// <summary>
             /// Output queue for this encoder, will usually be shared with the corresponding transmitter (as its input queue).
             /// </summary>
@@ -78,7 +78,7 @@ namespace Cwipc
 
         /// <summary>
         /// Structure describing a single incoming (tiled, single quality) stream.
-        /// Can really only be used for pointclouds.
+        /// Note: implementation detail for DASH support.
         /// </summary>
         [Serializable]
         public struct IncomingStreamDescription
@@ -116,7 +116,8 @@ namespace Cwipc
             /// </summary>
             public int tileNumber;
             /// <summary>
-            /// Streams used for this tile (for its multiple qualities)
+            /// Streams used for this tile (for its multiple qualities).
+            /// Note: implementation detail for DASH support, cal be null.
             /// </summary>
             public IncomingStreamDescription[] streamDescriptors;
         }
@@ -268,11 +269,47 @@ namespace Cwipc
                     encoderStreamDescriptions[streamNum] = new EncoderStreamDescription
                     {
                         octreeBits = octreeBits,
-                        tileNumber = tileNum + minTileNum,
+                        tileFilter = tileNum + minTileNum,
                     };
                 }
             }
             return encoderStreamDescriptions;
+        }
+
+        /// <summary>
+        /// Create an IncomingTileDescription array from a NetworkTileDescription.
+        /// </summary>
+        /// <param name="networkTileDescription"></param>
+        /// <returns></returns>
+        static public IncomingTileDescription[] CreateIncomingTileDescription(PointCloudNetworkTileDescription networkTileDescription)
+        {
+            //
+            // At some stage we made the decision that tilenumer 0 represents the whole untiled pointcloud.
+            // So if we receive an untiled stream we want tile 0 only, and if we receive a tiled stream we
+            // never want tile 0.
+            //
+            int nTileToReceive = networkTileDescription.tiles.Length;
+            int minTileNumber = networkTileDescription.tiles.Length == 1 ? 0 : 1;
+
+            //
+            // Create the right number of rendering pipelines
+            //
+
+            IncomingTileDescription[] tilesToReceive = new IncomingTileDescription[nTileToReceive];
+
+            for (int tileIndex = 0; tileIndex < nTileToReceive; tileIndex++)
+            {
+
+                //
+                // And collect the relevant information for the Dash receiver
+                //
+                tilesToReceive[tileIndex] = new IncomingTileDescription()
+                {
+                    tileNumber = tileIndex + minTileNumber,
+                    name = $"tile-{tileIndex}",
+                };
+            }
+            return tilesToReceive;
         }
     }
 }

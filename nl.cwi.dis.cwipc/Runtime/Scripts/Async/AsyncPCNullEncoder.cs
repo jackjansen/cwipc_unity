@@ -53,7 +53,7 @@ namespace Cwipc
             {
                 Timedelta encodeDuration = 0;
                 NativeMemoryChunk mc = null;
-                if (outputs[i].tileNumber == 0)
+                if (outputs[i].tileFilter == 0)
                 {
                     System.DateTime encodeStartTime = System.DateTime.Now;
                     int size = pc.copy_packet(System.IntPtr.Zero, 0);
@@ -66,7 +66,7 @@ namespace Cwipc
                 else
                 {
                     System.DateTime encodeStartTime = System.DateTime.Now;
-                    cwipc.pointcloud pcTile = cwipc.tilefilter(pc, outputs[i].tileNumber);
+                    cwipc.pointcloud pcTile = cwipc.tilefilter(pc, outputs[i].tileFilter);
                     int size = pcTile.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pcTile.copy_packet(mc.pointer, mc.length);

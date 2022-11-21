@@ -145,7 +145,7 @@ namespace Cwipc
                         gop_size = 1,
                         jpeg_quality = 75,
                         macroblock_size = 0,
-                        tilenumber = op.tileNumber,
+                        tilenumber = op.tileFilter,
                         voxelsize = 0,
                         n_parallel = nParallel
                     };
