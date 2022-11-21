@@ -1,11 +1,13 @@
 using System;
 using UnityEngine;
+using static Cwipc.StreamSupport;
 
 namespace Cwipc
 {
     /// <summary>
     /// Structures and methods used to help implementing streaming pointclouds (and other media)
     /// across the net.
+    /// Includes methods to convert the various representations of tiling information into each other (insofar as applicable).
     /// </summary>
     public class StreamSupport
     {
@@ -23,7 +25,9 @@ namespace Cwipc
         }
 
         /// <summary>
-        /// Structure describing a single outgoing (tile) stream.
+        /// Structure describing a single outgoing stream to an AsyncWriter.
+        /// This includes the information that needs to go into a DASH manifest (or other stream
+        /// description).
         /// Can really only be used for tiled pointclouds.
         /// </summary>
         [Serializable]
@@ -53,7 +57,7 @@ namespace Cwipc
 
         /// <summary>
         /// Structure describing the parameters of a single encoder (possibly part of a multi-tile, multi-quality
-        /// encoder group).
+        /// encoder group). This structure is only valid for the "cwi1" encoder, also known as the MPEG Anchor codec.
         /// </summary>
         [Serializable]
         public struct EncoderStreamDescription
@@ -161,5 +165,114 @@ namespace Cwipc
             /// </summary>
             public NetworkTileInformation[] tiles;
         };
+
+        /// <summary>
+        /// Create a PointCloudNetworkTileDescription from a PointCloudTileDescription array and an octreeBits array.
+        /// </summary>
+        /// <param name="tilesToTransmit"></param>
+        /// <param name="octreeBitsArray"></param>
+        /// <returns></returns>
+        static public PointCloudNetworkTileDescription CreateNetworkTileDescription(Cwipc.PointCloudTileDescription[] tilesToTransmit, int[] octreeBitsArray)
+        {
+            int nTileToTransmit = tilesToTransmit.Length;
+            int minTileNum = nTileToTransmit == 1 ? 0 : 1;
+            int nQuality = octreeBitsArray.Length;
+            int nStream = nQuality * nTileToTransmit;
+            //
+            // Create all three sets of descriptions needed.
+            //
+            PointCloudNetworkTileDescription networkTileDescription = new PointCloudNetworkTileDescription()
+            {
+                tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTileToTransmit]
+            };
+            for (int tileNum = 0; tileNum < nTileToTransmit; tileNum++)
+            {
+                var tileOrientation = tilesToTransmit[tileNum].normal;
+                networkTileDescription.tiles[tileNum].orientation = tileOrientation;
+                networkTileDescription.tiles[tileNum].qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQuality];
+                for (int qualityNum = 0; qualityNum < nQuality; qualityNum++)
+                {
+                    int streamNum = tileNum * nQuality + qualityNum;
+                    int octreeBits = octreeBitsArray[qualityNum];
+                   
+                    //
+                    // Invent a description of tile/quality bandwidth requirements and visual quality.
+                    //
+                    networkTileDescription.tiles[tileNum].qualities[qualityNum].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack
+                    networkTileDescription.tiles[tileNum].qualities[qualityNum].representation = (float)octreeBits / 20; // guessing octreedepth of 20 is completely ridiculously high
+                }
+            }
+            return networkTileDescription;
+        }
+
+        /// <summary>
+        /// Create a OutgoingStreamDescription array from a PointCloudTileDescription array and an octreeBits array.
+        /// </summary>
+        /// <param name="tilesToTransmit"></param>
+        /// <param name="octreeBitsArray"></param>
+        /// <returns></returns>
+        static public OutgoingStreamDescription[] CreateOutgoingStreamDescription(Cwipc.PointCloudTileDescription[] tilesToTransmit, int[] octreeBitsArray)
+        {
+            int nTileToTransmit = tilesToTransmit.Length;
+            int minTileNum = nTileToTransmit == 1 ? 0 : 1;
+            int nQuality = octreeBitsArray.Length;
+            int nStream = nQuality * nTileToTransmit;
+            //
+            // Create all three sets of descriptions needed.
+            //
+            OutgoingStreamDescription[] outgoingStreamDescriptions = new OutgoingStreamDescription[nStream];
+         
+            for (int tileNum = 0; tileNum < nTileToTransmit; tileNum++)
+            {
+                var tileOrientation = tilesToTransmit[tileNum].normal;
+                for (int qualityNum = 0; qualityNum < nQuality; qualityNum++)
+                {
+                    int streamNum = tileNum * nQuality + qualityNum;
+                    int octreeBits = octreeBitsArray[qualityNum];
+                   
+                    outgoingStreamDescriptions[streamNum] = new OutgoingStreamDescription
+                    {
+                        tileNumber = (uint)(tileNum + minTileNum),
+                        // quality = (uint)(100 * octreeBits + 75),
+                        qualityIndex = qualityNum,
+                        orientation = tileOrientation,
+                    };
+                }
+            }
+            return outgoingStreamDescriptions;
+        }
+
+        /// <summary>
+        /// Create a EncoderStreamDescription array from a PointCloudTileDescription array and an octreeBits array.
+        /// </summary>
+        /// <param name="tilesToTransmit"></param>
+        /// <param name="octreeBitsArray"></param>
+        /// <returns></returns>
+        static public EncoderStreamDescription[] CreateEncoderStreamDescription(Cwipc.PointCloudTileDescription[] tilesToTransmit, int[] octreeBitsArray)
+        {
+            int nTileToTransmit = tilesToTransmit.Length;
+            int minTileNum = nTileToTransmit == 1 ? 0 : 1;
+            int nQuality = octreeBitsArray.Length;
+            int nStream = nQuality * nTileToTransmit;
+            //
+            // Create all three sets of descriptions needed.
+            //
+            EncoderStreamDescription[] encoderStreamDescriptions = new EncoderStreamDescription[nStream];
+            for (int tileNum = 0; tileNum < nTileToTransmit; tileNum++)
+            {
+                var tileOrientation = tilesToTransmit[tileNum].normal;
+                for (int qualityNum = 0; qualityNum < nQuality; qualityNum++)
+                {
+                    int streamNum = tileNum * nQuality + qualityNum;
+                    int octreeBits = octreeBitsArray[qualityNum];
+                    encoderStreamDescriptions[streamNum] = new EncoderStreamDescription
+                    {
+                        octreeBits = octreeBits,
+                        tileNumber = tileNum + minTileNum,
+                    };
+                }
+            }
+            return encoderStreamDescriptions;
+        }
     }
 }
