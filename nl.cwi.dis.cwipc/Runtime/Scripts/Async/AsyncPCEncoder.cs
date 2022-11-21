@@ -44,12 +44,11 @@ namespace Cwipc
                 outQueue = parent.outputs[stream_number].outQueue;
             }
 
-            public void Start()
+            public void Close()
             {
-            }
-
-            public void Join()
-            {
+                if (outQueue != null) outQueue.Close();
+                outQueue = null;
+                encoder = null;
             }
 
             public bool LockBuffer()
@@ -80,39 +79,6 @@ namespace Cwipc
                     parent.stats.statsUpdate(dropped, curEncodeDuration, queuedDuration);
 #endif
                     curBuffer = null;
-                }
-            }
-
-            protected void run()
-            {
-                try
-                {
-                    Debug.Log($"PCEncoder#{stream_number}: PusherThread started");
-                    // Get encoder and output queue for our stream
-                    // Loop until feeder signals no more data is forthcoming
-                    while (!encoder.eof())
-                    {
-                        if (LockBuffer())
-                        {
-                            PushBuffer();
-                        }
-                        else
-                        {
-                            System.Threading.Thread.Sleep(10);
-                        }
-                    }
-                    outQueue.Close();
-                    Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
-                }
-#pragma warning disable CS0168
-                catch (System.Exception e)
-                {
-#if UNITY_EDITOR
-                    throw;
-#else
-                Debug.Log($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
-                Debug.LogError("Error while sending your representation to other participants.");
-#endif
                 }
             }
         }
@@ -165,17 +131,13 @@ namespace Cwipc
         protected override void Start()
         {
             base.Start();
-            int nThreads = encoderOutputs.Length;
-            pushers = new PCEncoderOutputPusher[nThreads];
-            for (int i = 0; i < nThreads; i++)
+            int nPushers = encoderOutputs.Length;
+            pushers = new PCEncoderOutputPusher[nPushers];
+            for (int i = 0; i < nPushers; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 pushers[i] = new PCEncoderOutputPusher(this, stream_number);
-            }
-            foreach (var t in pushers)
-            {
-                t.Start();
             }
         }
 
@@ -186,7 +148,7 @@ namespace Cwipc
             // Wait for each pusherThread to see this and terminate
             foreach (var t in pushers)
             {
-                t.Join();
+                t.Close();
             }
             // Clear our encoderGroup to signal the Update thread
             var tmp = encoderGroup;

@@ -350,7 +350,7 @@ MonoBehaviour:
   selfPipeline: {fileID: 1584311960}
   otherPipeline: {fileID: 2057174264}
   useCompression: 1
-  streamDescriptionReceived: 1
+  streamDescriptionReceived: 0
   otherInitialized: 0
   octreeDepths: 0a00000005000000
   ourTileDescription:
