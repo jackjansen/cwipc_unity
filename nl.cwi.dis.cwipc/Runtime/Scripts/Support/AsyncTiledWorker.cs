@@ -7,11 +7,11 @@ namespace Cwipc
     /// Abstract class for an AsyncWorker that is expected to optionally produce tiled frames.
     /// Only really implemented for tiled pointcloud capturers, readers and receivers.
     /// </summary>
-    public abstract class AsyncTiledWorker : AsyncWorker, ITileDescriptionProvider
+    public abstract class xxxjack_AsyncTiledWorker : AsyncWorker, ITileDescriptionProvider
     {
 
 
-        public AsyncTiledWorker() : base()
+        public xxxjack_AsyncTiledWorker() : base()
         {
         }
         /// <summary>

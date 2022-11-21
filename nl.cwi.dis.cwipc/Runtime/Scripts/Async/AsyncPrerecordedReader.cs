@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Cwipc
 {
-    public class AsyncPrerecordedReader : AsyncPrerecordedBaseReader
+    public class AsyncPrerecordedReader : AsyncPrerecordedBaseReader, ITileDescriptionProvider
     {
         PointCloudTileDescription[] tileInfo;
         [Serializable]

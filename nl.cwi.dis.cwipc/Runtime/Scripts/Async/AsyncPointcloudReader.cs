@@ -10,7 +10,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public abstract class AsyncPointCloudReader : AsyncTiledWorker
+    public abstract class AsyncPointCloudReader : AsyncReader, ITileDescriptionProvider
     {
         protected cwipc.source reader;
         public float voxelSize;
@@ -31,7 +31,7 @@ namespace Cwipc
         }
 
 
-        public override PointCloudTileDescription[] getTiles()
+        public virtual PointCloudTileDescription[] getTiles()
         {
             cwipc.tileinfo[] origTileInfo = reader.get_tileinfo();
             if (origTileInfo == null || origTileInfo.Length <= 1) return null;

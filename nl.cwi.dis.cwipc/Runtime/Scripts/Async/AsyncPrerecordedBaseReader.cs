@@ -172,7 +172,7 @@ namespace Cwipc
     // switching of representations (and therefore quality levels) for the PrerecordedPlaybackReader,
     // which is needed for the quality assessment trial.
     //
-    public class _SingleDirectoryReader : AsyncTiledWorker
+    public class _SingleDirectoryReader : AsyncWorker
     {
         string dirname;
         string subdir;
