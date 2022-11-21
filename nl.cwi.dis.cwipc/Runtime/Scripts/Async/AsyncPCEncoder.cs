@@ -86,6 +86,7 @@ namespace Cwipc
         public AsyncPCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
             nParallel = CwipcConfig.Instance.encoderParallelism;
+            if (nParallel > 0) Debug.LogWarning($"{Name()}: As of 2022-11-22 there seem to be problems with encoderParallelism");
             if (_inQueue == null)
             {
                 throw new System.Exception("{Name()}: inQueue is null");
