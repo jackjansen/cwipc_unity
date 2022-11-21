@@ -180,8 +180,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
             {
                 mySendQueue.Close();
             }
-            base.StopAndWait();
-        }
+         }
 
         public void Send(string message)
         {
