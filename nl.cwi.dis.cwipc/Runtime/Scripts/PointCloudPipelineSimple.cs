@@ -68,7 +68,7 @@ namespace Cwipc
         protected QueueThreadSafe ReaderEncoderQueue = null;
         protected AsyncPointCloudReader PCcapturer;
         protected AsyncReader PCreceiver;
-        protected AsyncFilter PCdecoder;
+        protected AbstractPointCloudDecoder PCdecoder;
         protected AsyncPointCloudPreparer PCpreparer;
 
         // Start is called before the first frame update

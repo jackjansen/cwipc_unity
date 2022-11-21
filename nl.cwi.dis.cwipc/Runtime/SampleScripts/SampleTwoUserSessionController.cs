@@ -80,6 +80,12 @@ public class SampleTwoUserSessionController : MonoBehaviour
         }
         // Ensure other pipeline is not active yet (we need to set its tile information before its
         // Start() is called).
+        if (selfPipeline.activeInHierarchy)
+        {
+            Debug.LogWarning("SampleTwoUserSessionController: selfPipeline is already active, this will lead to problems.");
+        }
+        // Ensure other pipeline is not active yet (we need to set its tile information before its
+        // Start() is called).
         if (otherPipeline.activeInHierarchy)
         {
             Debug.LogWarning("SampleTwoUserSessionController: otherPipeline is already active, this will lead to problems.");
@@ -98,6 +104,7 @@ public class SampleTwoUserSessionController : MonoBehaviour
         transmitter.outputUrl = $"tcp://{firstHost}:4303";
         transmitter.compressedOutputStreams = useCompression;
         Debug.Log($"SampleTwoUserSessionController: initialized self: transmitter on {firstHost}");
+        selfPipeline.gameObject.SetActive(true);
 
     }
 

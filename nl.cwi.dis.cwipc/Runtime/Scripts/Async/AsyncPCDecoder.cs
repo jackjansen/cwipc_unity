@@ -11,7 +11,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncPCDecoder : AsyncFilter
+    public class AsyncPCDecoder : AbstractPointCloudDecoder
     {
         /// <summary>
         /// Set this to true to colorize all points, making it easier to see where each tile is displayed.

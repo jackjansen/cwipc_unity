@@ -54,7 +54,7 @@ namespace Cwipc
         protected QueueThreadSafe[] ReaderDecoderQueues;
         protected QueueThreadSafe[] DecoderPreparerQueues;
         protected AsyncReader PCreceiver;
-        protected AsyncFilter[] PCdecoders;
+        protected AbstractPointCloudDecoder[] PCdecoders;
         protected AsyncPointCloudPreparer[] PCpreparers;
 
         // Start is called before the first frame update
@@ -136,12 +136,12 @@ namespace Cwipc
             // Create the decoders, preparers and renderers. Tie them together using the correct queues.
             //
 
-            PCdecoders = new AsyncFilter[nTiles];
+            PCdecoders = new AbstractPointCloudDecoder[nTiles];
             PCpreparers = new AsyncPointCloudPreparer[nTiles];
             PCrenderers = new PointCloudRenderer[nTiles];
             for (int tileIndex = 0; tileIndex < nTiles; tileIndex++)
             {
-                AsyncFilter newDecoderObject = CreateDecoder(ReaderDecoderQueues[tileIndex], DecoderPreparerQueues[tileIndex]);
+                AbstractPointCloudDecoder newDecoderObject = CreateDecoder(ReaderDecoderQueues[tileIndex], DecoderPreparerQueues[tileIndex]);
                 GameObject newGameObject = Instantiate<GameObject>(PCrendererPrefab, transform);
                 PointCloudRenderer newRendererObject = newGameObject.GetComponent<PointCloudRenderer>();
                 AsyncPointCloudPreparer newPreparerObject = new AsyncPointCloudPreparer(DecoderPreparerQueues[tileIndex], Preparer_DefaultCellSize, Preparer_CellSizeFactor);
@@ -152,8 +152,8 @@ namespace Cwipc
             }
         }
 
-        
-        AsyncFilter CreateDecoder(QueueThreadSafe inQueue, QueueThreadSafe outQueue)
+
+        AbstractPointCloudDecoder CreateDecoder(QueueThreadSafe inQueue, QueueThreadSafe outQueue)
         {
             if (compressedInputStream)
             {

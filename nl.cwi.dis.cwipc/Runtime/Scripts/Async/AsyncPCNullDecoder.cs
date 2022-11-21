@@ -11,7 +11,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncPCNullDecoder : AsyncFilter
+    public class AsyncPCNullDecoder : AbstractPointCloudDecoder
     {
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
