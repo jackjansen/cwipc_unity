@@ -13,7 +13,7 @@ namespace Cwipc
     public abstract class AsyncPointCloudReader : AsyncTiledWorker
     {
         protected cwipc.source reader;
-        protected float voxelSize;
+        public float voxelSize;
         protected System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
         protected System.DateTime earliestNextCapture;    // Earliest time we want to do the next capture, if non-null.
         protected QueueThreadSafe outQueue;

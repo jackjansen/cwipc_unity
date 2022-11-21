@@ -48,7 +48,6 @@ namespace Cwipc
         // I don't think C# has a way to say this without using public.
         public bool newTimestamps = false;
         public bool readPlyFiles;
-        public float voxelSize;
         public float frameRate;
         public bool loop = true;
         public bool multireader = false;
