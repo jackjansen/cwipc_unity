@@ -215,7 +215,7 @@ namespace Cwipc
         static public OutgoingStreamDescription[] CreateOutgoingStreamDescription(Cwipc.PointCloudTileDescription[] tilesToTransmit, int[] octreeBitsArray)
         {
             int nTileToTransmit = tilesToTransmit.Length;
-            int minTileNum = nTileToTransmit == 1 ? 0 : 1;
+            int minTileNum = 0; // nTileToTransmit == 1 ? 0 : 1;
             int nQuality = octreeBitsArray.Length;
             int nStream = nQuality * nTileToTransmit;
             //
