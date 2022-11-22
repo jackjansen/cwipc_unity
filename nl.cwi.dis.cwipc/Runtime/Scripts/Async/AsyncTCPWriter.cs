@@ -56,6 +56,7 @@ namespace Cwipc
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
+                Debug.Log($"{Name()}: serving on tcp://{description.host}:{description.port} 4cc={description.fourcc:X}");
                 IPAddress[] all = Dns.GetHostAddresses(description.host);
                 all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
                 IPAddress ipAddress = all[0];

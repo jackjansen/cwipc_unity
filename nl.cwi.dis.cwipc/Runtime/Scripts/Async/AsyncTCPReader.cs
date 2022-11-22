@@ -58,6 +58,7 @@ namespace Cwipc
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
+                Debug.Log($"{Name()}: connecting to tcp://{receiverInfo.host}:{receiverInfo.port} 4cc={receiverInfo.fourcc:X}");
             }
 
             public string Name()
