@@ -258,8 +258,7 @@ namespace Cwipc
             {
                 if (_descriptions[i].tileNumber > maxTileNumber) maxTileNumber = (int)_descriptions[i].tileNumber;
             }
-            int portsPerQuality = maxTileNumber;
-            if (portsPerQuality == 0) portsPerQuality = 1;
+            int portsPerQuality = maxTileNumber+1;
             for(int i=0; i<_descriptions.Length; i++)
             {
                 ourDescriptions[i] = new TCPStreamDescription
