@@ -56,6 +56,7 @@ namespace Cwipc
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
+                Debug.Log($"{Name()}: serving on tcp://{description.host}:{description.port} 4cc={description.fourcc:X}");
                 IPAddress[] all = Dns.GetHostAddresses(description.host);
                 all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
                 IPAddress ipAddress = all[0];
@@ -257,8 +258,7 @@ namespace Cwipc
             {
                 if (_descriptions[i].tileNumber > maxTileNumber) maxTileNumber = (int)_descriptions[i].tileNumber;
             }
-            int portsPerQuality = maxTileNumber;
-            if (portsPerQuality == 0) portsPerQuality = 1;
+            int portsPerQuality = maxTileNumber+1;
             for(int i=0; i<_descriptions.Length; i++)
             {
                 ourDescriptions[i] = new TCPStreamDescription
