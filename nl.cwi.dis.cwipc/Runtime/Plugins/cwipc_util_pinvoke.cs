@@ -97,9 +97,21 @@ namespace Cwipc
             internal extern static IntPtr cwipc_get_uncompressed_size(IntPtr pc);
             [DllImport(myDllName)]
             internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, IntPtr size);
-
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_copy_packet(IntPtr pc, IntPtr packet, IntPtr size);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_access_auxiliary_data(IntPtr pc);
+            [DllImport(myDllName)]
+            internal extern static int cwipc_auxiliary_data_count(IntPtr collection);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_auxiliary_data_name(IntPtr collection, int idx);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_auxiliary_data_description(IntPtr collection, int idx);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_auxiliary_data_pointer(IntPtr collection, int idx);
+            [DllImport(myDllName)]
+            internal extern static int cwipc_auxiliary_data_size(IntPtr collection, int idx);
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_source_get(IntPtr src);
@@ -109,6 +121,10 @@ namespace Cwipc
             internal extern static bool cwipc_source_available(IntPtr src, bool available);
             [DllImport(myDllName)]
             internal extern static void cwipc_source_free(IntPtr src);
+            [DllImport(myDllName)]
+            internal extern static bool cwipc_source_request_auxiliary_data(IntPtr src, [MarshalAs(UnmanagedType.LPStr)] string name);
+            [DllImport(myDllName)]
+            internal extern static bool cwipc_source_auxiliary_data_requested(IntPtr src, [MarshalAs(UnmanagedType.LPStr)] string name);
 
             [DllImport(myDllName)]
             internal extern static int cwipc_tiledsource_maxtile(IntPtr src);
@@ -233,6 +249,66 @@ namespace Cwipc
 
             [DllImport(myDllName)]
             internal extern static void cwipc_encodergroup_feed(IntPtr enc, IntPtr pc);
+
+        }
+        public class cwipc_auxiliary_data
+        {
+            protected IntPtr _pointer;
+            internal cwipc_auxiliary_data(IntPtr pointer)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata created with NULL pointer argument");
+                _pointer = pointer;
+            }
+#if CWIPC_UNUSED
+            [StructLayout(LayoutKind.Sequential, Pack = 1)]
+            protected struct item
+            {
+                string name;
+                string description;
+                IntPtr pointer;
+                int size;
+            };
+            protected List<item> m_items = new List<item>();
+#endif
+
+            public int count()
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.count called with NULL pointer argument");
+                return _API_cwipc_util.cwipc_auxiliary_data_count(_pointer);
+            }
+
+            public string name(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.name called with NULL pointer argument");
+                IntPtr aux_name = _API_cwipc_util.cwipc_auxiliary_data_name(_pointer, idx);
+                return Marshal.PtrToStringAnsi(aux_name);
+            }
+
+            public string description(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.description called with NULL pointer argument");
+                IntPtr aux_description = _API_cwipc_util.cwipc_auxiliary_data_description(_pointer, idx);
+                return Marshal.PtrToStringAnsi(aux_description);
+            }
+
+            public IntPtr pointer(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.pointer called with NULL pointer argument");
+                return _API_cwipc_util.cwipc_auxiliary_data_pointer(_pointer, idx);
+            }
+
+            public int size(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.size called with NULL pointer argument");
+                return _API_cwipc_util.cwipc_auxiliary_data_size(_pointer, idx);
+            }
+
+#if CWIPC_UNUSED
+            public cwipc_auxiliary_data data(int idx)
+            {
+
+            }
+#endif
 
         }
 
@@ -372,6 +448,17 @@ namespace Cwipc
                 return rv;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
+            public cwipc_auxiliary_data access_auxiliary_data()
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.access_auxiliary_data called with NULL pointer");
+                return new cwipc_auxiliary_data(_API_cwipc_util.cwipc_access_auxiliary_data(pointer));
+            }
+
+
             internal IntPtr _intptr()
             {
                 return pointer;
@@ -427,6 +514,29 @@ namespace Cwipc
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.available called with NULL pointer");
                 return _API_cwipc_util.cwipc_source_available(pointer, wait);
             }
+
+            /// <summary>
+            /// Ask the source to provide the named auxiliary data with every pointcloud.
+            /// Auxiliary data can be things like RGB or Depth images used to generate the point cloud, skeleton data provided by the camera, etc.
+            /// </summary>
+            /// <param name="name">The type of auxiliary data wanted</param>
+            /// <returns>True if the named auxiliary data is available from this capturer</returns>
+            public bool request_auxiliary_data(string name)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.request_auxiliary_data called with NULL pointer");
+                return _API_cwipc_util.cwipc_source_request_auxiliary_data(pointer, name);
+            }
+
+            /// <summary>
+            /// No clue.
+            /// </summary>
+            /// <param name="name"></param>
+            public void auxiliary_data_requested(string name)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.auxiliary_data_requested called with NULL pointer");
+                _API_cwipc_util.cwipc_source_auxiliary_data_requested(pointer, name);
+            }
+
 
             /// <summary>
             /// Get the tiling information for a tiled pointcloud source.

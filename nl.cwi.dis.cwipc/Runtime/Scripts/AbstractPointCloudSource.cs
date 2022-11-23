@@ -75,6 +75,11 @@ namespace Cwipc
             }
         }
 
+        public virtual void OptionalProcessing(cwipc.pointcloud pc)
+        {
+
+        }
+
         public void Stop()
         {
             reader?.free();
@@ -104,6 +109,7 @@ namespace Cwipc
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
+            OptionalProcessing(pc);
             Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
             {
