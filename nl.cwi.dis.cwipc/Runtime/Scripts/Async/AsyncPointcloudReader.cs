@@ -55,6 +55,15 @@ namespace Cwipc
         {
             bbox = null;
         }
+        /// <summary>
+        /// This method is called on every pointcloud just as it has been gotten from the source, before further processing.
+        /// It can be implemented by subclasses, for example to get access to pointcloud metadata.
+        /// </summary>
+        /// <param name="pc"></param>
+        protected virtual void OptionalProcessing(cwipc.pointcloud pc)
+        {
+
+        }
 
         public override void Stop()
         {
@@ -95,6 +104,7 @@ namespace Cwipc
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
+            OptionalProcessing(pc);
             Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
             {
