@@ -49,6 +49,8 @@ namespace Cwipc
         [SerializeField] int pointCountMostRecentReception;
         [Tooltip("Number of points in most recent pointcloud")]
         [SerializeField] float pointSizeMostRecentReception;
+        [Tooltip("Renderer temporarily paused by a script")]
+        [SerializeField] bool paused = false;
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -86,6 +88,11 @@ namespace Cwipc
             }
         }
 
+        public void PausePlayback(bool _paused)
+        {
+            paused = _paused;
+        }
+
         public void SetPreparer(IPointCloudPreparer _preparer)
         {
             if (_preparer == null)
@@ -112,6 +119,7 @@ namespace Cwipc
         private void LateUpdate()
         {
             if (preparer == null) return;
+            if (paused) return;
             bool fresh = preparer.LatchFrame();
             float pointSize = 0;
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
