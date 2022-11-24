@@ -59,6 +59,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         string receiverUrl = $"tcp://{secondHost}:4300";
         controlSender = new SimpleSocketSender(senderUrl);
         controlReceiver = new SimpleSocketReceiver(receiverUrl);
+        selfPipeline.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -79,6 +80,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         PointCloudTileDescription[] tilesToTransmit = pipeline.getTiles();
         if (tilesToTransmit == null)
         {
+            Debug.LogWarning($"SampleTwoUserSessionController: selfPipeline returned no PointCloudTileDescription");
             // If there is no tile information we assume a single tile.
             tilesToTransmit = new PointCloudTileDescription[1]
             {
@@ -100,8 +102,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         string message = JsonUtility.ToJson(ourTileDescription);
         Debug.Log($"xxxjack send message: {message}");
         controlSender.Send(message);
-
-    }
+      }
 
     /// <summary>
     /// Initialize the other pointcloud pipeline and enable it.

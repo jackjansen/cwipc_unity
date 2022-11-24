@@ -70,6 +70,7 @@ namespace Cwipc
         protected AsyncReader PCreceiver;
         protected AbstractPointCloudDecoder PCdecoder;
         protected AsyncPointCloudPreparer PCpreparer;
+        protected bool _initialized = false;
 
         // Start is called before the first frame update
 
@@ -84,6 +85,7 @@ namespace Cwipc
         /// <returns></returns>
         public PointCloudTileDescription[] getTiles()
         {
+            InitializePipeline();
             PointCloudTileDescription[] tileDescriptions = PCcapturer?.getTiles();
             return tileDescriptions;
         }
@@ -94,6 +96,8 @@ namespace Cwipc
         /// </summary>
         protected virtual void InitializePipeline()
         {
+            if (_initialized) return;
+            _initialized = true;
             if (enableOutput)
             {
                 ReaderRenderQueue = new QueueThreadSafe("ReaderRenderQueue", 2, true);
