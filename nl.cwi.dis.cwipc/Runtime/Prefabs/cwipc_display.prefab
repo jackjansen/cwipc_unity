@@ -84,7 +84,7 @@ MonoBehaviour:
   nDropped: 0
   voxelSize: 0
   defaultCellSize: 0.01
-  cellSizeFactor: 1
+  cellSizeFactor: 1.5
   frameRate: 15
   nPoints: 8000
 --- !u!1 &8672829700311196926
