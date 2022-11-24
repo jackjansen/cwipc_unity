@@ -85,8 +85,8 @@ MonoBehaviour:
   voxelSize: 0
   defaultCellSize: 0.01
   cellSizeFactor: 1
-  frameRate: 0
-  nPoints: 0
+  frameRate: 15
+  nPoints: 8000
 --- !u!1 &8672829700311196926
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,6 +135,11 @@ MonoBehaviour:
   baseMaterial: {fileID: 2100000, guid: 1ea68d9ebfc1c704b8d72164da860d9d, type: 2}
   timeoutBeforeGhosting: 5
   pcMirrorX: 1
+  _RendererName: 
+  _PreparerName: 
   material: {fileID: 0}
   dataIsMissing: 0
-  lastDataReceived: 0
+  timestampMostRecentReception: 0
+  pointCountMostRecentReception: 0
+  pointSizeMostRecentReception: 0
+  paused: 0
