@@ -10,6 +10,36 @@ namespace Cwipc
     using Timedelta = System.Int64;
 
     /// <summary>
+    /// Methods provided by point cloud readers that can also provide skeleton data.
+    /// </summary>
+    public interface ISkeletonPointCloudReader
+    {
+        /// <summary>
+        /// Call this directly after creation to signal that you need skeletons.
+        /// </summary>
+        /// <param name="_wantSkeleton"></param>
+        public void SetWantSkeleton(bool _wantSkeleton);
+
+        /// <summary>
+        /// Returns whether this instance of the reader will return skeleton data.
+        /// </summary>
+        /// <returns></returns>
+        public bool supports_skeleton();
+
+        /// <summary>
+        /// Returns true if the current point cloud has skeleton data.
+        /// </summary>
+        /// <returns></returns>
+        public bool has_skeleton();
+
+        /// <summary>
+        /// Return the skeleton data for the current point cloud.
+        /// </summary>
+        /// <returns></returns>
+        public SkeletonSupport.cwipc_skeleton get_skeleton();
+    }
+
+    /// <summary>
     /// Support for skeleton data.
     /// Modeled after Azure Kinect skeleton data, which is only the only type currently supported.
     /// </summary>
