@@ -10,7 +10,7 @@ namespace Cwipc
     {
         [Header("Synthetic reader specific fields")]
         [Tooltip("Produce pointclouds at this number of frames per second (if nonzero)")]
-        public int frameRate = 0;
+        public float frameRate = 0;
         [Tooltip("Approximate number of points per cloud (if nonzero)")]
         public int nPoints = 0;
 
@@ -22,7 +22,7 @@ namespace Cwipc
             }
             else
             {
-                frameInterval = System.TimeSpan.FromSeconds(1 / frameRate);
+                frameInterval = System.TimeSpan.FromSeconds(1.0 / frameRate);
             }
             try
             {
