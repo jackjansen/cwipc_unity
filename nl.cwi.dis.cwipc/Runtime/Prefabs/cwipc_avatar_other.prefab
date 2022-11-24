@@ -80,7 +80,7 @@ MonoBehaviour:
   sourceType: 4
   PCrendererPrefab: {fileID: 8672829700311196926}
   Preparer_DefaultCellSize: 0
-  Preparer_CellSizeFactor: 1
+  Preparer_CellSizeFactor: 1.5
   inputUrl: 
   compressedInputStream: 1
   nTiles: 0
@@ -141,3 +141,4 @@ MonoBehaviour:
   timestampMostRecentReception: 0
   pointCountMostRecentReception: 0
   pointSizeMostRecentReception: 0
+  paused: 0
