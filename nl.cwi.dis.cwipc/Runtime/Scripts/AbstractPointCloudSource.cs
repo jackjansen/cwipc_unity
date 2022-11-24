@@ -151,7 +151,6 @@ namespace Cwipc
                 cwipc.pointcloud pc = currentPointcloud;
                 if (pc == null)
                 {
-                    Debug.Log($"xxxjack LatchFrame pointcloud==null");
                     return false;
                 }
                 currentPointcloud = null;
