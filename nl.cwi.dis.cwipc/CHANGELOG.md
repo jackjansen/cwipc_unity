@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.3] - 2022-11-24
+
+Added kinect skeleton support
+
 ## [0.9.0] - 2022-11-23
 
 First public release
