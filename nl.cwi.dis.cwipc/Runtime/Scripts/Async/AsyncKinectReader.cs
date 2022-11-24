@@ -25,7 +25,9 @@ namespace Cwipc
                 if (reader != null)
                 {
                     Start();
+#if CWIPC_WITH_LOGGING
                     Debug.Log("{Name()}: Started.");
+#endif
                 }
                 else
                     throw new System.Exception($"{Name()}: cwipc_kinect could not be created"); // Should not happen, should throw exception
@@ -46,7 +48,9 @@ namespace Cwipc
             wantSkeleton = _wantSkeleton;
             if (wantSkeleton)
             {
+#if VRT_WITH_STATS
                 Statistics.Output(Name(), "skeleton=1");
+#endif
                 bool result = reader.request_auxiliary_data("skeleton");
                 if (!result) throw new System.Exception($"{Name()}: cwipc_kinect skeleton tracker could not be initialized");
                 Debug.Log($"{Name()}: Requested Skeletons.");
