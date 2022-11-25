@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -487,6 +487,7 @@ GameObject:
   m_Component:
   - component: {fileID: 839301504}
   - component: {fileID: 839301503}
+  - component: {fileID: 839301505}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -514,6 +515,7 @@ MonoBehaviour:
   useCompression: 1
   streamDescriptionReceived: 0
   otherInitialized: 0
+  orchestrator: {fileID: 0}
   octreeDepths: 0a00000005000000
   ourTileDescription:
     tiles: []
@@ -534,6 +536,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &839301505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839301502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d23093256dac140f29f3a0fa24d1fab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2057174263
 PrefabInstance:
   m_ObjectHideFlags: 0
