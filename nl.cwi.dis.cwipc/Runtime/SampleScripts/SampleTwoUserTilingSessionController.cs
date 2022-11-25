@@ -50,7 +50,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
             orchestrator = GetComponent<SampleOrchestration>();
         }
         orchestrator.Initialize(senderUrl, receiverUrl);
-        orchestrator.RegisterCallback<StreamSupport.PointCloudNetworkTileDescription>(SessionStartCallback);
+        orchestrator.RegisterCallback<StreamSupport.PointCloudNetworkTileDescription>("SessionStart", SessionStartCallback);
         selfPipeline.gameObject.SetActive(true);
     }
 
@@ -91,7 +91,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
             tilesToTransmit = tilesToTransmit[1..];
         }
         ourTileDescription = StreamSupport.CreateNetworkTileDescription(tilesToTransmit, octreeDepths);
-        orchestrator.Send<StreamSupport.PointCloudNetworkTileDescription>(ourTileDescription);
+        orchestrator.Send<StreamSupport.PointCloudNetworkTileDescription>("SessionStart", ourTileDescription);
       }
 
     /// <summary>

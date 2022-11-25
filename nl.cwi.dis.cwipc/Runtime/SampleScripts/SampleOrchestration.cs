@@ -8,7 +8,18 @@ public class SampleOrchestration : MonoBehaviour
 {
     protected SimpleSocketReceiver controlReceiver;
     protected SimpleSocketSender controlSender;
-    protected Action<string> callback;
+    protected Dictionary<string, Action<string>> callbacks = new Dictionary<string, Action<string>>();
+    [Serializable]
+    protected struct OrchestratorMessage<T>
+    {
+        public string command;
+        public T argument;
+    };
+    [Serializable]
+    protected struct BareOrchestratorMessage
+    {
+        public string command;
+    };
 
     private void OnDestroy()
     {
@@ -25,12 +36,7 @@ public class SampleOrchestration : MonoBehaviour
             string msg = controlReceiver.Receive();
             if (msg != null)
             {
-                // xxxjack handle message
-                Debug.Log($"SampleTwoUserTilingSessionController: Received message \"{msg}\"");
-                if (callback != null)
-                {
-                    callback(msg);
-                }
+                MessageReceived(msg);
             }
         }
     }
@@ -45,15 +51,55 @@ public class SampleOrchestration : MonoBehaviour
         controlReceiver = new SimpleSocketReceiver(receiverUrl);
     }
 
-    public void Send<T>(T message)
+    public void Send<T>(string command,T argument)
     {
-        string msg = JsonUtility.ToJson(message);
-        controlSender.Send(msg);
+        //
+        // We wrap the command and argument in a single JSON structure and forward it.
+        //
+        OrchestratorMessage<T> message = new OrchestratorMessage<T>()
+        {
+            command = command,
+            argument = argument
+        };
+        string jsonEncoded = JsonUtility.ToJson(message);
+        controlSender.Send(jsonEncoded);
     }
 
-    public void RegisterCallback<T>(Action<T> _callback)
+    public void RegisterCallback<T>(string command, Action<T> _callback)
     {
-        callback = (string s) => _callback(JsonUtility.FromJson<T>(s));
+        //
+        // The callback wrapper will JSON-parse the wrapper structure
+        // and call out to the real callback.
+        //
+        void _callbackWrapper(string s)
+        {
+            OrchestratorMessage<T> message = JsonUtility.FromJson<OrchestratorMessage<T>>(s);
+            _callback(message.argument);
+        }
+        callbacks[command] = _callbackWrapper;
+    }
+
+    protected void MessageReceived(string msg)
+    {
+        Debug.Log($"SampleOrchestration: Received message \"{msg}\"");
+        //
+        // We first JSON-parse the message and ignore everything but the command string.
+        //
+        BareOrchestratorMessage commandStruct = JsonUtility.FromJson<BareOrchestratorMessage>(msg);
+        string command = commandStruct.command;
+        //
+        // Now we can call the callback wrapper for this command (if any) which will parse
+        // the whole message and call the registered callback with the right argument.
+        //
+        if (callbacks.ContainsKey(command))
+        {
+            var cb = callbacks[command];
+            cb(msg);
+        }
+        else
+        {
+            Debug.LogError($"SampleOrchestration: no callback registered for command \"{command}\"");
+        }
     }
 
     protected class SimpleSocketReceiver : AsyncTCPReader
