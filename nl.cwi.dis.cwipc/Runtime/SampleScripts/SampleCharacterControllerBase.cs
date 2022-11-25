@@ -10,13 +10,13 @@ public class SampleCharacterControllerBase : MonoBehaviour
 
     /// <summary>
     /// Describes movement of a character, relative to its own coordinate system.
-    /// Movement is applied first (so using the old rotation), then rotation.
+    /// Rotation is applied first, then movement in the new local reference frame.
     /// </summary>
     [Serializable]
     protected class CharacterMovement
     {
-        public Vector3 deltaPosition;
         public Vector3 deltaRotation;
+        public Vector3 deltaPosition;
     }
 
     protected const string CharacterMovementCommand = "Move";

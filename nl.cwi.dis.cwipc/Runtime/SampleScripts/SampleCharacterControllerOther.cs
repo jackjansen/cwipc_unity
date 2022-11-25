@@ -17,8 +17,8 @@ public class SampleCharacterControllerOther : SampleCharacterControllerBase
     {
         if (moveReceived == null) return;
         Debug.Log($"Recv move: deltaPosition={moveReceived.deltaPosition}, deltaRotation={moveReceived.deltaRotation}");
-        gameObject.transform.position += moveReceived.deltaPosition;
         gameObject.transform.Rotate(moveReceived.deltaRotation);
+        gameObject.transform.Translate(moveReceived.deltaPosition);
         moveReceived = null;
     }
 

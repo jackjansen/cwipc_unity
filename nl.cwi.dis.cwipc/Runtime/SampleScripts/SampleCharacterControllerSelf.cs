@@ -26,9 +26,14 @@ public class SampleCharacterControllerSelf : SampleCharacterControllerBase
         {
             return;
         }
-        CharacterMovement movement = new CharacterMovement();
-        movement.deltaPosition = gameObject.transform.position - previousPosition;
-        movement.deltaRotation = gameObject.transform.rotation.eulerAngles - previousRotation;
+        Vector3 rotateInNewFrame = gameObject.transform.rotation.eulerAngles - previousRotation;
+        Vector3 moveInNewFrame = -gameObject.transform.InverseTransformPoint(previousPosition);
+        CharacterMovement movement = new CharacterMovement()
+        {
+            deltaRotation = rotateInNewFrame,
+            deltaPosition = moveInNewFrame
+        };
+
         Debug.Log($"Send move: deltaPosition={movement.deltaPosition}, deltaRotation={movement.deltaRotation}");
         orchestrator.Send<CharacterMovement>(CharacterMovementCommand, movement);
         previousPosition = gameObject.transform.position;
