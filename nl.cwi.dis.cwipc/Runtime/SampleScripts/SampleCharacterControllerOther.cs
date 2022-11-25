@@ -6,9 +6,9 @@ public class SampleCharacterControllerOther : SampleCharacterControllerBase
     CharacterMovement moveReceived;
 
     // Start is called before the first frame update
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         orchestrator.RegisterCallback<CharacterMovement>(CharacterMovementCommand, MoveCallback);  
     }
 

@@ -22,7 +22,7 @@ public class SampleCharacterControllerBase : MonoBehaviour
     protected const string CharacterMovementCommand = "Move";
 
     // Start is called before the first frame update
-    virtual protected void Start()
+    virtual protected void Awake()
     {
            // Initialize orchestrator?
     }

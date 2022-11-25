@@ -34,7 +34,7 @@ namespace Cwipc
         public virtual PointCloudTileDescription[] getTiles()
         {
             cwipc.tileinfo[] origTileInfo = reader.get_tileinfo();
-            if (origTileInfo == null || origTileInfo.Length <= 1) return null;
+            if (origTileInfo == null || origTileInfo.Length == 0) return null;
             int nTile = origTileInfo.Length;
             PointCloudTileDescription[] rv = new PointCloudTileDescription[nTile];
             for (int i = 0; i < nTile; i++)

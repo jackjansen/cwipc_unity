@@ -76,6 +76,7 @@ public class SampleOrchestration : MonoBehaviour
             OrchestratorMessage<T> message = JsonUtility.FromJson<OrchestratorMessage<T>>(s);
             _callback(message.argument);
         }
+        Debug.Log($"SampleOrchestration: registered callback for \"{command}\"");
         callbacks[command] = _callbackWrapper;
     }
 
