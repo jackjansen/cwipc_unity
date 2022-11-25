@@ -467,6 +467,10 @@ PrefabInstance:
       propertyPath: sourceType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6707972400606089489, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
+      propertyPath: Preparer_CellSizeFactor
+      value: 1.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
 --- !u!1 &765728494 stripped
@@ -533,7 +537,7 @@ MonoBehaviour:
   secondHost: 
   selfPipeline: {fileID: 765728494}
   otherPipeline: {fileID: 2057174264}
-  useCompression: 1
+  useCompression: 0
   streamDescriptionReceived: 0
   otherInitialized: 0
   orchestrator: {fileID: 0}
@@ -627,6 +631,10 @@ PrefabInstance:
     - target: {fileID: 2942035106827000207, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3238466466019172238, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
+      propertyPath: Preparer_CellSizeFactor
+      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e702f36436a04c8cac93d3384747eba, type: 3}
