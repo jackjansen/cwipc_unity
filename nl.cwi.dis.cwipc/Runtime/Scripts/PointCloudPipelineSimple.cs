@@ -55,6 +55,15 @@ namespace Cwipc
         public bool compressedInputStream;
 
         /// <summary>
+        /// Simple pipeline will always force untiled transmission and report untiled stream.
+        /// Can be overridden by subclasses.
+        /// </summary>
+        public virtual bool forceUntiled {
+            get { return false; }
+            set { }
+        }
+
+        /// <summary>
         /// Overridden by subclasses that want to transmit the pointcloud stream.
         /// </summary>
         public virtual AbstractPointCloudSink transmitter { get { return null; } }
@@ -86,6 +95,7 @@ namespace Cwipc
         public PointCloudTileDescription[] getTiles()
         {
             InitializePipeline();
+            if (forceUntiled) return null;
             PointCloudTileDescription[] tileDescriptions = PCcapturer?.getTiles();
             return tileDescriptions;
         }
@@ -109,7 +119,11 @@ namespace Cwipc
             InitializeReader();
             if (transmitter != null)
             {
-                PointCloudTileDescription[] tileDescriptions = PCcapturer.getTiles();
+                PointCloudTileDescription[] tileDescriptions = null;
+                if (!forceUntiled)
+                {
+                    tileDescriptions = PCcapturer.getTiles();
+                }
                 transmitter.InitializeTransmitter(tileDescriptions);
             }
             if (RendererInputQueue == null)
