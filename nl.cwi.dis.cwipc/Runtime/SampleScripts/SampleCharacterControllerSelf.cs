@@ -13,15 +13,15 @@ public class SampleCharacterControllerSelf : SampleCharacterControllerBase
         base.Awake();
     }
 
+    private void Start()
+    {
+        previousPosition = gameObject.transform.position;
+        previousRotation = gameObject.transform.rotation.eulerAngles;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (previousPosition == null || previousRotation == null)
-        {
-            previousPosition = gameObject.transform.position;
-            previousRotation = gameObject.transform.rotation.eulerAngles;
-            return;
-        }
         if (previousPosition == gameObject.transform.position && previousRotation == gameObject.transform.rotation.eulerAngles)
         {
             return;
