@@ -1,5 +1,5 @@
 {
-    "name": "XRI Default Input Actions",
+    "name": "VRPointCloudSelf",
     "maps": [
         {
             "name": "XRI Head",
@@ -2369,6 +2369,39 @@
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "86a833ec-7c9e-45f8-ab40-b5874610c9e2",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Turn",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "e2d9e5fa-03de-4998-a6bc-c7c1a11861fb",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Turn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "7160ba7e-ffa4-4fd2-87e7-110e46c5aa35",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Turn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
@@ -2473,6 +2506,11 @@
                     "isOR": false
                 }
             ]
+        },
+        {
+            "name": "KeyboardMouse",
+            "bindingGroup": "KeyboardMouse",
+            "devices": []
         }
     ]
 }
