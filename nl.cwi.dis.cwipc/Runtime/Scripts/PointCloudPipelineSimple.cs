@@ -175,7 +175,7 @@ namespace Cwipc
                     PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Kinect:
-                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
+                    PCcapturer = new AsyncKinectReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Prerecorded:
                     //PCreceiver = new AsyncPrerecordedReader(directoryPath, voxelSize, framerate, ReaderOutputQueue, ReaderEncoderQueue);
