@@ -2430,6 +2430,72 @@
                     "action": "ViewHeight",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "b3dafcf1-1ced-4fbf-ac53-d9117efbc3cb",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ViewHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "86173c8b-7951-4ced-a48a-c1b6894717de",
+                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "171588ee-703b-4d88-839f-d920402f05a3",
+                    "path": "<OculusTouchController>{LeftHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "f0ca8cab-17f4-4608-819b-37258bedabce",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ViewHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "2732e4b3-aa15-4596-8e6e-a16c1325397a",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "af81a906-0a45-40e2-98fb-2702c5ea2cc5",
+                    "path": "<OculusTouchController>{RightHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
