@@ -1,6 +1,10 @@
 {
     "name": "Cwipc",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "Unity.InputSystem",
+        "Unity.XR.Interaction.Toolkit"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,

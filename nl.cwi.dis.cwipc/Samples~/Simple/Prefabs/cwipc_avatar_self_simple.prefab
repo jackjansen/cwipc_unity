@@ -51,7 +51,7 @@ MonoBehaviour:
   PCrenderer: {fileID: 4770916539198233020}
   framerate: 15
   Preparer_DefaultCellSize: 0
-  Preparer_CellSizeFactor: 1
+  Preparer_CellSizeFactor: 1.5
   Synthetic_NPoints: 8000
   configFileName: cameraconfig.xml
   voxelSize: 0
@@ -214,3 +214,4 @@ MonoBehaviour:
   timestampMostRecentReception: 0
   pointCountMostRecentReception: 0
   pointSizeMostRecentReception: 0
+  paused: 0

@@ -1,9 +1,15 @@
 # CWI Pointcloud Unity package
 
 This repository contains a Unity package `nl.cwi.dis.cwipc` that allows capture and display of
-point clouds and various operations such as compression for transmission, reading and writing to disk, etc.
+point clouds and various operations such as compression for transmission, reading and writing to disk, etc. 
 
-It is part of the <https://github.com/cwi-dis/cwipc> cwipc pointcloud suite.
+Intel Realsense and Azure Kinect RGBD cameras are supported, but you can test your software without access to such hardware by using our synthetic point cloud source (which generates an approximately human sized point cloud).
+
+Samples are provided to use live point clouds as your representation in shared games or other activities: you can be **yourself** in stead of an avatar!
+
+These samples work best when used with a VR headset, obviously, but can also be used with a normal screen.
+
+This package is part of the <https://github.com/cwi-dis/cwipc> cwipc pointcloud suite.
 
 ## Installation
 

@@ -93,18 +93,21 @@ namespace Cwipc
             //
             if (earliestNextCapture != null)
             {
-                System.TimeSpan sleepDuration = earliestNextCapture - System.DateTime.Now;
-                if (sleepDuration > System.TimeSpan.FromSeconds(0))
+                if (System.DateTime.Now < earliestNextCapture)
                 {
-                    System.Threading.Thread.Sleep(sleepDuration);
+                    return;
                 }
+            }
+           
+            cwipc.pointcloud pc = reader.get();
+            if (pc == null)
+            {
+                return;
             }
             if (frameInterval != null)
             {
                 earliestNextCapture = System.DateTime.Now + frameInterval;
             }
-            cwipc.pointcloud pc = reader.get();
-            if (pc == null) return;
             Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
             {
@@ -180,7 +183,6 @@ namespace Cwipc
 
         override public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
         {
-            // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the currentByteArray.Length below that.
             int size = currentSize / 16; // Because every Point is a 16bytes sized, so I need to divide the buffer size by 16 to know how many points are.
             lock (this)
             {
@@ -200,7 +202,7 @@ namespace Cwipc
                     isReady = false;
                 }
             }
-            return size;
+             return size;
         }
 
         override public float GetPointSize()

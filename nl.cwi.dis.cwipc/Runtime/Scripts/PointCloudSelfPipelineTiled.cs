@@ -29,7 +29,14 @@ namespace Cwipc
         public override AbstractPointCloudSink transmitter { get { return _transmitter; } }
         [Tooltip("Enable transmission")]
         [SerializeField] bool enableTransmission = true;
-        
+        [Tooltip("Force untiled")]
+        [SerializeField] bool _forceUntiled = false;
+        public override bool forceUntiled
+        {
+            set { _forceUntiled = value; }
+            get { return _forceUntiled; }
+        }
+
         protected override QueueThreadSafe InitializeTransmitterQueue()
         {
             if (!enableTransmission) return null;

@@ -10,41 +10,29 @@ using System.Runtime.InteropServices;
 
 public class SampleTwoUserTilingSessionController : SampleTwoUserSessionController
 {
+    [Tooltip("Orchestrator (default: from this gameObject)")]
+    [SerializeField] protected SampleOrchestration orchestrator;
     [Tooltip("For compressed session: levels of octree depth to compress to")]
     [SerializeField] protected int[] octreeDepths = new int[] { 10 };
     [Header("Introspection")]
     [SerializeField] private StreamSupport.PointCloudNetworkTileDescription ourTileDescription;
     [SerializeField] private StreamSupport.PointCloudNetworkTileDescription theirTileDescription;
 
-    protected SimpleSocketReceiver controlReceiver;
-    protected SimpleSocketSender controlSender;
-
-    private void OnDestroy()
-    {
-        controlSender?.Stop();
-        controlSender = null;
-        controlReceiver?.Stop();
-        controlReceiver = null;
-    }
-
+  
     private void Update()
     {
-        if (controlReceiver != null)
-        {
-            string msg = controlReceiver.Receive();
-            if (msg != null) {
-                // xxxjack handle message
-                Debug.Log($"SampleTwoUserTilingSessionController: Received message \"{msg}\"");
-                theirTileDescription = JsonUtility.FromJson<StreamSupport.PointCloudNetworkTileDescription>(msg);
-                streamDescriptionReceived = true;
-            }
-        }
         if (otherInitialized) return;
         if (streamDescriptionReceived)
         {
             otherInitialized = true;
             InitializeOther();
         }
+    }
+
+    public void SessionStartCallback(StreamSupport.PointCloudNetworkTileDescription ntd)
+    {
+        theirTileDescription = ntd;
+        streamDescriptionReceived = true;
     }
 
     /// <summary>
@@ -57,8 +45,13 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         base.Initialize();
         string senderUrl = $"tcp://{firstHost}:4300";
         string receiverUrl = $"tcp://{secondHost}:4300";
-        controlSender = new SimpleSocketSender(senderUrl);
-        controlReceiver = new SimpleSocketReceiver(receiverUrl);
+        if (orchestrator == null)
+        {
+            orchestrator = GetComponent<SampleOrchestration>();
+        }
+        orchestrator.Initialize(senderUrl, receiverUrl);
+        orchestrator.RegisterCallback<StreamSupport.PointCloudNetworkTileDescription>("SessionStart", SessionStartCallback);
+        selfPipeline.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -79,6 +72,7 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         PointCloudTileDescription[] tilesToTransmit = pipeline.getTiles();
         if (tilesToTransmit == null)
         {
+            Debug.LogWarning($"SampleTwoUserSessionController: selfPipeline returned no PointCloudTileDescription");
             // If there is no tile information we assume a single tile.
             tilesToTransmit = new PointCloudTileDescription[1]
             {
@@ -97,11 +91,8 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
             tilesToTransmit = tilesToTransmit[1..];
         }
         ourTileDescription = StreamSupport.CreateNetworkTileDescription(tilesToTransmit, octreeDepths);
-        string message = JsonUtility.ToJson(ourTileDescription);
-        Debug.Log($"xxxjack send message: {message}");
-        controlSender.Send(message);
-
-    }
+        orchestrator.Send<StreamSupport.PointCloudNetworkTileDescription>("SessionStart", ourTileDescription);
+      }
 
     /// <summary>
     /// Initialize the other pointcloud pipeline and enable it.
@@ -120,68 +111,4 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         otherPipeline.gameObject.SetActive(true);
     }
 
-    protected class SimpleSocketReceiver : AsyncTCPReader
-    {
-        QueueThreadSafe myReceiveQueue = new QueueThreadSafe("SimpleSocketReceiver", 1, false);
-
-        public SimpleSocketReceiver(string _url) : base(_url)
-        {
-            receivers = new ReceiverInfo[]
-            {
-                new ReceiverInfo()
-                {
-                    outQueue=myReceiveQueue,
-                    host=url.Host,
-                    port=url.Port,
-                    fourcc=0x60606060
-                }
-            };
-            Start();
-        }
-
-        public string Receive()
-        {
-            BaseMemoryChunk packet = myReceiveQueue.TryDequeue(0);
-            if (packet == null) return null;
-            string packetString = System.Runtime.InteropServices.Marshal.PtrToStringUTF8(packet.pointer, packet.length);
-            return packetString;
-        }
-    }
-
-    protected class SimpleSocketSender : AsyncTCPWriter
-    {
-        QueueThreadSafe mySendQueue = new QueueThreadSafe("SimpleSocketSender", 1, false);
-
-        public SimpleSocketSender(string _url) : base()
-        {
-            Uri url = new Uri(_url);
-            descriptions = new TCPStreamDescription[]
-            {
-                new TCPStreamDescription()
-                {
-                    host=url.Host,
-                    port=url.Port,
-                    fourcc=0x60606060,
-                    inQueue=mySendQueue
-                }
-            };
-            Start();
-        }
-
-        public override void Stop()
-        {
-            if (!mySendQueue.IsClosed())
-            {
-                mySendQueue.Close();
-            }
-         }
-
-        public void Send(string message)
-        {
-            byte[] messageBytes = System.Text.UTF8Encoding.UTF8.GetBytes(message);
-            NativeMemoryChunk packet = new NativeMemoryChunk(messageBytes.Length);
-            System.Runtime.InteropServices.Marshal.Copy(messageBytes, 0, packet.pointer, packet.length);
-            mySendQueue.Enqueue(packet);
-        }
-    }
 }

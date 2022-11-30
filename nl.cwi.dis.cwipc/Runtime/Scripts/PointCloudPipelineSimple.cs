@@ -55,6 +55,15 @@ namespace Cwipc
         public bool compressedInputStream;
 
         /// <summary>
+        /// Simple pipeline will always force untiled transmission and report untiled stream.
+        /// Can be overridden by subclasses.
+        /// </summary>
+        public virtual bool forceUntiled {
+            get { return false; }
+            set { }
+        }
+
+        /// <summary>
         /// Overridden by subclasses that want to transmit the pointcloud stream.
         /// </summary>
         public virtual AbstractPointCloudSink transmitter { get { return null; } }
@@ -70,6 +79,7 @@ namespace Cwipc
         protected AsyncReader PCreceiver;
         protected AbstractPointCloudDecoder PCdecoder;
         protected AsyncPointCloudPreparer PCpreparer;
+        protected bool _initialized = false;
 
         // Start is called before the first frame update
 
@@ -84,6 +94,8 @@ namespace Cwipc
         /// <returns></returns>
         public PointCloudTileDescription[] getTiles()
         {
+            InitializePipeline();
+            if (forceUntiled) return null;
             PointCloudTileDescription[] tileDescriptions = PCcapturer?.getTiles();
             return tileDescriptions;
         }
@@ -94,6 +106,8 @@ namespace Cwipc
         /// </summary>
         protected virtual void InitializePipeline()
         {
+            if (_initialized) return;
+            _initialized = true;
             if (enableOutput)
             {
                 ReaderRenderQueue = new QueueThreadSafe("ReaderRenderQueue", 2, true);
@@ -105,7 +119,11 @@ namespace Cwipc
             InitializeReader();
             if (transmitter != null)
             {
-                PointCloudTileDescription[] tileDescriptions = PCcapturer.getTiles();
+                PointCloudTileDescription[] tileDescriptions = null;
+                if (!forceUntiled)
+                {
+                    tileDescriptions = PCcapturer.getTiles();
+                }
                 transmitter.InitializeTransmitter(tileDescriptions);
             }
             if (RendererInputQueue == null)
@@ -157,7 +175,7 @@ namespace Cwipc
                     PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Kinect:
-                    PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
+                    PCcapturer = new AsyncKinectReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Prerecorded:
                     //PCreceiver = new AsyncPrerecordedReader(directoryPath, voxelSize, framerate, ReaderOutputQueue, ReaderEncoderQueue);

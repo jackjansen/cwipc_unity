@@ -9,8 +9,6 @@ namespace Cwipc
 
     public class PointCloudTransmitTiled : AbstractPointCloudSink
     {
-        [Tooltip("Ignore tiling of source, always send untiled streams")]
-        [SerializeField] protected bool forceUntiled;
         [Tooltip("Output Stream Descriptions")]
         [SerializeField] protected OutgoingStreamDescription[] transmitterDescriptions;
         [Tooltip("Output encoder parameters. Number and order must match transmitterDescriptions")]
@@ -25,7 +23,6 @@ namespace Cwipc
             //
             // Override tile information from source.
             //
-            if (forceUntiled) tileDescriptions = null;
             if (tileDescriptions != null)
             {
                 transmitterDescriptions = null;
