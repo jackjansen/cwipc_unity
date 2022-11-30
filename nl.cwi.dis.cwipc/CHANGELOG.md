@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.4] - 2022-11-30
+
+Added support for OpenXR.
+
 ## [0.9.3] - 2022-11-24
 
 Added kinect skeleton support
