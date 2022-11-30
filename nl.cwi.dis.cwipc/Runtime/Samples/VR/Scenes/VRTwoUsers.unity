@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -217,6 +217,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &335202602 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 412585987603202173, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
+  m_PrefabInstance: {fileID: 765728493}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e4e6cca11330d4088d729ab4fc9d9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &533622290
 GameObject:
   m_ObjectHideFlags: 0
@@ -249,7 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f6bf3d943ac7945842268c9ef1dca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_InteractionManager: {fileID: 2125165378}
+  m_InteractionManager: {fileID: 335202602}
   m_Colliders: []
   m_InteractionLayerMask:
     serializedVersion: 2
@@ -315,7 +326,7 @@ MonoBehaviour:
   m_OnDeactivate:
     m_PersistentCalls:
       m_Calls: []
-  m_TeleportationProvider: {fileID: 765728495}
+  m_TeleportationProvider: {fileID: 1352245637}
   m_MatchOrientation: 0
   m_TeleportTrigger: 0
   m_Teleporting:
@@ -482,17 +493,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2942035106827000202, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
   m_PrefabInstance: {fileID: 765728493}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &765728495 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4017985550167685108, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-  m_PrefabInstance: {fileID: 765728493}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01f69dc1cb084aa42b2f2f8cd87bc770, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &765728499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,7 +544,7 @@ MonoBehaviour:
   useCompression: 0
   streamDescriptionReceived: 0
   otherInitialized: 0
-  orchestrator: {fileID: 0}
+  orchestrator: {fileID: 839301505}
   octreeDepths: 0a00000005000000
   ourTileDescription:
     tiles: []
@@ -575,6 +575,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d23093256dac140f29f3a0fa24d1fab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1352245637 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 412585989331119418, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
+  m_PrefabInstance: {fileID: 765728493}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01f69dc1cb084aa42b2f2f8cd87bc770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &2057174263
@@ -660,14 +671,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orchestrator: {fileID: 839301505}
---- !u!114 &2125165378 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8238923626206713021, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-  m_PrefabInstance: {fileID: 765728493}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83e4e6cca11330d4088d729ab4fc9d9f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
