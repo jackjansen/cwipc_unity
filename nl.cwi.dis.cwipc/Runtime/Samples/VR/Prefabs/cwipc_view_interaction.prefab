@@ -555,8 +555,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_System: {fileID: 4860176229408347810}
   cameraOffset: {fileID: 4860176230166721858}
-  player: {fileID: 0}
-  playerCamera: {fileID: 0}
+  player: {fileID: 4860176230215406218}
+  playerCamera: {fileID: 4860176229602588885}
   heightFactor: 0.01
   m_ViewHeightAction:
     m_UseReference: 1

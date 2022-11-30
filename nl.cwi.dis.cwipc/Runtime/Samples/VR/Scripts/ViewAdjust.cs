@@ -60,6 +60,8 @@ public class ViewAdjust : LocomotionProvider
         if (BeginLocomotion())
         {
             Debug.Log("xxxjack should reset origin");
+            var rotationY = playerCamera.transform.rotation.eulerAngles.y - cameraOffset.transform.rotation.eulerAngles.y;
+            player.transform.Rotate(0, -rotationY, 0);
             EndLocomotion();
         }
     }
