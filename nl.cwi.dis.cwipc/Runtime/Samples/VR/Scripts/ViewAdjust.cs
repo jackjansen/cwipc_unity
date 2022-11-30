@@ -63,8 +63,8 @@ public class ViewAdjust : LocomotionProvider
             float rotationY = playerCamera.transform.rotation.eulerAngles.y;
             cameraOffset.transform.Rotate(0, -rotationY, 0);
             //Vector3 moveXZ = playerCamera.transform.position - cameraOffset.transform.position;
-            Vector3 moveXZ =  cameraOffset.transform.InverseTransformPoint(playerCamera.transform.position);
-            moveXZ.y = 0;
+            Vector3 moveXZ =  playerCamera.transform.position - cameraOffset.transform.position;
+            moveXZ.y = cameraOffset.transform.position.y;
             cameraOffset.transform.position -= moveXZ;
 
             EndLocomotion();
