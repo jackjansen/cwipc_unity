@@ -2404,6 +2404,34 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "ViewPosition",
+            "id": "0378ce98-db71-4593-bec7-607510395a57",
+            "actions": [
+                {
+                    "name": "ViewHeight",
+                    "type": "Value",
+                    "id": "2200e927-2c64-4f90-9aa0-620e9c9eab4f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6deaefdb-c432-4f11-875f-e00323fbaf46",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

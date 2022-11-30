@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
 
-public class ViewAdjust : MonoBehaviour
+public class ViewAdjust : LocomotionProvider
 {
-    [SerializeField]
-    [Tooltip("The Input System Action that will be used to read Snap Turn data from the left hand controller. Must be a Value Vector2 Control.")]
-    InputActionProperty m_LeftHandSnapTurnAction;
-    /// <summary>
-    /// The Input System Action that Unity uses to read Snap Turn data sent from the left hand controller. Must be a <see cref="InputActionType.Value"/> <see cref="Vector2Control"/> Control.
-    /// </summary>
-    public InputActionProperty leftHandSnapTurnAction
+    [Tooltip("The object of which the height is adjusted")]
+    [SerializeField] GameObject cameraOffset;
+
+    [Tooltip("Multiplication factor for height adjustment")]
+    [SerializeField] float heightFactor = 1;
+
+    [Tooltip("The Input System Action that will be used to read view height. Must be a Value Vector2 Control of which y is used.")]
+    [SerializeField] InputActionProperty m_ViewHeightAction;
+    public InputActionProperty viewHeightAction
     {
-        get => m_LeftHandSnapTurnAction;
-        set => SetInputActionProperty(ref m_LeftHandSnapTurnAction, value);
+        get => m_ViewHeightAction;
+        set => SetInputActionProperty(ref m_ViewHeightAction, value);
     }
 
     // Start is called before the first frame update
@@ -28,6 +31,38 @@ public class ViewAdjust : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Vector2 input = ReadInput();
+        float deltaHeight = input.y * heightFactor;
+        if (deltaHeight != 0 && BeginLocomotion())
+        {
+            cameraOffset.transform.position += new Vector3(0, deltaHeight, 0);
+            EndLocomotion();
+        }
+    }
+
+    protected void OnEnable()
+    {
+        m_ViewHeightAction.EnableDirectAction();
+    }
+
+    protected void OnDisable()
+    {
+        m_ViewHeightAction.DisableDirectAction();
+    }
+
+    protected Vector2 ReadInput()
+    {
+        return m_ViewHeightAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
+     }
+
+    void SetInputActionProperty(ref InputActionProperty property, InputActionProperty value)
+    {
+        if (Application.isPlaying)
+            property.DisableDirectAction();
+
+        property = value;
+
+        if (Application.isPlaying && isActiveAndEnabled)
+            property.EnableDirectAction();
     }
 }

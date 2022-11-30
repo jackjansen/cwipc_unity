@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028349, g: 0.22571358, b: 0.3069225, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1556,6 +1556,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ece3af5ec41a4a3aad17a44ee01b528, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_System: {fileID: 1914321547}
+  cameraOffset: {fileID: 1096210795}
+  heightFactor: 0.01
+  m_ViewHeightAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: View Height
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 7a679fe8-0724-43d9-a1a0-1e774b1a9e55
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 6463340122363546935, guid: d348712bda248c246b8c49b3db54643f, type: 3}
 --- !u!4 &1020776365
 Transform:
   m_ObjectHideFlags: 0
