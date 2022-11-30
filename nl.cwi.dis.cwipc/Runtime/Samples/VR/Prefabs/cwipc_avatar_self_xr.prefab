@@ -380,6 +380,10 @@ PrefabInstance:
       propertyPath: m_XROrigin
       value: 
       objectReference: {fileID: 412585987462433642}
+    - target: {fileID: 4860176229602588885, guid: 5553f6bccdc163740a900449b94a4183, type: 3}
+      propertyPath: near clip plane
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 4860176230215406218, guid: 5553f6bccdc163740a900449b94a4183, type: 3}
       propertyPath: m_Name
       value: cwipc_view_interaction

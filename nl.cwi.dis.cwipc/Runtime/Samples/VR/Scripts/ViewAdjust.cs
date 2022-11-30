@@ -47,7 +47,7 @@ public class ViewAdjust : LocomotionProvider
         }
         if (useResetOriginAction && m_resetOriginAction != null)
         {
-            bool doResetOrigin = m_resetOriginAction.action.WasPerformedThisFrame();
+            bool doResetOrigin = m_resetOriginAction.action.ReadValue<float>() >= 0.5;
             if (doResetOrigin)
             {
                 ResetOrigin();
@@ -60,11 +60,12 @@ public class ViewAdjust : LocomotionProvider
         if (BeginLocomotion())
         {
             Debug.Log("xxxjack should reset origin");
-            float rotationY = playerCamera.transform.rotation.eulerAngles.y;
+            float rotationY = playerCamera.transform.rotation.eulerAngles.y - player.transform.rotation.eulerAngles.y;
             cameraOffset.transform.Rotate(0, -rotationY, 0);
             //Vector3 moveXZ = playerCamera.transform.position - cameraOffset.transform.position;
-            Vector3 moveXZ =  playerCamera.transform.position - cameraOffset.transform.position;
-            moveXZ.y = cameraOffset.transform.position.y;
+            Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
+            moveXZ.y = 0;
+            Debug.Log($"xxxjack should move to {moveXZ} worldpos={playerCamera.transform.position}");
             cameraOffset.transform.position -= moveXZ;
 
             EndLocomotion();
