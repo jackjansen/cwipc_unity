@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.9.6] - 2022-12-08
+
+Added support for mirroring Z (in stead of X) in renderer.
+Added support to adjust pointSizeFactor in renderer.
+
 ## [0.9.5] - 2022-12-08
 
 Added support for prerecorded pointcloud playback.

@@ -30,8 +30,12 @@ namespace Cwipc
         public Material baseMaterial;
         [Tooltip("After how many seconds without data pointcloud becomes ghosted")]
         [SerializeField] protected int timeoutBeforeGhosting = 5; // seconds
-        [Tooltip("Mirror pointclouds because they use a right-hand coordinate system (usually true)")]
+        [Tooltip("Multiplication factor for pointSize for this renderer")]
+        [SerializeField] protected float pointSizeFactor = 1f;
+        [Tooltip("Mirror point X axis because they use a right-hand coordinate system (usually true)")]
         [SerializeField] protected bool pcMirrorX = true;
+        [Tooltip("Mirror point Z axis because they use a right-hand coordinate system")]
+        [SerializeField] protected bool pcMirrorZ = false;
 
         [Header("Introspection (for debugging)")]
         [Tooltip("Renderer name (logging and statistics)")]
@@ -139,7 +143,7 @@ namespace Cwipc
                 dataIsMissing = false;
                 pointCount = preparer.GetComputeBuffer(ref pointBuffer);
                 pointCountMostRecentReception = pointCount;
-                pointSize = preparer.GetPointSize();
+                pointSize = preparer.GetPointSize() * pointSizeFactor;
                 pointSizeMostRecentReception = pointSize;
                 if (pointSize == 0)
                 {
@@ -172,6 +176,10 @@ namespace Cwipc
             if (pcMirrorX)
             {
                 pcMatrix = pcMatrix * Matrix4x4.Scale(new Vector3(-1, 1, 1));
+            }
+            if (pcMirrorZ)
+            {
+                pcMatrix = pcMatrix * Matrix4x4.Scale(new Vector3(1, 1, -1));
             }
             block.SetMatrix("_Transform", pcMatrix);
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
