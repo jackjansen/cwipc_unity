@@ -392,7 +392,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1697452587}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.8, z: -5.57}
+  m_LocalPosition: {x: 0, y: 1.8, z: -5.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -454,5 +454,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4089730585797677243, guid: c3b1c94af23e743a08547f27f81df210, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4770916539198233020, guid: c3b1c94af23e743a08547f27f81df210, type: 3}
+      propertyPath: pointcloudSource
+      value: 
+      objectReference: {fileID: 2942035107735954229}
+    m_RemovedComponents:
+    - {fileID: 4089730585797677243, guid: c3b1c94af23e743a08547f27f81df210, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c3b1c94af23e743a08547f27f81df210, type: 3}
+--- !u!1 &2942035107735954228 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5653253474329525849, guid: c3b1c94af23e743a08547f27f81df210, type: 3}
+  m_PrefabInstance: {fileID: 2942035107735954227}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2942035107735954229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2942035107735954228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdee89f72c1e244b190002b05fbf6c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  voxelSize: 0
+  frameRate: 30
+  dirName: ../Samples/loot-150K-4tiles

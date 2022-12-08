@@ -35,7 +35,6 @@ namespace Cwipc
                     //
                     // Get the point cloud data into an unsafe native array.
                     //
-                    System.IntPtr currentBuffer = System.IntPtr.Zero;
                     int currentSize = currentPointCloud.get_uncompressed_size();
                     const int sizeofPoint = sizeof(float) * 4;
                     int nPoints = currentSize / sizeofPoint;
@@ -44,10 +43,11 @@ namespace Cwipc
                     {
                         if (byteArray.Length != 0) byteArray.Dispose();
                         byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.Persistent);
-                        currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
                     }
                     if (currentSize > 0)
                     {
+                        System.IntPtr currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
+
                         int ret = currentPointCloud.copy_uncompressed(currentBuffer, currentSize);
                         if (ret * 16 != currentSize)
                         {
