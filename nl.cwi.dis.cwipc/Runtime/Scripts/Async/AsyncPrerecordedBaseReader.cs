@@ -191,7 +191,7 @@ namespace Cwipc
             subdir = _subdir;
             if (_outQueue == null)
             {
-                throw new System.Exception("{Name()}: outQueue is null");
+                throw new System.Exception($"{Name()}: outQueue is null");
             }
             if (outQueue != null)
             {
