@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace Cwipc
 {
@@ -11,6 +12,18 @@ namespace Cwipc
     /// </summary>
     public class cwipc
     {
+        /// <summary>
+        /// Structure describing a point within a point cloud.
+        /// Note that unpacking a cwipc.pointcloud to a vector of points is a very
+        /// expensive operation.
+        /// </summary>
+        public struct PointCloudPoint
+        {
+            public Vector3 point;
+            public Color color;
+            public byte tile;
+        };
+
         /// <summary>
         /// Low-level compatible structure with encoder parameters.
         /// </summary>
@@ -81,6 +94,8 @@ namespace Cwipc
 			internal extern static IntPtr cwipc_read_debugdump([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_from_packet(IntPtr packet, IntPtr size, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_from_points(IntPtr points, IntPtr size, Timestamp timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
             [DllImport(myDllName)]
             internal extern static void cwipc_free(IntPtr pc);
             [DllImport(myDllName)]
@@ -458,6 +473,35 @@ namespace Cwipc
                 return new cwipc_auxiliary_data(_API_cwipc_util.cwipc_access_auxiliary_data(pointer));
             }
 
+            /// <summary>
+            /// Get a vector with all the points in the point cloud.
+            /// NOTE: this is an expensive operation, use only when absolutely necessary.
+            /// </summary>
+            /// <returns>A vector with all the points</returns>
+            public PointCloudPoint[] get_points()
+            {
+                int npoint = count();
+                PointCloudPoint[] rv = new PointCloudPoint[npoint];
+                unsafe
+                {
+                    int nbytes = get_uncompressed_size();
+                    var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Persistent);
+                    System.IntPtr pointBufferPointer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(pointBuffer);
+                    int ret = copy_uncompressed(pointBufferPointer, nbytes);
+                    if (ret * 16 != nbytes || ret != npoint)
+                    {
+                        throw new Exception("cwipc.pointcloud.get_points unexpected point count");
+                    }
+                    for(int i=0; i<npoint; i++)
+                    {
+                        rv[i].point = new Vector3(pointBuffer[i].x, pointBuffer[i].y, pointBuffer[i].z);
+                        rv[i].color = new Color(((float)pointBuffer[i].r) / 256.0f, ((float)pointBuffer[i].g) / 256.0f, ((float)pointBuffer[i].b) / 256.0f);
+                        rv[i].tile = pointBuffer[i].tile;
+                    }
+                }
+
+                return rv;
+            }
 
             internal IntPtr _intptr()
             {
@@ -1252,6 +1296,63 @@ namespace Cwipc
                     throw new System.Exception("cwipc.from_packet: returned null without setting error message");
                 }
                 throw new System.Exception($"cwipc_from_packet: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            }
+            return new pointcloud(rvPtr);
+        }
+
+        /// <summary>
+        /// Read a pointcloud from a serialized data buffer.
+        /// This is a file format that closely follows the in-memory layout of cwipc pointclouds, and can therefore
+        /// be read and written relatively fast.
+        /// </summary>
+        /// <param name="packet">The native data buffer pointer</param>
+        /// <param name="size">Buffer size in bytes</param>
+        /// <returns>The pointcloud read</returns>
+        /// <seealso cref="pointcloud.get_packet"/>
+        public static pointcloud from_points(PointCloudPoint[] points, Timestamp timestamp)
+        {
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr rvPtr = IntPtr.Zero;
+            IntPtr pointBufferSize = IntPtr.Zero;
+            int npoint = points.Length;
+            unsafe
+            {
+                var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Persistent);
+                for(int i=0; i<npoint; i++)
+                {
+                    point pt = new point()
+                    {
+                        x = points[i].point.x,
+                        y = points[i].point.y,
+                        z = points[i].point.z,
+                        r = (byte)(points[i].color.r * 256),
+                        g = (byte)(points[i].color.g * 256),
+                        b = (byte)(points[i].color.b * 256),
+                        tile = points[i].tile
+                    };
+                    pointBuffer[i] = pt;
+                }
+                System.IntPtr pointBufferPointer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(pointBuffer);
+                try
+                {
+                    rvPtr = _API_cwipc_util.cwipc_from_points(pointBufferPointer, pointBufferSize, timestamp, ref errorPtr);
+                }
+                catch (System.DllNotFoundException e)
+                {
+                    UnityEngine.Debug.LogError($"cwipc.from_points: cannot load cwipc_util DLL.");
+                    UnityEngine.Debug.LogError($"cwipc.from_points: Exception: {e.ToString()}");
+                    UnityEngine.Debug.LogError($"cwipc.from_points: see https://github.com/cwi-dis/cwipc for installation instructions.");
+                    throw new Exception("cwipc.from_points: cwipc DLLs not installed correctly. See log.");
+                }
+            }
+            
+            if (rvPtr == System.IntPtr.Zero)
+            {
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.from_points: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_from_points: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             return new pointcloud(rvPtr);
         }
