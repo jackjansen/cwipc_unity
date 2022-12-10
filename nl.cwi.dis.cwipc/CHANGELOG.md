@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.7] - 2022-12-10
+
+Added methods to allow access to individual points in a cloud, and creating a cloud from a list of points. Plus example code.
+
 ## [0.9.6] - 2022-12-08
 
 Added support for mirroring Z (in stead of X) in renderer.
