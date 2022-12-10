@@ -108,6 +108,9 @@ namespace Cwipc
             {
                 earliestNextCapture = System.DateTime.Now + frameInterval;
             }
+            //
+            // Do optional downsampling
+            //
             Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
             {
@@ -126,6 +129,13 @@ namespace Cwipc
                 downsampleDuration = (Timedelta)(downsampleStopTime - downsampleStartTime).TotalMilliseconds;
 
             }
+            //
+            // Do optional filtering
+            //
+            pc = filter(pc);
+            //
+            // Store this as the current point cloud, to be picked up by the next LatchFrame() call.
+            //
             lock(this)
             {
                 if (currentPointcloud != null)
@@ -137,6 +147,11 @@ namespace Cwipc
                 currentPointcloud = pc;
                 nRead++;
             }
+        }
+
+        virtual protected cwipc.pointcloud filter(cwipc.pointcloud pc)
+        {
+            return pc;
         }
 
         override public void Synchronize()

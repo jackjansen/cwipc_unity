@@ -95,7 +95,7 @@ namespace Cwipc
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_from_packet(IntPtr packet, IntPtr size, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
             [DllImport(myDllName)]
-            internal extern static IntPtr cwipc_from_points(IntPtr points, IntPtr size, Timestamp timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+            internal extern static IntPtr cwipc_from_points(IntPtr points, IntPtr size, int nPoint, Timestamp timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
             [DllImport(myDllName)]
             internal extern static void cwipc_free(IntPtr pc);
             [DllImport(myDllName)]
@@ -1313,10 +1313,10 @@ namespace Cwipc
         {
             System.IntPtr errorPtr = System.IntPtr.Zero;
             System.IntPtr rvPtr = IntPtr.Zero;
-            IntPtr pointBufferSize = IntPtr.Zero;
-            int npoint = points.Length;
             unsafe
             {
+                int npoint = points.Length;
+                IntPtr pointBufferSize = (System.IntPtr)(npoint*16);
                 var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Temp);
                 for(int i=0; i<npoint; i++)
                 {
@@ -1335,7 +1335,7 @@ namespace Cwipc
                 System.IntPtr pointBufferPointer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(pointBuffer);
                 try
                 {
-                    rvPtr = _API_cwipc_util.cwipc_from_points(pointBufferPointer, pointBufferSize, timestamp, ref errorPtr);
+                    rvPtr = _API_cwipc_util.cwipc_from_points(pointBufferPointer, pointBufferSize, npoint, timestamp, ref errorPtr);
                 }
                 catch (System.DllNotFoundException e)
                 {
