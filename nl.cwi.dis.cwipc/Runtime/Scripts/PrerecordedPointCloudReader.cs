@@ -25,6 +25,14 @@ namespace Cwipc
             reader = new AsyncPrerecordedReader(dirName, voxelSize, frameRate, myQueue);
         }
 
+        private void OnDestroy()
+        {
+            if (byteArray.IsCreated)
+            {
+                byteArray.Dispose();
+            }
+        }
+
         public override int GetComputeBuffer(ref ComputeBuffer computeBuffer)
         {
             lock(this)

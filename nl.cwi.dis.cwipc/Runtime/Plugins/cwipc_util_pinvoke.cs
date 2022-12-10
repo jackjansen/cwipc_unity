@@ -485,7 +485,7 @@ namespace Cwipc
                 unsafe
                 {
                     int nbytes = get_uncompressed_size();
-                    var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Persistent);
+                    var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Temp);
                     System.IntPtr pointBufferPointer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(pointBuffer);
                     int ret = copy_uncompressed(pointBufferPointer, nbytes);
                     if (ret * 16 != nbytes || ret != npoint)
@@ -1317,7 +1317,7 @@ namespace Cwipc
             int npoint = points.Length;
             unsafe
             {
-                var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Persistent);
+                var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Temp);
                 for(int i=0; i<npoint; i++)
                 {
                     point pt = new point()
