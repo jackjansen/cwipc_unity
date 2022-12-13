@@ -67,8 +67,11 @@ namespace Cwipc
         public bool isSupported()
         {
             if (baseMaterial != null) return true;
-            baseMaterial = Resources.Load<Material>("PointCloud");
-            if (baseMaterial == null) return false;
+            baseMaterial = Resources.Load<Material>("PointCloudTextured");
+            if (baseMaterial == null) {
+                Debug.LogError($"{Name()}: no baseMaterial specified and PointCloudTextured (default) not found");
+                return false;
+            }
             return baseMaterial.shader.isSupported;
         }
 
