@@ -12,12 +12,24 @@ namespace Cwipc
         private QueueThreadSafe myQueue;
         private cwipc.pointcloud currentPointCloud;
         Unity.Collections.NativeArray<byte> byteArray;
+        [Tooltip("If non-zero, voxelize each point cloud to this voxel size")]
         [SerializeField] private float voxelSize = 0;
+        [Tooltip("Frame rate at which to read point clouds")]
         [SerializeField] private float frameRate = 15;
+        [Tooltip("Directory name (or file name) where point clouds and/or tileconfig.json or are stored.")]
         [SerializeField] private string dirName;
+        [Tooltip("Point size to use if a point cloud does not contain a pointsize")]
+        [SerializeField] float defaultPointSize = 0;
         const float allocationFactor = 1.3f;
 
-        public override long currentTimestamp => throw new NotImplementedException();
+        public override long currentTimestamp
+        {
+            get
+            {
+                if (currentPointCloud == null) return 0;
+                return currentPointCloud.timestamp();
+            }
+        }
 
         private void Start()
         {
@@ -81,7 +93,9 @@ namespace Cwipc
         public override float GetPointSize()
         {
             if (currentPointCloud == null) return 0;
-            return currentPointCloud.cellsize();
+            float pointSize = currentPointCloud.cellsize();
+            if (pointSize == 0) pointSize = defaultPointSize;
+            return pointSize;
         }
 
         public override long getQueueDuration()
