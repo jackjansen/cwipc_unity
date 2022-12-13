@@ -1,5 +1,5 @@
 ﻿
-Shader "cwipc/PointCloud"{
+Shader "cwipc/PointCloudTextured"{
 	Properties{
 		_Tint("Tint", Color) = (0.5, 0.5, 0.5, 1)
 		_PointSize("Point Size", Float) = 0.05
