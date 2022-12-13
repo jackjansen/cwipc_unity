@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.9] - 2022-12-13
+
+Fixed prerecorded reader, allow setting default pointsize (for ply files).
+
 ## [0.9.8] - 2022-12-12
 
 Changed Pointcloud material values of pointfactorsize and cutoff values to prevent pointcloud to disappear in the distance
