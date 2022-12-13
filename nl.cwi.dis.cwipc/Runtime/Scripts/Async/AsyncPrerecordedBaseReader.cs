@@ -25,6 +25,16 @@ namespace Cwipc
     /// </summary>
     public abstract class AsyncPrerecordedBaseReader : AsyncPointCloudReader
     {
+        /// <summary>
+        /// Structure describing directory tree with point clouds stored
+        /// in individual per-tile per-quality files. This structure is used
+        /// to do instantaneous switching between qualities, for UX experiments.
+        ///
+        /// Commonly read from tileconfig.json in the top level directory.
+        ///
+        /// NOTE: this structure is slightly different from the one in AsyncPrerecordedReader,
+        /// for no good reason.
+        /// </summary>
         [Serializable]
         public class _PrerecordedReaderConfig
         {
@@ -32,7 +42,7 @@ namespace Cwipc
             public string[] qualities; // Only for prerecordedPlaybackReader: subsubdirectory names per quality
             public bool ply;    // True when using .ply files, false when using .cwipcdump files
             public bool preferBest; // Start reading best (last) quality (default is first/worst) until instructed otherwise
-            public PointCloudTileDescription[] tileInfos; // Only for PrerecordedLiveReader: list of tile definitions
+            public PointCloudTileDescription[] tileInfo; // Only for PrerecordedLiveReader: list of tile definitions
         };
         protected string baseDirectory;
         List<_SingleDirectoryReader> tileReaders = new List<_SingleDirectoryReader>();
@@ -42,7 +52,7 @@ namespace Cwipc
         public int numberOfFilesPerReader = 0;
         protected string[] qualitySubdirs;
         protected string[] tileSubdirs;
-        PointCloudTileDescription[] tileInfos;
+        protected PointCloudTileDescription[] tileInfo;
         bool preferBest;
         // Next variables are shared (readonly) among _SingleDirectoryReader children.
         // I don't think C# has a way to say this without using public.
@@ -65,20 +75,31 @@ namespace Cwipc
         {
         }
 
-        protected bool _InitFromConfigFile(string directory)
+        protected void _InitFromConfigFile(string directory)
         {
             var configFilename = System.IO.Path.Combine(directory, "tileconfig.json");
             if (!System.IO.File.Exists(configFilename))
             {
-                Debug.LogWarning($"{Name()}: {configFilename} does not exist. Assuming defaults.");
-                return false;
+                Debug.LogWarning($"{Name()}: {configFilename} does not exist. Guessing defaults.");
+                bool hasPly = System.IO.Directory.GetFiles(directory, "*.ply").Length != 0;
+                bool hasCwipcdump = System.IO.Directory.GetFiles(directory, "*.cwipcdump").Length != 0;
+                if (!hasPly && !hasCwipcdump)
+                {
+                    Debug.LogWarning($"{Name()}: {directory} contains neither .ply nor .cwipcdump files");
+                }
+                if (hasPly && hasCwipcdump)
+                {
+                    Debug.LogWarning($"{Name()}: {directory} contains both .ply and .cwipcdump files, showing .ply");
+                }
+                readPlyFiles = hasPly;
+                return;
             }
             var file = System.IO.File.ReadAllText(configFilename);
             _PrerecordedReaderConfig config = JsonUtility.FromJson<_PrerecordedReaderConfig>(file);
             preferBest = config.preferBest;
             qualitySubdirs = config.qualities ?? new string[1] { "" };
             tileSubdirs = config.tiles; // can be null
-            tileInfos = config.tileInfos ?? new PointCloudTileDescription[1]
+            tileInfo = config.tileInfo ?? new PointCloudTileDescription[1]
             {
                 new PointCloudTileDescription {
                     normal = new Vector3 {x=0, y=0, z=0},
@@ -87,7 +108,6 @@ namespace Cwipc
                 }
             };
             readPlyFiles = config.ply;
-            return true;
         }
 
         /// <summary>
@@ -96,7 +116,7 @@ namespace Cwipc
         /// <returns></returns>
         public override PointCloudTileDescription[] getTiles()
         {
-            return tileInfos;
+            return tileInfo;
         }
 
         public void Add(string tilename, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
