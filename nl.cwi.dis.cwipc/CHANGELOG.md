@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.10] - 2022-12-21
+
+Allow switching PrerecordedPointCloudReader source by setting new value in dirName attribute
+
 ## [0.9.9] - 2022-12-13
 
 Fixed prerecorded reader, allow setting default pointsize (for ply files).

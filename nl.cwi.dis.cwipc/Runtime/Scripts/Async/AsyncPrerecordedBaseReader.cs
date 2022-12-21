@@ -140,6 +140,15 @@ namespace Cwipc
             }
         }
 
+        public void StopWithoutClose()
+        {
+            foreach(var tr in tileReaders)
+            {
+                tr.StopWithoutClose();
+            }
+            Stop();
+        }
+
         public override void Stop()
         {
             base.Stop();
@@ -269,6 +278,13 @@ namespace Cwipc
             if (subdir == newSubDir) return;
             // Debug.Log($"{Name()}: xxxjack setSubDir {subdir} -> {newSubDir}");
             subdir = newSubDir;
+        }
+
+        public void StopWithoutClose()
+        {
+            outQueue = null;
+            out2Queue = null;
+            Stop();
         }
 
         public override void Stop()

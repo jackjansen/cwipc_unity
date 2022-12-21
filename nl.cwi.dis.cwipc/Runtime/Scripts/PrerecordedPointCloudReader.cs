@@ -17,7 +17,15 @@ namespace Cwipc
         [Tooltip("Frame rate at which to read point clouds")]
         [SerializeField] private float frameRate = 15;
         [Tooltip("Directory name (or file name) where point clouds and/or tileconfig.json or are stored.")]
-        [SerializeField] private string dirName;
+        [SerializeField] private string _dirName;
+        public string dirName
+        {
+            get => _dirName;
+            set {
+                _dirName = value;
+                InitReader();
+            }
+        }
         [Tooltip("Point size to use if a point cloud does not contain a pointsize")]
         [SerializeField] float defaultPointSize = 0;
         const float allocationFactor = 1.3f;
@@ -34,6 +42,15 @@ namespace Cwipc
         private void Start()
         {
             myQueue = new QueueThreadSafe($"{Name()}.queue");
+            InitReader();
+        }
+
+        private void InitReader()
+        {
+            if (reader != null)
+            {
+                reader.StopWithoutClose();
+            }
             reader = new AsyncPrerecordedReader(dirName, voxelSize, frameRate, myQueue);
         }
 
