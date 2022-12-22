@@ -94,6 +94,7 @@ namespace Cwipc
         {
             if (_pointer == IntPtr.Zero) throw new Exception("BaseMemoryChunk: constructor called with null pointer");
             this._pointer = _pointer;
+            this.metadata = new FrameMetadata();
             refCount = 1;
             BaseMemoryChunkReferences.AddReference(GetType());
         }
