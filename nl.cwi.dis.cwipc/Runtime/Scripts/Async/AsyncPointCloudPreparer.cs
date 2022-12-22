@@ -20,6 +20,8 @@ namespace Cwipc
         int currentSize;
         Timestamp _currentTimestamp;
         public Timestamp currentTimestamp {  get { return _currentTimestamp;  } }
+        FrameMetadata _currentMetadata;
+        public FrameMetadata currentMetadata {  get { return _currentMetadata;  } }
         float currentCellSize = 0.008f;
         float defaultCellSize;
         float cellSizeFactor;
@@ -91,6 +93,7 @@ namespace Cwipc
                     currentSize = pc.get_uncompressed_size();
                     _currentTimestamp = pc.timestamp();
                     currentCellSize = pc.cellsize();
+                    _currentMetadata = pc.metadata;
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                     if (currentSize > byteArray.Length)
                     {

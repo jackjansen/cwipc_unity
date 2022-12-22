@@ -59,7 +59,7 @@ namespace Cwipc
                     int size = pc.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pc.copy_packet(mc.pointer, mc.length);
-                    mc.info.timestamp = pc.timestamp();
+                    mc.metadata.timestamp = pc.timestamp();
                     System.DateTime encodeStopTime = System.DateTime.Now;
                     encodeDuration = (Timedelta)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
@@ -70,7 +70,7 @@ namespace Cwipc
                     int size = pcTile.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pcTile.copy_packet(mc.pointer, mc.length);
-                    mc.info.timestamp = pc.timestamp();
+                    mc.metadata.timestamp = pc.timestamp();
                     pcTile.free();
                     System.DateTime encodeStopTime = System.DateTime.Now;
                     encodeDuration = (Timedelta)(encodeStopTime - encodeStartTime).TotalMilliseconds;

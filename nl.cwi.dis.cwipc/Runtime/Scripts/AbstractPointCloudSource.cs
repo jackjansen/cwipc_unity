@@ -23,6 +23,7 @@ namespace Cwipc
         [Tooltip("Timestamp of current pointcloud")]
         [SerializeField] protected Timestamp _currentTimestamp;
         public override Timestamp currentTimestamp { get { return _currentTimestamp; } }
+        public override FrameMetadata currentMetadata {  get { return currentPointcloud?.metadata;  } }
         [Tooltip("Cell size of current pointcloud cell (in meters)")]
         [SerializeField] protected float currentCellSize = 0;
         [Tooltip("How many pointclouds have been read")]

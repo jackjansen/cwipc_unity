@@ -58,7 +58,7 @@ namespace Cwipc
                     if (curBuffer != null) return true;
                     if (!encoder.available(false)) return false;
                     curBuffer = new NativeMemoryChunk(encoder.get_encoded_size());
-                    curBuffer.info.timestamp = parent.mostRecentFeedTimestamps.Peek();
+                    curBuffer.metadata.timestamp = parent.mostRecentFeedTimestamps.Peek();
                     curEncodeDuration = (Timedelta)(System.DateTime.Now - parent.mostRecentFeedTimes.Peek()).TotalMilliseconds;
                     if (!encoder.copy_data(curBuffer.pointer, curBuffer.length))
                     {

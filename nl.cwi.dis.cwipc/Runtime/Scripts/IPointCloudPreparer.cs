@@ -32,6 +32,11 @@ namespace Cwipc
         public Timestamp currentTimestamp { get; }
 
         /// <summary>
+        /// Metadata of current frame.
+        /// </summary>
+        public FrameMetadata currentMetadata { get; }
+
+        /// <summary>
         /// Return name (for logging and statistics)
         /// </summary>
         /// <returns></returns>
@@ -49,6 +54,7 @@ namespace Cwipc
         abstract public float GetPointSize();
         abstract public Timedelta getQueueDuration();
         abstract public Timestamp currentTimestamp { get; }
+        abstract public FrameMetadata currentMetadata { get; }
         abstract public string Name();
     }
 }

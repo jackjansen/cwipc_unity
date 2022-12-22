@@ -338,7 +338,8 @@ namespace Cwipc
                 if (_pointer == IntPtr.Zero)
                     throw new Exception("cwipc.pointcloud called with NULL pointer argument");
                 // This is a hack. We copy the timestamp from the cwipc data to our info structure.
-                info.timestamp = timestamp();
+                metadata = new FrameMetadata();
+                metadata.timestamp = timestamp();
             }
 
             ~pointcloud()
@@ -370,7 +371,7 @@ namespace Cwipc
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_timestamp called with NULL pointer");
                 _API_cwipc_util.cwipc__set_timestamp(pointer, timestamp);
-                info.timestamp = timestamp;
+                metadata.timestamp = timestamp;
             }
 
             /// <summary>

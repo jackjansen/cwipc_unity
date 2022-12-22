@@ -140,7 +140,7 @@ namespace Cwipc
                         hdr1.CopyTo(hdr, 0);
                         var hdr2 = BitConverter.GetBytes((Int32)mc.length);
                         hdr2.CopyTo(hdr, 4);
-                        var hdr3 = BitConverter.GetBytes(mc.info.timestamp);
+                        var hdr3 = BitConverter.GetBytes(mc.metadata.timestamp);
                         hdr3.CopyTo(hdr, 8);
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);

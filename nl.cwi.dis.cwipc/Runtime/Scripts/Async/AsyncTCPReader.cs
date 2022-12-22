@@ -174,7 +174,7 @@ namespace Cwipc
                         Timedelta receiveDuration = (Timedelta)(receiveStopTime - receiveMidTime).TotalMilliseconds;
 
                         NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
-                        mc.info.timestamp = timestamp;
+                        mc.metadata.timestamp = timestamp;
                         System.Runtime.InteropServices.Marshal.Copy(data, 0, mc.pointer, dataSize);
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);

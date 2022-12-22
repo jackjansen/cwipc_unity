@@ -345,6 +345,7 @@ namespace Cwipc
                 pc = cwipc.readdump(nextFilename);
             }
             if (pc == null) return;
+            pc.metadata.filename = nextFilename;
             if (parent.newTimestamps) {
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp timestamp = (Timestamp)sinceEpoch.TotalMilliseconds;

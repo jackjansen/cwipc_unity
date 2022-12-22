@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.11] - 2022-12-22
+
+FrameInfo renamed to FrameMetadata, contains prerecorded reader filenames, accessible from various places.
+
 ## [0.9.10] - 2022-12-21
 
 Allow switching PrerecordedPointCloudReader source by setting new value in dirName attribute

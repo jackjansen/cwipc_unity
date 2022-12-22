@@ -48,7 +48,9 @@ namespace Cwipc
         [Tooltip("True if no pointcloud data is being received")]
         [SerializeField] bool dataIsMissing = false;
         [Tooltip("Timestamp of most recent pointcloud (system clock)")]
-        [SerializeField] Timestamp timestampMostRecentReception;
+        [SerializeField] public Timestamp timestampMostRecentReception;
+        [Tooltip("Metadata of most recent pointcloud")]
+        [SerializeField] public FrameMetadata? metadataMostRecentReception;
         [Tooltip("Number of points in most recent pointcloud")]
         [SerializeField] int pointCountMostRecentReception;
         [Tooltip("Number of points in most recent pointcloud")]
@@ -135,6 +137,7 @@ namespace Cwipc
             if (fresh)
             {
                 timestampMostRecentReception = now;
+                metadataMostRecentReception = preparer.currentMetadata;
                 if (dataIsMissing)
                 {
 #if CWIPC_WITH_LOGGING

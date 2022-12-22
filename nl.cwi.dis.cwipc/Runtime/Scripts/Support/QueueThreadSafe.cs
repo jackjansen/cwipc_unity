@@ -191,7 +191,7 @@ namespace Cwipc
             BaseMemoryChunk head = _Peek();
             if (head != null)
             {
-                Timestamp rv = (Timestamp)head.info.timestamp;
+                Timestamp rv = (Timestamp)head.metadata.timestamp;
                 if (rv == 0) rv = zeroReturn;
                 return rv;
             }
@@ -250,7 +250,7 @@ namespace Cwipc
                 lock (queue)
                 {
                     item = queue.Dequeue();
-                    latestTimestampReturned = item.info.timestamp;
+                    latestTimestampReturned = item.metadata.timestamp;
                 }
                 empty.Release();
                 return item;
@@ -280,7 +280,7 @@ namespace Cwipc
                     lock (queue)
                     {
                         item = queue.Dequeue();
-                        latestTimestampReturned = item.info.timestamp;
+                        latestTimestampReturned = item.metadata.timestamp;
                     }
                     empty.Release();
                     return item;
@@ -316,7 +316,7 @@ namespace Cwipc
                 empty.Wait(isClosed.Token);
                 lock (queue)
                 {
-                    latestTimestamp = item.info.timestamp;
+                    latestTimestamp = item.metadata.timestamp;
                     if (latestTimestamp == 0)
                     {
 #if CWIPC_WITH_LOGGING
@@ -361,7 +361,7 @@ namespace Cwipc
                         }
                         empty.Wait(isClosed.Token);
                     }
-                    latestTimestamp = item.info.timestamp;
+                    latestTimestamp = item.metadata.timestamp;
                     if (latestTimestamp == 0)
                     {
 #if CWIPC_WITH_LOGGING

@@ -13,7 +13,8 @@ namespace Cwipc
     ///
     /// Currently very much modeled after what Dash implementation in VRTogether needed.
     /// </summary>
-    public struct FrameInfo
+    [Serializable]
+    public class FrameMetadata
     {
         /// <summary>
         /// Presentation timestamp (milliseconds).
@@ -28,6 +29,10 @@ namespace Cwipc
         /// Length of dsi.
         /// </summary>
         public int dsi_size;
+        /// <summary>
+        /// For pointclouds read from file: the filename it was read from.
+        /// </summary>
+        public string filename;
     }
 
     /// <summary>
@@ -82,7 +87,7 @@ namespace Cwipc
         /// <summary>
         /// Frame metadata, if this is a media frame.
         /// </summary>
-        public FrameInfo info;
+        public FrameMetadata metadata;
         public int length { get; protected set; }
 
         protected BaseMemoryChunk(IntPtr _pointer)

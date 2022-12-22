@@ -39,6 +39,15 @@ namespace Cwipc
             }
         }
 
+        public override FrameMetadata? currentMetadata
+        {
+            get
+            {
+                if (currentPointCloud == null) return null;
+                return currentPointCloud.metadata;
+            }
+        }
+
         private void Start()
         {
             myQueue = new QueueThreadSafe($"{Name()}.queue");
