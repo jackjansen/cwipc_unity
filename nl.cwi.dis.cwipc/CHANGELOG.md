@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.0] - 2022-12-28
+
+Upped minimum Unity version to 2021.3. Turns out we are dependent on something too modern for 2019.3
+
 ## [0.9.11] - 2022-12-22
 
 FrameInfo renamed to FrameMetadata, contains prerecorded reader filenames, accessible from various places.
