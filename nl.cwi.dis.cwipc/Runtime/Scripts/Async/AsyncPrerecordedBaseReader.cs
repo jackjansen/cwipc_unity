@@ -59,13 +59,21 @@ namespace Cwipc
         public bool newTimestamps = false;
         public bool readPlyFiles;
         public float frameRate;
-        public bool loop = true;
+        public int remainingLoopCount = -1;
         public bool multireader = false;
         
-        public AsyncPrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base(null)
+        public AsyncPrerecordedBaseReader(string directory, float _voxelSize, float _frameRate, int loopCount=0) : base(null)
         {
             voxelSize = _voxelSize;
             frameRate = _frameRate;
+            if (loopCount <= 0)
+            {
+                remainingLoopCount = -1;
+            }
+            else
+            {
+                remainingLoopCount = loopCount;
+            }
 
             baseDirectory = directory;
             _InitFromConfigFile(directory);
@@ -218,6 +226,7 @@ namespace Cwipc
         {
             dirname = _dirname;
             subdir = _subdir;
+            parent = _parent;
             if (_outQueue == null)
             {
                 throw new System.Exception($"{Name()}: outQueue is null");
@@ -226,7 +235,6 @@ namespace Cwipc
             {
                 throw new System.Exception($"{Name()}: only single Add() allowed");
             }
-            parent = _parent;
             positionCounter = parent.sharedCounter;
             positionCounter.Subscribe();
             thread_index = _index;
@@ -328,7 +336,18 @@ namespace Cwipc
                 Debug.Log($"{Name()}: xxxjack Update() called while already stopping");
                 return;
             }
-            if (!parent.loop && curIndex >= filenames.Length) return;
+            if (curIndex > 0 && curIndex % filenames.Length == 0 && parent.remainingLoopCount > 0)
+            {
+                parent.remainingLoopCount--;
+                Debug.Log($"{Name()}: end of loop, {parent.remainingLoopCount} more");
+                if (parent.remainingLoopCount == 0)
+                {
+                    outQueue?.Close();
+                    out2Queue?.Close();
+                    filenames = null;
+                    return;
+                }
+            }
             curIndex = curIndex % filenames.Length;
             var nextFilename = System.IO.Path.Combine(dirname, subdir, filenames[curIndex]);
 
