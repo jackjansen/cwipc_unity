@@ -32,6 +32,7 @@ namespace Cwipc
         private double statsInterval = 10;
         private static System.IO.StreamWriter statsStream;
         private bool usesDefaultInterval;
+        private static bool muted = false;
 
         /// <summary>
         /// Call this static method early during initialization to configure Statistics logger.
@@ -54,6 +55,12 @@ namespace Cwipc
             }
             DateTime now = DateTime.Now;
             globalStatsLastTime = now;
+            if (statsOutputFile == "-")
+            {
+                muted = true;
+                Debug.Log("stats: muted=1");
+                return;
+            }
             if (statsOutputFile != null && statsOutputFile != "")
             {
                 string sfn = statsOutputFile;
@@ -154,6 +161,7 @@ namespace Cwipc
         /// <param name="s">The name=value string</param>
         public static void Output(string name, string s)
         {
+            if (muted) return;
             if (!initialized) Initialize();
             lock (lockObj)
             {
