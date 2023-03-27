@@ -171,17 +171,28 @@ namespace Cwipc
 #if VRT_WITH_STATS
             stats.statsUpdate(pc.count(), pc.cellsize(), downsampleDuration, didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
 #endif
-            mostRecentPC?.free();
-            mostRecentPC = pc;
+            lock(this)
+            {
+                mostRecentPC?.free();
+                mostRecentPC = pc;
+            }
         }
 
         public Vector3 GetPosition()
         {
-            if (mostRecentPC == null)
+            cwipc.pointcloud pc = null;
+            lock (this)
+            {
+                pc = mostRecentPC;
+                mostRecentPC = null;
+            }
+            if (pc == null)
             {
                 return Vector3.zero;
             }
-            Vector3 rv = ComputePosition(mostRecentPC);
+        
+            Vector3 rv = ComputePosition(pc);
+            pc.free();
             return rv;
         }
 
