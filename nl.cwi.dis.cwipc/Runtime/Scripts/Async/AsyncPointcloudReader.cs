@@ -20,6 +20,9 @@ namespace Cwipc
         protected QueueThreadSafe out2Queue;
         protected bool dontWait = false;
         protected float[] bbox;
+        protected bool positionRequested = false;
+        public Vector3 position;
+        public bool positionValid = false;
 
         protected AsyncPointCloudReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
@@ -104,6 +107,10 @@ namespace Cwipc
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
+            if (positionRequested)
+            {
+                ComputePosition(pc);
+            }
             OptionalProcessing(pc);
             Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
@@ -165,6 +172,84 @@ namespace Cwipc
             stats.statsUpdate(pc.count(), pc.cellsize(), downsampleDuration, didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
 #endif
             pc.free();
+        }
+
+        public void WantPosition()
+        {
+            positionValid = false;
+            positionRequested = true;
+        }
+
+        protected void ComputePosition(cwipc.pointcloud pc)
+        {
+            cwipc.pointcloud pcTmp;
+            bool pcTmpAllocated = false;
+            // Find bounding box and centroid of the point cloud
+            Vector3 corner1, corner2, centroid;
+            if (!AnalysePointcloud(pc, out corner1, out corner2, out centroid))
+            {
+                return;
+            }
+            // If the bounding box is far too big we should limit it and recompute,
+            // to get rid of outliers
+            Vector3 bbSize = corner2 - corner1;
+            if (bbSize.x > 1 || bbSize.y > 1)
+            {
+                corner1.x = centroid.x - 0.5f;
+                corner1.z = centroid.z - 0.5f;
+                corner2.x = centroid.x + 0.5f;
+                corner2.z = centroid.z + 0.5f;
+                pcTmp = cwipc.crop(pc, corner1, corner2);
+                pcTmpAllocated = true;
+                AnalysePointcloud(pcTmp, out corner1, out corner2, out centroid);
+            } 
+            else
+            {
+                pcTmp = pc;
+            }
+            // limit pointcloud to torso
+            // recompute centroid
+            positionValid = true;
+            positionRequested = false;
+        }
+
+        protected bool AnalysePointcloud(cwipc.pointcloud pc, out Vector3 corner1, out Vector3 corner2, out Vector3 centroid)
+        {
+            cwipc.PointCloudPoint[] points = pc.get_points();
+            if (points == null || points.Length == 0)
+            {
+                corner1 = Vector3.zero;
+                corner2 = Vector3.zero;
+                centroid = Vector3.zero;
+                return false;
+            }
+            float minx = points[0].point.x;
+            float maxx = points[0].point.x;
+            float miny = points[0].point.y;
+            float maxy = points[0].point.y;
+            float minz = points[0].point.z;
+            float maxz = points[0].point.z;
+            float sumx = 0;
+            float sumy = 0;
+            float sumz = 0;
+            foreach(var p in points)
+            {
+                Vector3 point = p.point;
+                if (point.x < minx) minx = point.x;
+                if (point.x > maxx) maxx = point.x;
+                if (point.y < miny) miny = point.y;
+                if (point.y > maxy) maxy = point.y;
+                if (point.z < minz) minz = point.z;
+                if (point.z > maxz) maxz = point.z;
+                sumx += point.x;
+                sumy += point.y;
+                sumz += point.z;
+            }
+            corner1 = new Vector3(minx, miny, minz);
+            corner2 = new Vector3(maxx, maxy, maxz);
+            int nPoints = points.Length;
+            centroid = new Vector3(sumx / nPoints, sumy / nPoints, sumz / nPoints);
+            return true;
         }
 
 #if VRT_WITH_STATS
