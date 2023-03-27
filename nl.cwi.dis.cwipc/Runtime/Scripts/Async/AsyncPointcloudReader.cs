@@ -20,10 +20,8 @@ namespace Cwipc
         protected QueueThreadSafe out2Queue;
         protected bool dontWait = false;
         protected float[] bbox;
-        protected bool positionRequested = false;
-        public Vector3 position;
-        public bool positionValid = false;
-
+        private cwipc.pointcloud mostRecentPC = null;
+        
         protected AsyncPointCloudReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             outQueue = _outQueue;
@@ -73,6 +71,11 @@ namespace Cwipc
             base.Stop();
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
+            if (mostRecentPC != null)
+            {
+                mostRecentPC.free();
+                mostRecentPC = null;
+            }
         }
 
         public override void AsyncOnStop()
@@ -107,10 +110,7 @@ namespace Cwipc
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
-            if (positionRequested)
-            {
-                ComputePosition(pc);
-            }
+           
             OptionalProcessing(pc);
             Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
@@ -171,16 +171,21 @@ namespace Cwipc
 #if VRT_WITH_STATS
             stats.statsUpdate(pc.count(), pc.cellsize(), downsampleDuration, didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
 #endif
-            pc.free();
+            mostRecentPC?.free();
+            mostRecentPC = pc;
         }
 
-        public void WantPosition()
+        public Vector3 GetPosition()
         {
-            positionValid = false;
-            positionRequested = true;
+            if (mostRecentPC == null)
+            {
+                return Vector3.zero;
+            }
+            Vector3 rv = ComputePosition(mostRecentPC);
+            return rv;
         }
 
-        protected void ComputePosition(cwipc.pointcloud pc)
+        protected Vector3 ComputePosition(cwipc.pointcloud pc)
         {
             cwipc.pointcloud pcTmp;
             bool pcTmpAllocated = false;
@@ -188,7 +193,7 @@ namespace Cwipc
             Vector3 corner1, corner2, centroid;
             if (!AnalysePointcloud(pc, out corner1, out corner2, out centroid))
             {
-                return;
+                return Vector3.zero;
             }
             // If the bounding box is far too big we should limit it and recompute,
             // to get rid of outliers
@@ -209,8 +214,13 @@ namespace Cwipc
             }
             // limit pointcloud to torso
             // recompute centroid
-            positionValid = true;
-            positionRequested = false;
+            Vector3 rv = centroid;
+            rv.y = 0;
+            if (pcTmpAllocated)
+            {
+                pcTmp.free();
+            }
+            return rv;
         }
 
         protected bool AnalysePointcloud(cwipc.pointcloud pc, out Vector3 corner1, out Vector3 corner2, out Vector3 centroid)
