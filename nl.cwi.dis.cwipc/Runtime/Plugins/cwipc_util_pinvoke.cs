@@ -1142,6 +1142,25 @@ namespace Cwipc
             if (rvPtr == IntPtr.Zero) return null;
             return new pointcloud(rvPtr);
         }
+        /// <summary>
+        /// Crop a pointcloud to a bounding cube.
+        /// A new pointcloud is returned containing only the points that fall within the
+        /// bounding box.
+        /// </summary>
+        /// <param name="pc">Source pointcloud</param>
+        /// <param name="bbox">6 floats specifying the cube</param>
+        /// <returns>A new pointcloud</returns>
+        public static pointcloud crop(pointcloud pc, Vector3 corner1, Vector3 corner2)
+        {
+            float[] bbox = new float[6];
+            bbox[0] = corner1.x;
+            bbox[1] = corner2.x;
+            bbox[2] = corner1.y;
+            bbox[3] = corner2.y;
+            bbox[4] = corner1.z;
+            bbox[5] = corner2.z;
+            return crop(pc, bbox);
+        }
 
         /// <summary>
         /// Combine two pointclouds.
