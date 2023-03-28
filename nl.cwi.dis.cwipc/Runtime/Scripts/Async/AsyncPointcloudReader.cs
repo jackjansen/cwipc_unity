@@ -227,6 +227,11 @@ namespace Cwipc
             // recompute centroid
             Vector3 rv = centroid;
             rv.y = 0;
+            bool mirrorX = true; // Should this be an attribute so we can also opt for mirroring Z?
+            if (mirrorX)
+            {
+                rv.x = -rv.x;
+            }
             if (pcTmpAllocated)
             {
                 pcTmp.free();
