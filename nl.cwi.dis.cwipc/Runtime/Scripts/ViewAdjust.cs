@@ -2,6 +2,7 @@ using Cwipc;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -9,102 +10,177 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs;
 
 public class ViewAdjust : LocomotionProvider
 {
-    [Tooltip("The object of which the height is adjusted, and that resetting origin will modify")]
-    [SerializeField] GameObject cameraOffset;
 
-    [Tooltip("Toplevel object of this player, usually the XROrigin, for resetting origin")]
-    [SerializeField] GameObject player;
+	[Tooltip("The object of which the height is adjusted, and that resetting origin will modify")]
+	[SerializeField] GameObject cameraOffset;
 
-    [Tooltip("Point cloud pipeline")]
-    [SerializeField] PointCloudPipelineSimple pointCloudPipeline;
+	[Tooltip("Toplevel object of this player, usually the XROrigin, for resetting origin")]
+	[SerializeField] GameObject player;
 
-    [Tooltip("Camera used for determining zero position and orientation, for resetting origin")]
-    [SerializeField] Camera playerCamera;
+	[Tooltip("Point cloud pipeline")]
+	[SerializeField] PointCloudPipelineSimple pointCloudPipeline;
 
-    [Tooltip("Multiplication factor for height adjustment")]
-    [SerializeField] float heightFactor = 1;
+	[Tooltip("Camera used for determining zero position and orientation, for resetting origin")]
+	[SerializeField] Camera playerCamera;
 
-    [Tooltip("The Input System Action that will be used to change view height. Must be a Value Vector2 Control of which y is used.")]
-    [SerializeField] InputActionProperty m_ViewHeightAction;
+	[Tooltip("Multiplication factor for height adjustment")]
+	[SerializeField] float heightFactor = 1;
 
-    [Tooltip("Use Reset Origin action. Unset if ResetOrigin() is called from a script.")]
-    [SerializeField] bool useResetOriginAction = true;
+	[Tooltip("Reset viewpoint height when resetting position (otherwise height is untouched)")]
+	[SerializeField] bool resetHeightWithPosition = false;
+	[Tooltip("Callback done after view has been adjusted")]
+	public UnityEvent viewAdjusted;
 
-    [Tooltip("The Input System Action that will be used to reset view origin.")]
-    [SerializeField] InputActionProperty m_resetOriginAction;
+	[Tooltip("The Input System Action that will be used to change view height. Must be a Value Vector2 Control of which y is used.")]
+	[SerializeField] InputActionProperty m_ViewHeightAction;
 
-    [Tooltip("Debug output")]
-    [SerializeField] bool debug = false;
+	[Tooltip("Use Reset Origin action. Unset if ResetOrigin() is called from a script.")]
+	[SerializeField] bool useResetOriginAction = true;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	[Tooltip("The Input System Action that will be used to reset view origin.")]
+	[SerializeField] InputActionProperty m_resetOriginAction;
 
-    // Update is called once per frame
-    void Update()
-    {
-        Vector2 heightInput = m_ViewHeightAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
-        float deltaHeight = heightInput.y * heightFactor;
-        if (deltaHeight != 0 && BeginLocomotion())
-        {
-            cameraOffset.transform.position += new Vector3(0, deltaHeight, 0);
-            EndLocomotion();
-        }
-        if (useResetOriginAction && m_resetOriginAction != null)
-        {
-            bool doResetOrigin = m_resetOriginAction.action.ReadValue<float>() >= 0.5;
-            if (doResetOrigin)
-            {
-                ResetOrigin();
-            }
-        }
-    }
+	[Tooltip("Position indicator, visible while adjusting position")]
+	[SerializeField] GameObject positionIndicator;
 
-    void ResetOrigin()
-    {
-        if (BeginLocomotion())
-        {
-            Debug.Log("ViewAdjust: ResetOrigin");
-            // Rotation of camera relative to the player
-            float cameraToPlayerRotationY = playerCamera.transform.rotation.eulerAngles.y - player.transform.rotation.eulerAngles.y;
-            if (debug) Debug.Log($"ViewAdjust: camera rotation={cameraToPlayerRotationY}");
-            // Apply the inverse rotation to cameraOffset to make the camera point in the same direction as the player
-            cameraOffset.transform.Rotate(0, -cameraToPlayerRotationY, 0);
-            if (pointCloudPipeline != null)
-            {
-                // Now the camera is pointing forward from the users point of view.
-                // Rotate the point cloud so it is in the same direction.
-                float cameraToPointcloudRotationY = playerCamera.transform.rotation.eulerAngles.y - pointCloudPipeline.transform.rotation.eulerAngles.y;
-                pointCloudPipeline.transform.Rotate(0, cameraToPointcloudRotationY, 0);
-            }
-            // Next set correct position on the camera
-            Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
-            moveXZ.y = 0;
-            if (debug) Debug.Log($"ResetOrigin: move cameraOffset by {moveXZ} to worldpos={playerCamera.transform.position}");
-            cameraOffset.transform.position -= moveXZ;
-            // Finally adjust the pointcloud position
-            if (pointCloudPipeline != null)
-            {
-                Vector3 pcOriginLocal = pointCloudPipeline.GetPosition();
-                if (debug) Debug.Log($"ViewAdjust: adjust pointcloud to {pcOriginLocal}");
-                pointCloudPipeline.transform.localPosition = -pcOriginLocal;
-               
-            }
-            EndLocomotion();
-        }
-    }
+	[Tooltip("Best forward direction indicator, visible while adjusting position")]
+	[SerializeField] GameObject forwardIndicator;
 
-    protected void OnEnable()
-    {
-        m_ViewHeightAction.EnableDirectAction();
-        if (useResetOriginAction) m_resetOriginAction.EnableDirectAction();
-    }
+	[Tooltip("How many seconds is the position indicator visible?")]
+	[SerializeField] float positionIndicatorDuration = 5f;
 
-    protected void OnDisable()
-    {
-        m_ViewHeightAction.DisableDirectAction();
-        if (useResetOriginAction) m_resetOriginAction.DisableDirectAction();
-    }
+	float positionIndicatorInvisibleAfter = 0;
+
+	[Tooltip("Debug output")]
+	[SerializeField] bool debug = false;
+
+	// Start is called before the first frame update
+	void Start()
+	{
+		optionalHideIndicators();
+	}
+
+	private void optionalHideIndicators()
+	{
+		if (positionIndicator != null && positionIndicator.activeSelf && Time.time > positionIndicatorInvisibleAfter) positionIndicator.SetActive(false);
+		if (forwardIndicator != null && forwardIndicator.activeSelf && Time.time > positionIndicatorInvisibleAfter) forwardIndicator.SetActive(false);
+	}
+
+	// Update is called once per frame
+	void Update()
+	{
+		optionalHideIndicators();
+		Vector2 heightInput = m_ViewHeightAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
+		float deltaHeight = heightInput.y * heightFactor;
+		if (deltaHeight != 0 && BeginLocomotion())
+		{
+			ShowPositionIndicator();
+			cameraOffset.transform.position += new Vector3(0, deltaHeight, 0);
+			// Note: we don't save height changes. But if you reset view position
+			// afterwards we do also save height changes.
+			EndLocomotion();
+		}
+		if (useResetOriginAction && m_resetOriginAction != null)
+		{
+			bool doResetOrigin = m_resetOriginAction.action.ReadValue<float>() >= 0.5;
+			if (doResetOrigin)
+			{
+				ResetOrigin();
+			}
+		}
+	}
+
+	private void ShowPositionIndicator()
+	{
+		if (positionIndicator != null)
+		{
+			positionIndicator.SetActive(true);
+		}
+		if (forwardIndicator != null)
+		{
+			forwardIndicator.SetActive(true);
+		}
+		positionIndicatorInvisibleAfter = Time.time + positionIndicatorDuration;
+	}
+
+	/// <summary>
+	/// The user wants the current head position, (X,Z) only, to be the (0, Y, 0), right above the XROrigin.
+	/// </summary>
+	public void ResetOrigin()
+	{
+		ShowPositionIndicator();
+		if (BeginLocomotion())
+		{
+			Debug.Log("ViewAdjust: ResetOrigin");
+			// Rotation of camera relative to the player
+			float cameraToPlayerRotationY = playerCamera.transform.rotation.eulerAngles.y - player.transform.rotation.eulerAngles.y;
+			if (debug) Debug.Log($"ViewAdjust: camera rotation={cameraToPlayerRotationY}");
+			// Apply the inverse rotation to cameraOffset to make the camera point in the same direction as the player
+			cameraOffset.transform.Rotate(0, -cameraToPlayerRotationY, 0);
+			if (pointCloudPipeline != null)
+			{
+				// Now the camera is pointing forward from the users point of view.
+				// Rotate the point cloud so it is in the same direction.
+				float cameraToPointcloudRotationY = playerCamera.transform.rotation.eulerAngles.y - pointCloudPipeline.transform.rotation.eulerAngles.y;
+				pointCloudPipeline.transform.Rotate(0, cameraToPointcloudRotationY, 0);
+			}
+			// Next set correct position on the camera
+			Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
+			if (resetHeightWithPosition)
+			{
+				moveXZ.y = cameraOffset.transform.position.y;
+			}
+			else
+			{
+				moveXZ.y = 0;
+			}
+			if (debug) Debug.Log($"ResetOrigin: move cameraOffset by {moveXZ} to worldpos={playerCamera.transform.position}");
+			cameraOffset.transform.position -= moveXZ;
+			// Finally adjust the pointcloud position
+			if (pointCloudPipeline != null)
+			{
+				Vector3 pcOriginLocal = pointCloudPipeline.GetPosition();
+				if (debug) Debug.Log($"ViewAdjust: adjust pointcloud to {pcOriginLocal}");
+				pointCloudPipeline.transform.localPosition = -pcOriginLocal;
+			   
+			}
+			if (playerController != null)
+			{
+				playerController.SaveCameraTransform();
+
+			}
+			viewAdjusted.Invoke();
+			EndLocomotion();
+		}
+	}
+
+	public void HigherView(float deltaHeight=0.02f)
+	{
+		ShowPositionIndicator();
+		if (deltaHeight != 0 && BeginLocomotion())
+		{
+			ShowPositionIndicator();
+			cameraOffset.transform.position += new Vector3(0, deltaHeight, 0);
+			if (debugLogging) Debug.Log($"ViewAdjust: new height={cameraOffset.transform.position.y}");
+			viewAdjusted.Invoke();
+			EndLocomotion();
+		}
+	}
+
+	public void LowerView()
+	{
+		HigherView(-0.02f);
+	}
+
+	protected void OnEnable()
+	{
+		m_ViewHeightAction.EnableDirectAction();
+		if (useResetOriginAction) m_resetOriginAction.EnableDirectAction();
+	}
+
+	protected void OnDisable()
+	{
+		m_ViewHeightAction.DisableDirectAction();
+		if (useResetOriginAction) m_resetOriginAction.DisableDirectAction();
+	}
 }
