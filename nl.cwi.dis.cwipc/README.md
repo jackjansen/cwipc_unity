@@ -39,8 +39,8 @@ pointcloud suite.
 You should probably install the Simple Samples and (if you want to use
 point clouds in VR) the VR Samples:
 
-- Documentation for [Simple Samples](Samples~/Simple/readme.md)
-- Documentation for [VR Samples](Samples~/VR/readme.md)
+- Documentation for [Simple Samples](Samples~/Simple point cloud samples/readme.md)
+- Documentation for [VR Samples](Samples~/VR point cloud extensions/readme.md)
 
 ## Documentation
 
