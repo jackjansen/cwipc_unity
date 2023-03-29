@@ -1,8 +1,13 @@
 # Changelog
 
+## [0.12.0] - 2023-03-29
+
+ViewAdjust has moved from Samples/VR to Runtime and adjusts self-pointcloud-playback.
+Samples renamed.
+
 ## [0.11.0] - 2023-02-26
 
-Added cwipc_playback prefab and PointCloudPlayback_script to allow more control over prerecorded playback.
+Added cwipc\_playback prefab and PointCloudPlayback script to allow more control over prerecorded playback.
 Rendering point clouds on Mac should be improved.
 
 ## [0.10.0] - 2022-12-28
