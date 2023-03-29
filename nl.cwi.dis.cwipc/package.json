@@ -10,12 +10,12 @@
 		{
 			"displayName": "Simple point cloud samples",
 			"description": "Show a stream of point clouds from a depth camera or other source, or do a 2-computer session with both users represented as point clouds",
-			"path": "Samples~/Simple"
+			"path": "Samples~/Simple point cloud samples"
 		},
 		{
 			"displayName": "VR point cloud extensions",
 			"description": "A two user interactve VR session, using optional HMD and controllers. Needs simple samples.",
-			"path": "Samples~/VR"
+			"path": "Samples~/VR point cloud extensions"
 		}
 	]
 }
