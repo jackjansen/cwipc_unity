@@ -1,3 +1,4 @@
+using Cwipc;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,10 @@ public class ViewAdjust : LocomotionProvider
     [Tooltip("Toplevel object of this player, usually the XROrigin, for resetting origin")]
     [SerializeField] GameObject player;
 
-    [Tooltip("Camera used for determining zero position, for resetting origin")]
+    [Tooltip("Point cloud pipeline")]
+    [SerializeField] PointCloudPipelineSimple pointCloudPipeline;
+
+    [Tooltip("Camera used for determining zero position and orientation, for resetting origin")]
     [SerializeField] Camera playerCamera;
 
     [Tooltip("Multiplication factor for height adjustment")]
@@ -28,6 +32,9 @@ public class ViewAdjust : LocomotionProvider
 
     [Tooltip("The Input System Action that will be used to reset view origin.")]
     [SerializeField] InputActionProperty m_resetOriginAction;
+
+    [Tooltip("Debug output")]
+    [SerializeField] bool debug = false;
 
     // Start is called before the first frame update
     void Start()
@@ -59,15 +66,32 @@ public class ViewAdjust : LocomotionProvider
     {
         if (BeginLocomotion())
         {
-            Debug.Log("xxxjack should reset origin");
-            float rotationY = playerCamera.transform.rotation.eulerAngles.y - player.transform.rotation.eulerAngles.y;
-            cameraOffset.transform.Rotate(0, -rotationY, 0);
-            //Vector3 moveXZ = playerCamera.transform.position - cameraOffset.transform.position;
+            Debug.Log("ViewAdjust: ResetOrigin");
+            // Rotation of camera relative to the player
+            float cameraToPlayerRotationY = playerCamera.transform.rotation.eulerAngles.y - player.transform.rotation.eulerAngles.y;
+            if (debug) Debug.Log($"ViewAdjust: camera rotation={cameraToPlayerRotationY}");
+            // Apply the inverse rotation to cameraOffset to make the camera point in the same direction as the player
+            cameraOffset.transform.Rotate(0, -cameraToPlayerRotationY, 0);
+            if (pointCloudPipeline != null)
+            {
+                // Now the camera is pointing forward from the users point of view.
+                // Rotate the point cloud so it is in the same direction.
+                float cameraToPointcloudRotationY = playerCamera.transform.rotation.eulerAngles.y - pointCloudPipeline.transform.rotation.eulerAngles.y;
+                pointCloudPipeline.transform.Rotate(0, cameraToPointcloudRotationY, 0);
+            }
+            // Next set correct position on the camera
             Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
             moveXZ.y = 0;
-            Debug.Log($"xxxjack should move to {moveXZ} worldpos={playerCamera.transform.position}");
+            if (debug) Debug.Log($"ResetOrigin: move cameraOffset by {moveXZ} to worldpos={playerCamera.transform.position}");
             cameraOffset.transform.position -= moveXZ;
-
+            // Finally adjust the pointcloud position
+            if (pointCloudPipeline != null)
+            {
+                Vector3 pcOriginLocal = pointCloudPipeline.GetPosition();
+                if (debug) Debug.Log($"ViewAdjust: adjust pointcloud to {pcOriginLocal}");
+                pointCloudPipeline.transform.localPosition = -pcOriginLocal;
+               
+            }
             EndLocomotion();
         }
     }
