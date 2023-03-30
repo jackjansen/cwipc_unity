@@ -424,37 +424,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 210523093159407276, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 412585988363098140, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-      propertyPath: forwardIndicator
-      value: 
-      objectReference: {fileID: 765728498}
-    - target: {fileID: 412585988363098140, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-      propertyPath: forwardIndicatorCountdown
-      value: 
-      objectReference: {fileID: 765728495}
-    - target: {fileID: 1718427251635656224, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-      propertyPath: m_Name
-      value: Text
-      objectReference: {fileID: 0}
     - target: {fileID: 1911508270948310340, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: sourceType
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 2928787280192262188, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-      propertyPath: m_FontData.m_Font
-      value: 
-      objectReference: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 2942035106827000202, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: m_Name
       value: cwipc_avatar_self_xr
       objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000202, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000207, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: m_RootOrder
@@ -500,10 +480,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5945865151658966578, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 765728497}
     - target: {fileID: 6051466313898402052, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: compressedOutputStreams
       value: 0
@@ -520,38 +496,11 @@ PrefabInstance:
       propertyPath: Preparer_CellSizeFactor
       value: 1.5
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1191943743962977146, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
 --- !u!1 &765728494 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2942035106827000202, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-  m_PrefabInstance: {fileID: 765728493}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &765728495 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2928787280192262188, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-  m_PrefabInstance: {fileID: 765728493}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &765728496 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1718427251635656224, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-  m_PrefabInstance: {fileID: 765728493}
-  m_PrefabAsset: {fileID: 0}
---- !u!20 &765728497 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 412585989401117516, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
-  m_PrefabInstance: {fileID: 765728493}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &765728498 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 210523093159407276, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
   m_PrefabInstance: {fileID: 765728493}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &765728499
@@ -567,42 +516,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orchestrator: {fileID: 839301505}
---- !u!114 &765728500
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 765728496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 16
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 40
-    m_Alignment: 4
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 'Stand straight facing here,
-
-    arms by your side.'
 --- !u!1 &839301502
 GameObject:
   m_ObjectHideFlags: 0
