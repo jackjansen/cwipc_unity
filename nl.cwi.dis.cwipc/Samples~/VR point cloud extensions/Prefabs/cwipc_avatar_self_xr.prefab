@@ -795,6 +795,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2942035106827000202}
     - target: {fileID: 4860176228497449861, guid: 5553f6bccdc163740a900449b94a4183, type: 3}
+      propertyPath: pointCloudGO
+      value: 
+      objectReference: {fileID: 2391882678302957417}
+    - target: {fileID: 4860176228497449861, guid: 5553f6bccdc163740a900449b94a4183, type: 3}
       propertyPath: forwardIndicator
       value: 
       objectReference: {fileID: 210523093159407276}
