@@ -92,6 +92,14 @@ namespace Cwipc
             {
                 Debug.LogError($"{Name()}: uses shader that is not supported on this graphics card");
             }
+            if (started == null)
+            {
+                started = new UnityEvent();
+            }
+            if (finished == null)
+            {
+                finished = new UnityEvent();
+            }
             material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
 #if VRT_WITH_STATS
