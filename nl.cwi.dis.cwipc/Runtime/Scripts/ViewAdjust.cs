@@ -8,6 +8,7 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
 
+
 public class ViewAdjust : LocomotionProvider
 {
 
@@ -17,8 +18,8 @@ public class ViewAdjust : LocomotionProvider
 	[Tooltip("Toplevel object of this player, usually the XROrigin, for resetting origin")]
 	[SerializeField] GameObject player;
 
-	[Tooltip("Point cloud pipeline")]
-	[SerializeField] PointCloudPipelineSimple pointCloudPipeline;
+	[Tooltip("Point cloud pipeline GameObject")]
+	[SerializeField] GameObject pointCloudGO;
 
 	[Tooltip("Camera used for determining zero position and orientation, for resetting origin")]
 	[SerializeField] Camera playerCamera;
@@ -117,12 +118,15 @@ public class ViewAdjust : LocomotionProvider
 			if (debug) Debug.Log($"ViewAdjust: camera rotation={cameraToPlayerRotationY}");
 			// Apply the inverse rotation to cameraOffset to make the camera point in the same direction as the player
 			cameraOffset.transform.Rotate(0, -cameraToPlayerRotationY, 0);
+			IPointCloudPositionProvider pointCloudPipeline = null;
+			if (pointCloudGO != null) pointCloudPipeline = pointCloudGO.GetComponentInChildren<IPointCloudPositionProvider>();
 			if (pointCloudPipeline != null)
 			{
 				// Now the camera is pointing forward from the users point of view.
 				// Rotate the point cloud so it is in the same direction.
-				float cameraToPointcloudRotationY = playerCamera.transform.rotation.eulerAngles.y - pointCloudPipeline.transform.rotation.eulerAngles.y;
-				pointCloudPipeline.transform.Rotate(0, cameraToPointcloudRotationY, 0);
+				float cameraToPointcloudRotationY = playerCamera.transform.rotation.eulerAngles.y - pointCloudGO.transform.rotation.eulerAngles.y;
+                if (debug) Debug.Log($"ViewAdjust: pointcloud rotation={cameraToPointcloudRotationY}");
+                pointCloudGO.transform.Rotate(0, cameraToPointcloudRotationY, 0);
 			}
 			// Next set correct position on the camera
 			Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
@@ -141,13 +145,8 @@ public class ViewAdjust : LocomotionProvider
 			{
 				Vector3 pcOriginLocal = pointCloudPipeline.GetPosition();
 				if (debug) Debug.Log($"ViewAdjust: adjust pointcloud to {pcOriginLocal}");
-				pointCloudPipeline.transform.localPosition = -pcOriginLocal;
+				pointCloudGO.transform.localPosition = -pcOriginLocal;
 			   
-			}
-			if (playerController != null)
-			{
-				playerController.SaveCameraTransform();
-
 			}
 			viewAdjusted.Invoke();
 			EndLocomotion();
@@ -161,7 +160,7 @@ public class ViewAdjust : LocomotionProvider
 		{
 			ShowPositionIndicator();
 			cameraOffset.transform.position += new Vector3(0, deltaHeight, 0);
-			if (debugLogging) Debug.Log($"ViewAdjust: new height={cameraOffset.transform.position.y}");
+			if (debug) Debug.Log($"ViewAdjust: new height={cameraOffset.transform.position.y}");
 			viewAdjusted.Invoke();
 			EndLocomotion();
 		}

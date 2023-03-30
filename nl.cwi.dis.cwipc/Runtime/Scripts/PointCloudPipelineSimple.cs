@@ -11,7 +11,7 @@ namespace Cwipc
     /// There is always a renderer (MonoBehaviour), but it may be disabled by subclasses (before Start() is called).
     /// There is never a transmitter, but subclasses (such as PointCloudSelfPipelineSimple) may override that.
     /// </summary>
-    public class PointCloudPipelineSimple : MonoBehaviour
+    public class PointCloudPipelineSimple : MonoBehaviour, IPointCloudPositionProvider
     {
         public enum SourceType
         {

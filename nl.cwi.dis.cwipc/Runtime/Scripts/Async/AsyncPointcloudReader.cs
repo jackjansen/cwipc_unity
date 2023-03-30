@@ -10,7 +10,7 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public abstract class AsyncPointCloudReader : AsyncReader, ITileDescriptionProvider
+    public abstract class AsyncPointCloudReader : AsyncReader, ITileDescriptionProvider, IPointCloudPositionProvider
     {
         protected cwipc.source reader;
         public float voxelSize;
