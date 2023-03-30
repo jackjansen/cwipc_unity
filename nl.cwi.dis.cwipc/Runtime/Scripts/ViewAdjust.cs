@@ -8,7 +8,6 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
 
-
 public class ViewAdjust : LocomotionProvider
 {
 
@@ -44,10 +43,13 @@ public class ViewAdjust : LocomotionProvider
 	[Tooltip("Position indicator, visible while adjusting position")]
 	[SerializeField] GameObject positionIndicator;
 
-	[Tooltip("Best forward direction indicator, visible while adjusting position")]
-	[SerializeField] GameObject forwardIndicator;
+    [Tooltip("Best forward direction indicator, visible while adjusting position")]
+    [SerializeField] GameObject forwardIndicator;
+    
+	[Tooltip("Forward indicator countdown")]
+    [SerializeField] UnityEngine.UI.Text forwardIndicatorCountdown;
 
-	[Tooltip("How many seconds is the position indicator visible?")]
+    [Tooltip("How many seconds is the position indicator visible?")]
 	[SerializeField] float positionIndicatorDuration = 5f;
 
 	float positionIndicatorInvisibleAfter = 0;
@@ -91,15 +93,22 @@ public class ViewAdjust : LocomotionProvider
 		}
 	}
 
-	private void ShowPositionIndicator()
+	private void ShowPositionIndicator(string stage=null)
 	{
 		if (positionIndicator != null)
 		{
 			positionIndicator.SetActive(true);
 		}
-		if (forwardIndicator != null)
+		if (forwardIndicator != null && stage != null)
 		{
+			// We need to determine the direction of the point cloud capture Z axis and rotate
+			// the forward indicator so that is in that direction.
+			// xxxjack this is wrong, currently.
+			float angle = forwardIndicator.transform.rotation.y;
+			
+			forwardIndicator.transform.Rotate(0, angle, 0);
 			forwardIndicator.SetActive(true);
+			forwardIndicatorCountdown.text = stage;
 		}
 		positionIndicatorInvisibleAfter = Time.time + positionIndicatorDuration;
 	}
@@ -109,8 +118,31 @@ public class ViewAdjust : LocomotionProvider
 	/// </summary>
 	public void ResetOrigin()
 	{
-		ShowPositionIndicator();
-		if (BeginLocomotion())
+		StartCoroutine(_ResetOrigin());
+	}
+
+	private IEnumerator _ResetOrigin() {
+        IPointCloudPositionProvider pointCloudPipeline = null;
+        if (pointCloudGO != null) pointCloudPipeline = pointCloudGO.GetComponentInChildren<IPointCloudPositionProvider>();
+        yield return null;
+		if (pointCloudPipeline == null)
+		{
+			// Show the position indicator and reset the view point immedeately. 
+			ShowPositionIndicator();
+        }
+        else
+		{
+            // Show the countdown
+            ShowPositionIndicator(stage: "3");
+            yield return new WaitForSeconds(1);
+            ShowPositionIndicator(stage: "2");
+            yield return new WaitForSeconds(1);
+            ShowPositionIndicator(stage: "1");
+            yield return new WaitForSeconds(1);
+            ShowPositionIndicator(stage: "Click!");
+        }
+
+        if (BeginLocomotion())
 		{
 			Debug.Log("ViewAdjust: ResetOrigin");
 			// Rotation of camera relative to the player
@@ -118,8 +150,6 @@ public class ViewAdjust : LocomotionProvider
 			if (debug) Debug.Log($"ViewAdjust: camera rotation={cameraToPlayerRotationY}");
 			// Apply the inverse rotation to cameraOffset to make the camera point in the same direction as the player
 			cameraOffset.transform.Rotate(0, -cameraToPlayerRotationY, 0);
-			IPointCloudPositionProvider pointCloudPipeline = null;
-			if (pointCloudGO != null) pointCloudPipeline = pointCloudGO.GetComponentInChildren<IPointCloudPositionProvider>();
 			if (pointCloudPipeline != null)
 			{
 				// Now the camera is pointing forward from the users point of view.
