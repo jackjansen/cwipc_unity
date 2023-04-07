@@ -23,6 +23,9 @@ public class ViewAdjust : LocomotionProvider
 	[Tooltip("Camera used for determining zero position and orientation, for resetting origin")]
 	[SerializeField] Camera playerCamera;
 
+	[Tooltip("How many meters forward the camera should be positioned relative to player origin")]
+	[SerializeField] float cameraZFudgeFactor = 0;
+
 	[Tooltip("Multiplication factor for height adjustment")]
 	[SerializeField] float heightFactor = 1;
 
@@ -160,6 +163,7 @@ public class ViewAdjust : LocomotionProvider
 			}
 			// Next set correct position on the camera
 			Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
+			moveXZ.z += cameraZFudgeFactor;
 			if (resetHeightWithPosition)
 			{
 				moveXZ.y = cameraOffset.transform.position.y;
