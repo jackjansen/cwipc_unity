@@ -62,8 +62,16 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         PointCloudSelfPipelineTiled pipeline = selfPipeline.GetComponentInChildren<PointCloudSelfPipelineTiled>();
         AbstractPointCloudSink transmitter = pipeline?.transmitter;
         if (transmitter == null) Debug.LogError($"SampleTowUserSessionController: transmitter is null for {selfPipeline}");
-        transmitter.sinkType = AbstractPointCloudSink.SinkType.TCP;
-        transmitter.outputUrl = $"tcp://{firstHost}:4303";
+        if (useWebRTC)
+        {
+            transmitter.sinkType = AbstractPointCloudSink.SinkType.WebRTC;
+            transmitter.outputUrl = webRTCURL;
+        }
+        else
+        {
+            transmitter.sinkType = AbstractPointCloudSink.SinkType.TCP;
+            transmitter.outputUrl = $"tcp://{firstHost}:4303";
+        }
         transmitter.compressedOutputStreams = useCompression;
         Debug.Log($"SampleTwoUserSessionController: initialized self: transmitter on {firstHost}");
         //
@@ -102,8 +110,16 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
 
         PointCloudPipelineTiled receiver = otherPipeline.GetComponentInChildren<PointCloudPipelineTiled>();
         if (receiver == null) Debug.LogError($"SampleTowUserSessionController: receiver is null for {otherPipeline}");
-        receiver.sourceType = PointCloudPipelineTiled.SourceType.TCP;
-        receiver.inputUrl = $"tcp://{secondHost}:4303";
+        if (useWebRTC)
+        {
+            receiver.sourceType = PointCloudPipelineTiled.SourceType.WebRTC;
+            receiver.inputUrl = webRTCURL;
+        }
+        else
+        {
+            receiver.sourceType = PointCloudPipelineTiled.SourceType.TCP;
+            receiver.inputUrl = $"tcp://{secondHost}:4303";
+        }
         receiver.compressedInputStream = useCompression;
         StreamSupport.IncomingTileDescription[] incomingTileDescription = StreamSupport.CreateIncomingTileDescription(theirTileDescription);
         receiver.SetTileDescription(incomingTileDescription);

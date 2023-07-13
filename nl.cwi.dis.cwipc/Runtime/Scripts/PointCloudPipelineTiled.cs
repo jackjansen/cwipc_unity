@@ -23,6 +23,7 @@ namespace Cwipc
         public enum SourceType
         {
             TCP,
+            WebRTC
         };
         [Tooltip("Type of source to create")]
         [SerializeField] public SourceType sourceType;

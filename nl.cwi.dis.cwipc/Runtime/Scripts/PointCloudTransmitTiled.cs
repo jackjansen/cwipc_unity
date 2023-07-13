@@ -127,7 +127,14 @@ namespace Cwipc
             {
                 PCencoder = new AsyncPCNullEncoder(ReaderEncoderQueue, encoderDescriptions);
             }
-            PCtransmitter = new AsyncTCPWriter(outputUrl, fourcc, transmitterDescriptions);
+            if (sinkType == SinkType.WebRTC)
+            {
+                PCtransmitter = new AsyncTCPWriter(outputUrl, fourcc, transmitterDescriptions);
+            }
+            else
+            {
+                PCtransmitter = new AsyncTCPWriter(outputUrl, fourcc, transmitterDescriptions);
+            }
         }
     }
 }

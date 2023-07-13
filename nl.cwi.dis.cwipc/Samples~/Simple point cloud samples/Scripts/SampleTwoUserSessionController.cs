@@ -20,6 +20,10 @@ public class SampleTwoUserSessionController : MonoBehaviour
     [SerializeField] protected string firstHost;
     [Tooltip("Host name or IP address")]
     [SerializeField] protected string secondHost;
+    [Tooltip("Use WebRTC in stead of TCP for transport")]
+    [SerializeField] protected bool useWebRTC = false;
+    [Tooltip("WebRTC URL")]
+    [SerializeField] protected string webRTCURL = "";
     [Tooltip("Self: capturer, self-view, compressor, transmitter GameObject")]
     [SerializeField] protected GameObject selfPipeline;
     [Tooltip("Other:, receiver, decompressor, view GameObject")]
@@ -100,8 +104,17 @@ public class SampleTwoUserSessionController : MonoBehaviour
         PointCloudSelfPipelineSimple pipeline = selfPipeline.GetComponentInChildren<PointCloudSelfPipelineSimple>();
         AbstractPointCloudSink transmitter = pipeline?.transmitter;
         if (transmitter == null) Debug.LogError($"SampleTowUserSessionController: transmitter is null for {selfPipeline}");
-        transmitter.sinkType = AbstractPointCloudSink.SinkType.TCP;
-        transmitter.outputUrl = $"tcp://{firstHost}:4303";
+        if (useWebRTC)
+        {
+            transmitter.sinkType = AbstractPointCloudSink.SinkType.WebRTC;
+            transmitter.outputUrl = webRTCURL;
+        }
+        else
+        {
+            transmitter.sinkType = AbstractPointCloudSink.SinkType.TCP;
+            transmitter.outputUrl = $"tcp://{firstHost}:4303";
+        }
+
         transmitter.compressedOutputStreams = useCompression;
         Debug.Log($"SampleTwoUserSessionController: initialized self: transmitter on {firstHost}");
         selfPipeline.gameObject.SetActive(true);

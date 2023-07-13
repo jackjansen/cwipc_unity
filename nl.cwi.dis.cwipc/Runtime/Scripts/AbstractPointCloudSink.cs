@@ -17,6 +17,7 @@ namespace Cwipc
         public enum SinkType
         {
             TCP,
+            WebRTC
         }
         [Tooltip("Type of output sink (protocol)")]
         [SerializeField] public SinkType sinkType;
@@ -29,7 +30,7 @@ namespace Cwipc
 
         protected QueueThreadSafe ReaderEncoderQueue;
         protected AsyncWorker PCencoder;
-        protected AsyncTCPWriter PCtransmitter;
+        protected AsyncWriter PCtransmitter;
 
         public QueueThreadSafe InitializeTransmitterQueue()
         {
