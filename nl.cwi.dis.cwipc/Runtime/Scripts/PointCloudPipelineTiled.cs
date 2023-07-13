@@ -132,7 +132,14 @@ namespace Cwipc
             //
             // Create the receiver
             //
-            PCreceiver = new AsyncTCPPCReader(inputUrl, fourcc, tileDescription);
+            if (sourceType == SourceType.WebRTC)
+            {
+                PCreceiver = new AsyncWebRTCPCReader(inputUrl, fourcc, tileDescription);
+            }
+            else
+            {
+                PCreceiver = new AsyncTCPPCReader(inputUrl, fourcc, tileDescription);
+            }
             //
             // Create the decoders, preparers and renderers. Tie them together using the correct queues.
             //

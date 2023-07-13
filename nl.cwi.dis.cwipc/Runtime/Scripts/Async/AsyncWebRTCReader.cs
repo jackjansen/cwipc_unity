@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -22,27 +23,34 @@ namespace Cwipc
     /// </summary>
     public class AsyncWebRTCReader : AsyncReader
     {
+        // xxxjack The next two types have to be replaced with whatever identifies our
+        // outgoing connection to our peer and whetever identifies the thing that we use to transmit a
+        // sequence of frames over
+        protected class XxxjackPeerConnection { };
+        protected class XxxjackTrackOrStream { };
 
         protected Uri url;
         protected class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
-            public string host;
-            public int port;
-            public int portOffset = 0;
+            public XxxjackTrackOrStream trackOrStream;
             public object tileDescriptor;
             public int tileNumber = -1;
             public uint fourcc;
         }
+        protected XxxjackPeerConnection peerConnection;
         protected ReceiverInfo[] receivers;
    
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
+        // xxxjack Unsure whether we need a pull-thread for WebRTC. Maybe the package gives us per-stream
+        // callbacks, then we don't need a thread.
+        // But we should make sure (eventually) that the callbacks don't happen on the main thread, where they
+        // will interfere with the update loop.
         protected class WebRTCPullThread
         {
             AsyncWebRTCReader parent;
-            Socket socket = null;
             bool stopping = false;
             int thread_index;
             ReceiverInfo receiverInfo;
@@ -58,7 +66,7 @@ namespace Cwipc
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
-                Debug.Log($"{Name()}: connecting to tcp://{receiverInfo.host}:{receiverInfo.port} 4cc={receiverInfo.fourcc:X}");
+                Debug.Log($"{Name()}: ready to receive");
             }
 
             public string Name()
@@ -73,11 +81,8 @@ namespace Cwipc
 
             public void Stop() {
                 stopping = true;
-                if (socket != null)
-                {
-                    socket.Close();
-                }
-                socket = null;
+                Debug.Log($"{Name()}: Should stop receiving");
+               
 
             }
 
@@ -86,23 +91,8 @@ namespace Cwipc
                 myThread.Join();
             }
 
-            protected int _ReceiveAll(Socket sock, byte[] buffer)
-            {
-                int wanted = buffer.Length;
-                int got = 0;
-                while (wanted > 0)
-                {
-                    int curGot = sock.Receive(buffer, got, wanted, SocketFlags.None);
-                    if (curGot <= 0) return got;
-                    got += curGot;
-                    wanted -= curGot;
-                }
-                return got;
-            }
-
             protected void run()
             {
-                int portOffset = 0;
                 try
                 {
                     while (!stopping)
@@ -114,81 +104,20 @@ namespace Cwipc
                         {
                             return;
                         }
-
-                        if (socket == null)
-                        {
-                            IPAddress[] all = Dns.GetHostAddresses(receiverInfo.host);
-                            all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
-                            IPAddress ipAddress = all[0];
-                            portOffset = receiverInfo.portOffset;
-                            IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port + portOffset);
-#if VRT_WITH_STATS
-                            Statistics.Output(Name(), $"connected=0, destination={remoteEndpoint.ToString()}");
-#endif
-                            socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                            try
-                            {
-                                socket.Connect(remoteEndpoint);
-                            }
-                            catch(SocketException e)
-                            {
-                                Debug.LogWarning($"{Name()}: Connect({remoteEndpoint}) failed: {e.ToString()}. Sleep 1 second.");
-                                socket = null;
-                                System.Threading.Thread.Sleep(1000);
-                                continue;
-                            }
-#if VRT_WITH_STATS
-                            Statistics.Output(Name(), $"connected=1, destination={remoteEndpoint.ToString()}");
-#endif
-                            Debug.Log($"{Name()}: Connect({remoteEndpoint}) succeeded");
-                        }
-                        System.DateTime receiveStartTime = System.DateTime.Now;
-                        byte[] hdr = new byte[16];
-                        int hdrSize = _ReceiveAll(socket, hdr);
-                        System.DateTime receiveMidTime = System.DateTime.Now;
-                        if (hdrSize != 16)
-                        {
-                            Debug.LogWarning($"{Name()}: short header read ({hdrSize} in stead of {hdr.Length}), closing socket");
-                            socket.Close();
-                            socket = null;
-                            continue;
-                        }
-                        // Check fourcc
-                        int fourccReceived = BitConverter.ToInt32(hdr, 0);
-                        if (fourccReceived != receiverInfo.fourcc)
-                        {
-                            Debug.LogError($"{Name()}: expected 4CC 0x{receiverInfo.fourcc:x} got 0x{fourccReceived:x}");
-                        } 
-                        int dataSize = BitConverter.ToInt32(hdr, 4);
-                        Timestamp timestamp = BitConverter.ToInt64(hdr, 8);
+                        Debug.Log($"{Name()}: should receive WebRTC data, delay one second in stead");
+                        Thread.Sleep(1000);
+                        int dataSize = 0;
+                        Timestamp timestamp = 0;
                         byte[] data = new byte[dataSize];
-                        int actualDataSize = _ReceiveAll(socket, data);
-                        if (actualDataSize != dataSize)
-                        {
-                            if (actualDataSize != 0) Debug.LogWarning($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
-                            socket.Close();
-                            socket = null;
-                            continue;
-                        }
-                        System.DateTime receiveStopTime = System.DateTime.Now;
-                        Timedelta receiveDuration = (Timedelta)(receiveStopTime - receiveMidTime).TotalMilliseconds;
 
                         NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
                         mc.metadata.timestamp = timestamp;
                         System.Runtime.InteropServices.Marshal.Copy(data, 0, mc.pointer, dataSize);
-                        var buf = new byte[mc.length];
-                        System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
                         bool ok = receiverInfo.outQueue.Enqueue(mc);
 #if VRT_WITH_STATS
                         stats.statsUpdate(dataSize, receiveDuration, !ok);
 #endif
-                        // Close the socket if the portOffset (the quality index) has been changed in the mean time
-                        if (socket != null && receiverInfo.portOffset != portOffset)
-                        {
-                            Debug.Log($"{Name()}: closing socket for quality switch");
-                            socket.Close();
-                            socket = null;
-                        }
+                        
                     }
                 }
 #pragma warning disable CS0168
@@ -263,15 +192,7 @@ namespace Cwipc
                     throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, but no URL specified");
                 }
                 url = new Uri(_url);
-                if (url.Scheme != "tcp" || url.Host == "" || url.Port <= 0)
-                {
-                    throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, got \"{_url}\"");
-                }
-                if (url.Host == "" || url.Port == 0)
-                {
-                    Debug.LogError($"{Name()}: configuration error: url misses host or port");
-                    throw new System.Exception($"{Name()}: configuration error: url misses host or port");
-                }
+                
 
             }
         }
@@ -292,8 +213,7 @@ namespace Cwipc
                     new ReceiverInfo()
                     {
                         outQueue = outQueue,
-                        host = url.Host,
-                        port = url.Port,
+                        trackOrStream = new XxxjackTrackOrStream(),
                         fourcc = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3])
                     },
                 };

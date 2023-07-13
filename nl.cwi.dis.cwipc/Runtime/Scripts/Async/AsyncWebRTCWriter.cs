@@ -22,16 +22,21 @@ namespace Cwipc
     /// </summary>
     public class AsyncWebRTCWriter : AsyncWriter
     {
-   
 
+        // xxxjack The next two types have to be replaced with whatever identifies our
+        // outgoing connection to our peer and whetever identifies the thing that we use to transmit a
+        // sequence of frames over
+        protected class XxxjackPeerConnection { };
+        protected class XxxjackTrackOrStream { };
         protected struct WebRTCStreamDescription
         {
-            public string host;
-            public int port;
+            public int index;
+            public XxxjackTrackOrStream trackOrStream;
             public uint fourcc;
             public QueueThreadSafe inQueue;
         };
 
+        protected XxxjackPeerConnection peerConnection;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -42,9 +47,7 @@ namespace Cwipc
             AsyncWebRTCWriter parent;
             WebRTCStreamDescription description;
             System.Threading.Thread myThread;
-            Socket listenSocket = null;
-            Socket sendSocket = null;
-
+          
             public WebRTCPushThread(AsyncWebRTCWriter _parent, WebRTCStreamDescription _description)
             {
                 parent = _parent;
@@ -54,14 +57,7 @@ namespace Cwipc
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
-                Debug.Log($"{Name()}: serving on tcp://{description.host}:{description.port} 4cc={description.fourcc:X}");
-                IPAddress[] all = Dns.GetHostAddresses(description.host);
-                all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
-                IPAddress ipAddress = all[0];
-                IPEndPoint localEndpoint = new IPEndPoint(ipAddress, description.port);
-                listenSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                listenSocket.Bind(localEndpoint);
-                listenSocket.Listen(4);
+                Debug.Log($"{Name()}:  Should initialize stream or track");
 #if CWIPC_WITH_LOGGING
                 Debug.Log($"{Name()}: Start server on ({localEndpoint})");
 #endif
@@ -69,7 +65,7 @@ namespace Cwipc
 
             public string Name()
             {
-                return $"{parent.Name()}.{description.port}";
+                return $"{parent.Name()}.{description.index}";
             }
 
             public void Start()
@@ -79,18 +75,7 @@ namespace Cwipc
 
             public void Stop()
             {
-                if (listenSocket != null)
-                {
-                    Socket tmp = listenSocket;
-                    listenSocket = null;
-                    tmp.Close();
-                }
-                if (sendSocket != null)
-                {
-                    Socket tmp = sendSocket;
-                    sendSocket = null;
-                    tmp.Close();
-                }
+               Debug.Log($"{Name()}:  should close stream or track");
             }
 
             public void Join()
@@ -104,30 +89,9 @@ namespace Cwipc
                 {
                     Debug.Log($"{Name()}: thread started");
                     QueueThreadSafe queue = description.inQueue;
-                    while (!queue.IsClosed() && listenSocket != null)
+                    while (!queue.IsClosed())
                     {
-                        // Accept incoming connection
-                        if (sendSocket == null)
-                        {
-#if VRT_WITH_STATS
-                            Statistics.Output(Name(), $"open=0, listen=1");
-#endif
-                            try
-                            {
-                                sendSocket = listenSocket.Accept();
-#if VRT_WITH_STATS
-                                Statistics.Output(Name(), $"open=1, remote={sendSocket.RemoteEndPoint.ToString()}");
-#endif
-                            }
-                            catch(SocketException e)
-                            {
-                                if (listenSocket != null)
-                                {
-                                    Debug.Log($"{Name()}: Accept: Exception {e.ToString()}");
-                                }
-                                continue;
-                            }
-                        }
+                        
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue; // Probably closing...
 #if VRT_WITH_STATS
@@ -142,34 +106,8 @@ namespace Cwipc
                         hdr3.CopyTo(hdr, 8);
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
-                        try
-                        {
-                            sendSocket.Send(hdr);
-                            sendSocket.Send(buf);
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            if (sendSocket != null)
-                            {
-                                Debug.Log($"{Name()}: socket was closed by another thread");
-                            }
-                            sendSocket = null;
-#if VRT_WITH_STATS
-                            Statistics.Output(Name(), $"open=0");
-#endif
-                        }
-                        catch(SocketException e)
-                        {
-                            if (sendSocket != null)
-                            {
-                                Debug.Log($"{Name()}: socket exception: {e.ToString()}");
-                                sendSocket.Close();
-                                sendSocket = null;
-                            }
-#if VRT_WITH_STATS
-                            Statistics.Output(Name(), $"open=0");
-#endif
-                        }
+                        Debug.Log($"{Name()}: should transmit header and {mc.length} bytes");
+                        
                     }
                     Debug.Log($"{Name()}: thread stopped");
                 }
@@ -243,10 +181,7 @@ namespace Cwipc
             }
             uint fourccInt = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
             Uri url = new Uri(_url);
-            if (url.Scheme != "tcp" || url.Host == "" || url.Port <= 0)
-            {
-                throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, got \"{_url}\"");
-            }
+            
             WebRTCStreamDescription[] ourDescriptions = new WebRTCStreamDescription[_descriptions.Length];
             // We use the lowest ports for the first quality, for each tile.
             // The the next set of ports is used for the next quality, and so on.
@@ -260,8 +195,8 @@ namespace Cwipc
             {
                 ourDescriptions[i] = new WebRTCStreamDescription
                 {
-                    host = url.Host,
-                    port = url.Port + (int)_descriptions[i].tileNumber + (portsPerQuality*_descriptions[i].qualityIndex),
+                    index = (int)_descriptions[i].tileNumber + (portsPerQuality * _descriptions[i].qualityIndex),
+                    trackOrStream = new XxxjackTrackOrStream(),
                     fourcc = fourccInt,
                     inQueue = _descriptions[i].inQueue
 

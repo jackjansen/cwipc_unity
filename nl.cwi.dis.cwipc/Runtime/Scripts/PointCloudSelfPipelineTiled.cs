@@ -49,12 +49,19 @@ namespace Cwipc
         }
 
 
-        void InitializeEncoder()
+        void InitializeEncoder(bool isWebRTC)
         {
 
            string fourcc = compressedInputStream ? "cwi1" : "cwi0";
             RendererInputQueue = new QueueThreadSafe("DecoderOutputQueue", 2, false);
-            PCreceiver = new AsyncTCPReader(inputUrl, fourcc, ReaderRenderQueue);
+            if (isWebRTC)
+            {
+                PCreceiver = new AsyncWebRTCReader(inputUrl, fourcc, ReaderRenderQueue);
+            }
+            else
+            {
+                PCreceiver = new AsyncTCPReader(inputUrl, fourcc, ReaderRenderQueue);
+            }
             if (compressedInputStream)
             {
                 PCdecoder = new AsyncPCDecoder(ReaderRenderQueue, RendererInputQueue);

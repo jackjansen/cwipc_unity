@@ -20,6 +20,7 @@ namespace Cwipc
             Kinect,
             Prerecorded,
             TCP,
+            WebRTC
         };
         [Tooltip("Type of source to create")]
         [SerializeField] public SourceType sourceType;
@@ -48,7 +49,7 @@ namespace Cwipc
         [Tooltip("Path of directory with pointcloud files")]
         [SerializeField] protected string directoryPath;
 
-        [Header("Source type: TCP")]
+        [Header("Source type: TCP or WebRTC")]
         [Tooltip("Specifies TCP server to contact for source, in the form tcp://host:port")]
         [SerializeField] public string inputUrl;
         [Tooltip("Insert a compressed pointcloud decoder into the stream")]
@@ -181,16 +182,26 @@ namespace Cwipc
                     //PCreceiver = new AsyncPrerecordedReader(directoryPath, voxelSize, framerate, ReaderOutputQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.TCP:
-                    InitializeDecoder();
+                    InitializeDecoder(false);
+                    break;
+                case SourceType.WebRTC:
+                    InitializeDecoder(true);
                     break;
             }
         }
 
-        void InitializeDecoder()
+        void InitializeDecoder(bool isWebRTC)
         {
             string fourcc = compressedInputStream ? "cwi1" : "cwi0";
             RendererInputQueue = new QueueThreadSafe("DecoderOutputQueue", 2, false);
-            PCreceiver = new AsyncTCPReader(inputUrl, fourcc, ReaderRenderQueue);
+            if (isWebRTC)
+            {
+                PCreceiver = new AsyncWebRTCReader(inputUrl, fourcc, ReaderRenderQueue);
+            }
+            else
+            {
+                PCreceiver = new AsyncTCPReader(inputUrl, fourcc, ReaderRenderQueue);
+            }
             if (compressedInputStream)
             {
                 PCdecoder = new AsyncPCDecoder(ReaderRenderQueue, RendererInputQueue);

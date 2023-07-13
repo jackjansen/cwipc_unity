@@ -21,9 +21,7 @@ namespace Cwipc
                 {
                     ReceiverInfo ri = new ReceiverInfo();
                     ri.tileNumber = ti;
-                    ri.host = url.Host;
-                    // ri.port = url.Port + _tileDescriptors[ti].tileNumber;
-                    ri.port = url.Port + ti;
+                    ri.trackOrStream = new XxxjackTrackOrStream();
                     IncomingTileDescription td = _tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.outQueue = _tileDescriptors[ti].outQueue;
@@ -38,7 +36,7 @@ namespace Cwipc
         {
             Debug.Log($"{Name()}: setTileQualityIndex({tileIndex},{qualityIndex})");
             int portOffset = qualityIndex * receivers.Length;
-            receivers[tileIndex].portOffset = portOffset;
+            Debug.LogWarning($"{Name()}: setTileQuanlityIndex not yet implemented");
         }
     }
 }
