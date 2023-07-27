@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.13.0] - 2023-07-27
+
+Native support for the Oculus Quest added.
+
+
 ## [0.12.0] - 2023-03-29
 
 ViewAdjust has moved from Samples/VR to Runtime and adjusts self-pointcloud-playback.
