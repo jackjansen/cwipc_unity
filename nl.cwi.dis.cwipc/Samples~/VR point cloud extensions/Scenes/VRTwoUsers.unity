@@ -447,7 +447,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1911508270948310340, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: sourceType
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1911508270948310340, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: configFileName
@@ -571,9 +571,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935f18f3a2f3d494dacd53fd7392796a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singleMachineSession: 0
+  singleMachineSession: 1
   firstHost: 192.168.1.139
   secondHost: 192.168.1.96
+  useWebRTC: 0
+  webRTCURL: 
   selfPipeline: {fileID: 765728494}
   otherPipeline: {fileID: 2057174264}
   useCompression: 1
