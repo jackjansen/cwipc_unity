@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.14.0] - 2023-08-04
+
+Load native dynamic libraries from /opt/homebrew on Silicon Macs.
+
 ## [0.13.0] - 2023-07-27
 
 Native support for the Oculus Quest added.

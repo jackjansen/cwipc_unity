@@ -34,9 +34,6 @@ pointcloud suite.
   going to use. You should also install the _XR Interaction Toolkit_.
 - In the Unity Package Manager, do _Add Package by URL_ and use the URL
   `git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc`
-  - Alternatively, after installing `cwipc`, you can _Add Package from
-    Disk_. The package is located in the installation directory, in
-    `share/cwipc/unity/nl.cwi.dis.cwipc`.
 
 
 ## Samples
