@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.15.0] - 2023-08-06
+
+Added support for reading pointclouds from a remote camera (using cwipc_forward on the camera machine)
+
 ## [0.14.0] - 2023-08-04
 
 Load native dynamic libraries from /opt/homebrew on Silicon Macs.
