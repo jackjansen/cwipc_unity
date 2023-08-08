@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.16.0] - 2023-08-08
+
+Added support for cwipc_capturer (which uses whatever capturer is specified in cameraconfig.json)
+
 ## [0.15.0] - 2023-08-06
 
 Added support for reading pointclouds from a remote camera (using cwipc_forward on the camera machine)

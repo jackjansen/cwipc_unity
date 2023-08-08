@@ -165,6 +165,9 @@ namespace Cwipc
             internal extern static IntPtr cwipc_synthetic(int fps, int npoints, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 
             [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_capturer([MarshalAs(UnmanagedType.LPStr)] string filename, ref IntPtr errorMessage, ulong apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
+
+            [DllImport(myDllName)]
             internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, Timestamp timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 
             [DllImport(myDllName)]
@@ -848,6 +851,36 @@ namespace Cwipc
             if (errorPtr != IntPtr.Zero)
             {
                 UnityEngine.Debug.LogError($"cwipc.synthetic: {Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+            }
+            return new source(rdr);
+        }
+
+        public static source capturer(string filename)
+        {
+            _load_cwipc_util();
+            // Special case: we want to ensure all capturers have been loaded.
+            _load_cwipc_kinect();
+#if 0
+            // Disabled for now: causes a hang in Unity?
+            _load_cwipc_realsense2();
+#endif
+
+            IntPtr errorPtr = IntPtr.Zero;
+            IntPtr rdr = IntPtr.Zero;
+
+            rdr = _API_cwipc_util.cwipc_capturer(filename, ref errorPtr);
+
+            if (rdr == IntPtr.Zero)
+            {
+                if (errorPtr == IntPtr.Zero)
+                {
+                    throw new Exception("cwipc.capturer: returned null without setting error message");
+                }
+                throw new Exception($"cwipc.capturer: {Marshal.PtrToStringAnsi(errorPtr)} ");
+            }
+            if (errorPtr != IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogError($"cwipc.capturer: {Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
             }
             return new source(rdr);
         }
