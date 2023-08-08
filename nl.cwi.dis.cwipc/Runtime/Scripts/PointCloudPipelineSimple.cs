@@ -19,6 +19,8 @@ namespace Cwipc
             Realsense,
             Kinect,
             Prerecorded,
+            Networked,
+            // The following shouldn't be used as capturer
             TCP,
             WebRTC
         };
@@ -39,11 +41,17 @@ namespace Cwipc
         [Tooltip("Number of points per cloud")]
         [SerializeField] protected int Synthetic_NPoints = 8000;
 
-        [Header("Source type: Realsense/Kinect settings")]
+        [Header("Source type: Realsense/Kinect/Auto settings")]
         [Tooltip("Camera configuration filename")]
         [SerializeField] protected string configFileName;
         [Tooltip("If non-zero: voxelize captured pointclouds to this cellsize")]
         [SerializeField] protected float voxelSize;
+
+        [Header("Source type: networked settings")]
+        [Tooltip("URL for the camera server")]
+        [SerializeField] protected string networkedCameraURL;
+        [Tooltip("True if camera server produces compressed pointclouds")]
+        [SerializeField] protected bool networkedCameraCompressed;
 
         [Header("Source type: prerecorded")]
         [Tooltip("Path of directory with pointcloud files")]
@@ -180,6 +188,9 @@ namespace Cwipc
                     break;
                 case SourceType.Prerecorded:
                     //PCreceiver = new AsyncPrerecordedReader(directoryPath, voxelSize, framerate, ReaderOutputQueue, ReaderEncoderQueue);
+                    break;
+                case SourceType.Networked:
+                    PCcapturer = new AsyncNetworkCaptureReader(networkedCameraURL, networkedCameraCompressed, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.TCP:
                     InitializeDecoder(false);
