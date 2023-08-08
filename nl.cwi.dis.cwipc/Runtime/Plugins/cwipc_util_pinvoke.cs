@@ -860,7 +860,7 @@ namespace Cwipc
             _load_cwipc_util();
             // Special case: we want to ensure all capturers have been loaded.
             _load_cwipc_kinect();
-#if 0
+#if disabled
             // Disabled for now: causes a hang in Unity?
             _load_cwipc_realsense2();
 #endif
