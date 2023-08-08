@@ -21,6 +21,7 @@ namespace Cwipc
             myQueue = new QueueThreadSafe($"{Name()}.queue");
             decoderQueue = new QueueThreadSafe($"{Name()}.decoderQueue");
             InitReader();
+            Start();
         }
 
         private void InitReader()

@@ -447,11 +447,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1911508270948310340, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: sourceType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1911508270948310340, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: configFileName
       value: cameraconfig.json
+      objectReference: {fileID: 0}
+    - target: {fileID: 1911508270948310340, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
+      propertyPath: networkedCameraURL
+      value: tcp://sap.local:9901/
+      objectReference: {fileID: 0}
+    - target: {fileID: 1911508270948310340, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
+      propertyPath: networkedCameraCompressed
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2942035106827000202, guid: a3e9aeec6c4e96042b6010dc86ac69d3, type: 3}
       propertyPath: m_Name

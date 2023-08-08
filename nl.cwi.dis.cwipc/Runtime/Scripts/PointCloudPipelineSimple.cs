@@ -16,6 +16,7 @@ namespace Cwipc
         public enum SourceType
         {
             Synthetic,
+            Auto,
             Realsense,
             Kinect,
             Prerecorded,
@@ -179,6 +180,9 @@ namespace Cwipc
             {
                 case SourceType.Synthetic:
                     PCcapturer = new AsyncSyntheticReader(framerate, Synthetic_NPoints, ReaderRenderQueue, ReaderEncoderQueue);
+                    break;
+                case SourceType.Auto:
+                    PCcapturer = new AsyncAutoReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
                     break;
                 case SourceType.Realsense:
                     PCcapturer = new AsyncRealsenseReader(configFileName, voxelSize, framerate, ReaderRenderQueue, ReaderEncoderQueue);
