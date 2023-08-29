@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.17.0] - 2023-08-29
+
+Not being able to load capturers (for the generic capturer) isn't a fatal error.
+
 ## [0.16.0] - 2023-08-08
 
 Added support for cwipc_capturer (which uses whatever capturer is specified in cameraconfig.json)

@@ -859,8 +859,8 @@ namespace Cwipc
         {
             _load_cwipc_util();
             // Special case: we want to ensure all capturers have been loaded.
-            _load_cwipc_kinect();
-            _load_cwipc_realsense2();
+            _load_cwipc_kinect(required: false);
+            _load_cwipc_realsense2(required: false);
 
             IntPtr errorPtr = IntPtr.Zero;
             IntPtr rdr = IntPtr.Zero;
@@ -1505,10 +1505,10 @@ namespace Cwipc
 
         static bool cwipc_realsense2_load_attempted = false;
 
-        private static void _load_cwipc_realsense2()
+        private static void _load_cwipc_realsense2(bool required=true)
         {
             if (cwipc_realsense2_load_attempted) return;
-            cwipc_realsense2_load_attempted = true;
+            cwipc_realsense2_load_attempted = required;
 
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             // We first try to load the cwipc_realsense2 library fomr the standard DYLIB search path. This will
@@ -1522,6 +1522,7 @@ namespace Cwipc
             }
             catch (System.DllNotFoundException)
             {
+                if (!required) return;
                 UnityEngine.Debug.Log($"cwipc._load_cwipc_realsense2: could not load cwipc_realsense2 from {_API_cwipc_realsense2_prober_standard_path.myDllName}");
                 // Let's try and load from the silicon path.
                 try
@@ -1551,6 +1552,7 @@ namespace Cwipc
             }
             catch (System.TypeLoadException e)
             {
+                if (!required) return;
                 UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_realsense2 DLL.");
                 UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
                 UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
@@ -1561,10 +1563,10 @@ namespace Cwipc
 
         static bool cwipc_kinect_load_attempted = false;
 
-        private static void _load_cwipc_kinect()
+        private static void _load_cwipc_kinect(bool required=true)
         {
             if (cwipc_kinect_load_attempted) return;
-            cwipc_kinect_load_attempted = true;
+            cwipc_kinect_load_attempted = required;
 
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             // We first try to load the cwipc_kinect library fomr the standard DYLIB search path. This will
@@ -1578,6 +1580,7 @@ namespace Cwipc
             }
             catch (System.DllNotFoundException)
             {
+                if (!required) return;
                 UnityEngine.Debug.Log($"cwipc._load_cwipc_kinect: could not load cwipc_kinect from {_API_cwipc_kinect_prober_standard_path.myDllName}");
                 // Let's try and load from the silicon path.
                 try
@@ -1607,6 +1610,7 @@ namespace Cwipc
             }
             catch (System.TypeLoadException e)
             {
+                if (!required) return;
                 UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_kinect DLL.");
                 UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
                 UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
