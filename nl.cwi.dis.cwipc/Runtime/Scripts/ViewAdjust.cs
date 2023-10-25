@@ -46,13 +46,13 @@ public class ViewAdjust : LocomotionProvider
 	[Tooltip("Position indicator, visible while adjusting position")]
 	[SerializeField] GameObject positionIndicator;
 
-    [Tooltip("Best forward direction indicator, visible while adjusting position")]
-    [SerializeField] GameObject forwardIndicator;
-    
-	[Tooltip("Forward indicator countdown")]
-    [SerializeField] UnityEngine.UI.Text forwardIndicatorCountdown;
+	[Tooltip("Best forward direction indicator, visible while adjusting position")]
+	[SerializeField] GameObject forwardIndicator;
 
-    [Tooltip("How many seconds is the position indicator visible?")]
+	[Tooltip("Forward indicator countdown")]
+	[SerializeField] UnityEngine.UI.Text forwardIndicatorCountdown;
+
+	[Tooltip("How many seconds is the position indicator visible?")]
 	[SerializeField] float positionIndicatorDuration = 5f;
 
 	float positionIndicatorInvisibleAfter = 0;
@@ -96,7 +96,7 @@ public class ViewAdjust : LocomotionProvider
 		}
 	}
 
-	private void ShowPositionIndicator(string stage=null)
+	private void ShowPositionIndicator(string stage = null)
 	{
 		if (positionIndicator != null)
 		{
@@ -107,8 +107,10 @@ public class ViewAdjust : LocomotionProvider
 			// We need to determine the direction of the point cloud capture Z axis and rotate
 			// the forward indicator so that is in that direction.
 			// xxxjack this is wrong, currently.
-			float angle = forwardIndicator.transform.rotation.y;
-			
+			float angleIndicator = forwardIndicator.transform.rotation.eulerAngles.y;
+			float angleCamera = playerCamera.transform.rotation.eulerAngles.y;
+			float angle = angleCamera - angleIndicator;
+
 			forwardIndicator.transform.Rotate(0, angle, 0);
 			forwardIndicator.SetActive(true);
 			forwardIndicatorCountdown.text = stage;
@@ -124,28 +126,29 @@ public class ViewAdjust : LocomotionProvider
 		StartCoroutine(_ResetOrigin());
 	}
 
-	private IEnumerator _ResetOrigin() {
-        IPointCloudPositionProvider pointCloudPipeline = null;
-        if (pointCloudGO != null) pointCloudPipeline = pointCloudGO.GetComponentInChildren<IPointCloudPositionProvider>();
-        yield return null;
+	private IEnumerator _ResetOrigin()
+	{
+		IPointCloudPositionProvider pointCloudPipeline = null;
+		if (pointCloudGO != null) pointCloudPipeline = pointCloudGO.GetComponentInChildren<IPointCloudPositionProvider>();
+		yield return null;
 		if (pointCloudPipeline == null)
 		{
 			// Show the position indicator and reset the view point immedeately. 
 			ShowPositionIndicator();
-        }
-        else
+		}
+		else
 		{
-            // Show the countdown
-            ShowPositionIndicator(stage: "3");
-            yield return new WaitForSeconds(1);
-            ShowPositionIndicator(stage: "2");
-            yield return new WaitForSeconds(1);
-            ShowPositionIndicator(stage: "1");
-            yield return new WaitForSeconds(1);
-            ShowPositionIndicator(stage: "Click!");
-        }
+			// Show the countdown
+			ShowPositionIndicator(stage: "3");
+			yield return new WaitForSeconds(1);
+			ShowPositionIndicator(stage: "2");
+			yield return new WaitForSeconds(1);
+			ShowPositionIndicator(stage: "1");
+			yield return new WaitForSeconds(1);
+			ShowPositionIndicator(stage: ">CLICK<");
+		}
 
-        if (BeginLocomotion())
+		if (BeginLocomotion())
 		{
 			Debug.Log("ViewAdjust: ResetOrigin");
 			// Rotation of camera relative to the player
@@ -153,14 +156,16 @@ public class ViewAdjust : LocomotionProvider
 			if (debug) Debug.Log($"ViewAdjust: camera rotation={cameraToPlayerRotationY}");
 			// Apply the inverse rotation to cameraOffset to make the camera point in the same direction as the player
 			cameraOffset.transform.Rotate(0, -cameraToPlayerRotationY, 0);
+#if xxxjack_bad_idea
 			if (pointCloudPipeline != null)
 			{
 				// Now the camera is pointing forward from the users point of view.
 				// Rotate the point cloud so it is in the same direction.
 				float cameraToPointcloudRotationY = playerCamera.transform.rotation.eulerAngles.y - pointCloudGO.transform.rotation.eulerAngles.y;
-                if (debug) Debug.Log($"ViewAdjust: pointcloud rotation={cameraToPointcloudRotationY}");
-                pointCloudGO.transform.Rotate(0, cameraToPointcloudRotationY, 0);
+				if (debug) Debug.Log($"ViewAdjust: pointcloud rotation={cameraToPointcloudRotationY}");
+				pointCloudGO.transform.Rotate(0, cameraToPointcloudRotationY, 0);
 			}
+#endif
 			// Next set correct position on the camera
 			Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
 			moveXZ.z += cameraZFudgeFactor;
@@ -174,6 +179,7 @@ public class ViewAdjust : LocomotionProvider
 			}
 			if (debug) Debug.Log($"ResetOrigin: move cameraOffset by {moveXZ} to worldpos={playerCamera.transform.position}");
 			cameraOffset.transform.position -= moveXZ;
+#if xxxjack_bad_idea
 			// Finally adjust the pointcloud position
 			if (pointCloudPipeline != null)
 			{
@@ -182,12 +188,14 @@ public class ViewAdjust : LocomotionProvider
 				pointCloudGO.transform.localPosition = -pcOriginLocal;
 			   
 			}
+#endif
 			viewAdjusted.Invoke();
 			EndLocomotion();
 		}
+		ShowPositionIndicator(stage: "Done!");
 	}
 
-	public void HigherView(float deltaHeight=0.02f)
+	public void HigherView(float deltaHeight = 0.02f)
 	{
 		ShowPositionIndicator();
 		if (deltaHeight != 0 && BeginLocomotion())
