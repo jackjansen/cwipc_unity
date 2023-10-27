@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.18.0] - 2023-10-27
+
+Self-calibration (aligning HMD viewpoint to captured point cloud) improved 
+
 ## [0.17.0] - 2023-08-29
 
 Not being able to load capturers (for the generic capturer) isn't a fatal error.
