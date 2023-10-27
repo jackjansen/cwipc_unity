@@ -242,13 +242,18 @@ namespace Cwipc
 
         }
 
-        public Vector3 GetPosition()
+        public Vector3? GetPosition()
         {
             if (PCcapturer == null)
             {
-                return Vector3.zero;
+                return null;
             }
             return PCcapturer.GetPosition();
+        }
+
+        public int GetCameraCount()
+        {
+            return PCcapturer.GetCameraCount();
         }
     }
 }
