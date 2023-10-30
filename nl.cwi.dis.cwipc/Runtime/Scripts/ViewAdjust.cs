@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
 
@@ -43,9 +44,6 @@ public class ViewAdjust : LocomotionProvider
 
     [Tooltip("Multiplication factor for height adjustment")]
     [SerializeField] float heightFactor = 1;
-
-    [Tooltip("Reset viewpoint height when resetting position (otherwise height is untouched)")]
-    [SerializeField] bool resetHeightWithPosition = false;
 
     [Tooltip("Callback done after view has been adjusted")]
     public UnityEvent viewAdjusted;
@@ -291,6 +289,11 @@ public class ViewAdjust : LocomotionProvider
             // Next set correct position on the camera
             Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
             moveXZ.z += cameraZFudgeFactor;
+            bool resetHeightWithPosition = XRSettings.enabled && XRSettings.isDeviceActive;
+            if (debug)
+            {
+                Debug.Log($"ViewAdjust: resetHeightWithPosition={resetHeightWithPosition}");
+            }
             if (resetHeightWithPosition)
             {
                 moveXZ.y = cameraOffset.transform.position.y;

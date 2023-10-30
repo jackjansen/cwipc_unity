@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.19.0] - 2023-10-30
+
+Self-calibration fix for use without HMD 
+
 ## [0.18.0] - 2023-10-27
 
 Self-calibration (aligning HMD viewpoint to captured point cloud) improved 
