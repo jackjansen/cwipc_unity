@@ -296,14 +296,15 @@ public class ViewAdjust : LocomotionProvider
             }
             if (resetHeightWithPosition)
             {
-                moveXZ.y = cameraOffset.transform.position.y;
+                moveXZ.y = cameraOffset.transform.position.y-player.transform.position.y;
             }
             else
             {
                 moveXZ.y = 0;
             }
-            if (debug) Debug.Log($"ResetOrigin: move cameraOffset by {moveXZ} to worldpos={playerCamera.transform.position}");
             cameraOffset.transform.position -= moveXZ;
+            if (debug) Debug.Log($"ResetOrigin: moved cameraOffset by {-moveXZ} to worldpos={playerCamera.transform.position}");
+
 #if xxxjack_bad_idea
             // Finally adjust the pointcloud position
             if (pointCloudPipeline != null)
