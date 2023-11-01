@@ -57,6 +57,10 @@ public class ViewAdjust : LocomotionProvider
     [Tooltip("The Input System Action that will be used to reset view origin.")]
     [SerializeField] InputActionProperty m_resetOriginAction;
 
+    [Tooltip("The Input System Action that determines whether the HMD is tracking. Set this if putting on the HMD should start a ViewAdjust action.")]
+    [SerializeField] InputActionProperty m_hmdTrackingAction;
+
+
     [Tooltip("Position indicator, visible while adjusting position")]
     [SerializeField] GameObject positionIndicator;
 
@@ -115,6 +119,14 @@ public class ViewAdjust : LocomotionProvider
             {
                 ResetOrigin(false);
             }
+        }
+        if (m_hmdTrackingAction != null && m_hmdTrackingAction.action != null && m_hmdTrackingAction.action.WasPerformedThisFrame()) 
+        {
+            if (debug)
+            {
+                Debug.Log("ViewAdjust: HMD started tracking. Adjust view.");
+            }
+            ResetOrigin(false);
         }
     }
 
