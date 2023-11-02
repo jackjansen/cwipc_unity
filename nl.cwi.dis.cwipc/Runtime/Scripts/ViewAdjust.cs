@@ -198,8 +198,19 @@ public class ViewAdjust : LocomotionProvider
             // We do this by rotating the player.
             //
             float cameraAngle = playerCamera.transform.rotation.eulerAngles.y;
-            float playerAngle = player.transform.rotation.eulerAngles.y;
+           float playerAngle = player.transform.rotation.eulerAngles.y;
+            //
+            // Rotate the whole player so it is facing in the (virtual) world Z axis direction
+            //
             player.transform.Rotate(0, -cameraAngle - playerAngle, 0);
+            if (forwardIndicator != null)
+            {
+                // Rotate the forwardIndicator so it is in the direction of the real-world capture Z axis
+                cameraAngle = playerCamera.transform.rotation.eulerAngles.y;
+                float forwardIndicatorAngle = forwardIndicator.transform.rotation.eulerAngles.y;
+                float pointCloudAngle = pointCloudGO.transform.rotation.eulerAngles.y;
+                forwardIndicator.transform.Rotate(0, 0, 0);
+            }
 
             // now instruct the user position correctly.
             stage = ViewAdjustStage.position;
@@ -219,53 +230,55 @@ public class ViewAdjust : LocomotionProvider
                     yield return new WaitForSeconds(0.3f);
                     continue;
                 }
+                //
+                // We apparently have a pointcloud.
+                //
+
+                Vector3 pcPosition = (Vector3)_pcPosition;
+                if (cameraCount < 0)
+                {
+                    // Determine number of cameras.
+                    cameraCount = pointCloudPipeline.GetCameraCount();
+                }
+                if (cameraCount == 1)
+                {
+                    // For a single-camera setup (and note only if we are sure: we don't do
+                    // this for cameraCount == 0) we move the center of gravity, because we
+                    // expect to capture only half a person.
+                    pcPosition.z += singleCameraCoGForwardMove;
+                }
+                if (pointCloudCenterOfGravityIndicator != null)
+                {
+                    pointCloudCenterOfGravityIndicator.localPosition = pcPosition;
+                }
+                float distance = pcPosition.magnitude;
+                int distanceCm = (int)(distance * 100);
+
+                float angle = Vector3.SignedAngle(Vector3.forward, pcPosition, Vector3.up) - 180;
+                int dir = (int)(angle / 30);
+                if (dir <= 0) dir += 12;
+
+                ShowPositionIndicator(stage: "Adjust Position",
+                    instructions:
+                    $"Look down, position your body on the cartoon feet.\n\nYou are {distanceCm} cm away from where you should be.\nMove in the {dir} o'clock direction.",
+                    floor:
+                    $"You are {distanceCm} cm away from where you should be."
+                    );
+                // Check whether the user has been standing still in a reasonable position for 2 seconds.
+                if (distanceCm == lastDistanceCm && distanceCm < 5)
+                {
+                    lastDistanceSameCount++;
+                    if (lastDistanceSameCount > 4)
+                    {
+                        stage = ViewAdjustStage.orientation;
+                    }
+                }
                 else
                 {
-                    Vector3 pcPosition = (Vector3) _pcPosition;
-                    if (cameraCount < 0) {
-                        // Determine number of cameras.
-                        cameraCount = pointCloudPipeline.GetCameraCount();
-                    }
-                    if (cameraCount == 1)
-                    {
-                        // For a single-camera setup (and note only if we are sure: we don't do
-                        // this for cameraCount == 0) we move the center of gravity, because we
-                        // expect to capture only half a person.
-                        pcPosition.z += singleCameraCoGForwardMove;
-                    }
-                    if (pointCloudCenterOfGravityIndicator != null)
-                    {
-                        pointCloudCenterOfGravityIndicator.localPosition = pcPosition;
-                    }
-                    float distance = pcPosition.magnitude;
-                    int distanceCm = (int)(distance * 100);
-
-                    float angle = Vector3.Angle(-Vector3.forward, pcPosition);
-                    int dir = (int)(angle / 30);
-                    if (dir <= 0) dir += 12; 
-
-                    ShowPositionIndicator(stage: "Adjust Position",
-                        instructions:
-                        $"Look down, position your body on the cartoon feet.\n\nYou are {distanceCm} cm away from where you should be.\nMove in the {dir} o'clock direction.",
-                        floor:
-                        $"You are {distanceCm} cm away from where you should be."
-                        );
-                    // Check whether the user has been standing still in a reasonable position for 2 seconds.
-                    if (distanceCm == lastDistanceCm && distanceCm < 5)
-                    {
-                        lastDistanceSameCount++;
-                        if (lastDistanceSameCount > 4)
-                        {
-                            stage = ViewAdjustStage.orientation;
-                        }
-                    }
-                    else
-                    {
-                        lastDistanceSameCount = 0;
-                        lastDistanceCm = distanceCm;
-                    }
-                    yield return new WaitForSeconds(0.3f);
+                    lastDistanceSameCount = 0;
+                    lastDistanceCm = distanceCm;
                 }
+                yield return new WaitForSeconds(0.3f);
             }
             stage = ViewAdjustStage.done;
             
