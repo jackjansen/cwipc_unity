@@ -191,10 +191,6 @@ public class ViewAdjust : LocomotionProvider
         {
             // We are a pointcloud.
             // We start by resetting the cameraOffset to known values (for height)
-#if xxxjack_bad_idea
-            cameraOffset.transform.Rotate(0, -cameraOffset.transform.localRotation.y, 0);
-            cameraOffset.transform.Rotate(0, -playerCamera.transform.localRotation.y, 0);
-#endif
             cameraOffset.transform.Translate(0, -cameraOffset.transform.localPosition.y, 0);
             //
             // Now we want to ensure that a camera Y angle of 0 (note: camera, not cameraOffset)
@@ -271,11 +267,6 @@ public class ViewAdjust : LocomotionProvider
                     yield return new WaitForSeconds(0.3f);
                 }
             }
-#if xxxjack_bad_idea
-            // Show the countdown
-            ShowPositionIndicator(stage: "Adjust Orientation", instructions: "To be provided");
-            yield return new WaitForSeconds(3);
-#endif
             stage = ViewAdjustStage.done;
             
         }
@@ -288,16 +279,6 @@ public class ViewAdjust : LocomotionProvider
             if (debug) Debug.Log($"ViewAdjust: camera rotation={cameraToPlayerRotationY}");
             // Apply the inverse rotation to cameraOffset to make the camera point in the same direction as the player
             cameraOffset.transform.Rotate(0, -cameraToPlayerRotationY, 0);
-#if xxxjack_bad_idea
-            if (pointCloudPipeline != null)
-            {
-                // Now the camera is pointing forward from the users point of view.
-                // Rotate the point cloud so it is in the same direction.
-                float cameraToPointcloudRotationY = playerCamera.transform.rotation.eulerAngles.y - pointCloudGO.transform.rotation.eulerAngles.y;
-                if (debug) Debug.Log($"ViewAdjust: pointcloud rotation={cameraToPointcloudRotationY}");
-                pointCloudGO.transform.Rotate(0, cameraToPointcloudRotationY, 0);
-            }
-#endif
             // Next set correct position on the camera
             Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
             moveXZ.z += cameraZFudgeFactor;
@@ -317,16 +298,6 @@ public class ViewAdjust : LocomotionProvider
             cameraOffset.transform.position -= moveXZ;
             if (debug) Debug.Log($"ResetOrigin: moved cameraOffset by {-moveXZ} to worldpos={playerCamera.transform.position}");
 
-#if xxxjack_bad_idea
-            // Finally adjust the pointcloud position
-            if (pointCloudPipeline != null)
-            {
-                Vector3 pcOriginLocal = pointCloudPipeline.GetPosition();
-                if (debug) Debug.Log($"ViewAdjust: adjust pointcloud to {pcOriginLocal}");
-                pointCloudGO.transform.localPosition = -pcOriginLocal;
-               
-            }
-#endif
             viewAdjusted.Invoke();
             EndLocomotion();
         }
