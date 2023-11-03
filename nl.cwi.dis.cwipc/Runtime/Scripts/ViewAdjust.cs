@@ -261,8 +261,10 @@ public class ViewAdjust : LocomotionProvider
                     pointCloudCenterOfGravityIndicator.localPosition = pcPosition;
                 }
                 tempCameraOffset = pcPosition - playerCamera.transform.position;
+                tempCameraYRotation = (player.transform.rotation.eulerAngles.y - playerCamera.transform.rotation.eulerAngles.y);
                 tempCameraOffset.y = 0;
                 cameraOffset.transform.position += tempCameraOffset;
+                cameraOffset.transform.Rotate(0, tempCameraYRotation, 0);
 
                 float distance = pcPosition.magnitude;
                 int distanceCm = (int)(distance * 100);
@@ -295,6 +297,8 @@ public class ViewAdjust : LocomotionProvider
             }
             stage = ViewAdjustStage.done;
             cameraOffset.transform.position -= tempCameraOffset;
+            cameraOffset.transform.Rotate(0, -tempCameraYRotation, 0);
+
         }
 
         if (BeginLocomotion())
