@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8734245819382289769}
   - component: {fileID: 7964182305002527354}
   - component: {fileID: 8534541918455642381}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Backdrop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 30769038344988080}
   - component: {fileID: 3451264028109318905}
   - component: {fileID: 148882552321782828}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Forward Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 1059525965137547134}
   - component: {fileID: 6328708324046323024}
   - component: {fileID: 5141105371991559789}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Backdrop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 7311115436913540340}
   - component: {fileID: 6628428872788632267}
   - component: {fileID: 8636335620149764721}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Floor Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -370,7 +370,7 @@ GameObject:
   - component: {fileID: 6377545571995164899}
   - component: {fileID: 4942768093885140451}
   - component: {fileID: 8053126322149057178}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Instructions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -450,7 +450,7 @@ GameObject:
   - component: {fileID: 2554603080163959857}
   - component: {fileID: 9142619404254976534}
   - component: {fileID: 6001162474147235218}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Stage Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -530,7 +530,7 @@ GameObject:
   - component: {fileID: 3217077078659025401}
   - component: {fileID: 1462340626782711898}
   - component: {fileID: 7383132613688090824}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Text (Legacy)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -611,7 +611,7 @@ GameObject:
   - component: {fileID: 4822862753310585440}
   - component: {fileID: 668861234411657125}
   - component: {fileID: 683586334533598299}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CenterOfPointCloudGravity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -707,7 +707,7 @@ GameObject:
   - component: {fileID: 6417351462178894799}
   - component: {fileID: 9208410359906994688}
   - component: {fileID: 107984228592121662}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Instructions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -785,7 +785,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5854284509823315473}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PointcloudForwardIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -821,7 +821,7 @@ GameObject:
   - component: {fileID: 8651648994937976483}
   - component: {fileID: 3804409303917105461}
   - component: {fileID: 8610262822897257494}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Feet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
