@@ -190,19 +190,25 @@ public class ViewAdjust : LocomotionProvider
         else
         {
             // We are a pointcloud.
+#if xxxjack_bad
             // We start by resetting the cameraOffset to known values (for height)
             cameraOffset.transform.Translate(0, -cameraOffset.transform.localPosition.y, 0);
+#else
+            cameraOffset.transform.localPosition = Vector3.zero;
+            cameraOffset.transform.localRotation = Quaternion.identity;
+#endif
             //
             // Now we want to ensure that a camera Y angle of 0 (note: camera, not cameraOffset)
             // corresponds to t world angle of 0 (note: world, not player).
             // We do this by rotating the player.
             //
             float cameraAngle = playerCamera.transform.rotation.eulerAngles.y;
-           float playerAngle = player.transform.rotation.eulerAngles.y;
+            float playerAngle = player.transform.rotation.eulerAngles.y;
             //
             // Rotate the whole player so it is facing in the (virtual) world Z axis direction
             //
-            player.transform.Rotate(0, -cameraAngle - playerAngle, 0);
+            cameraOffset.transform.Rotate(0, -cameraAngle - playerAngle, 0);
+#if xxxjack_bad
             if (forwardIndicator != null)
             {
                 // Rotate the forwardIndicator so it is in the direction of the real-world capture Z axis
@@ -211,6 +217,7 @@ public class ViewAdjust : LocomotionProvider
                 float pointCloudAngle = pointCloudGO.transform.rotation.eulerAngles.y;
                 forwardIndicator.transform.Rotate(0, 0, 0);
             }
+#endif
 
             // now instruct the user position correctly.
             stage = ViewAdjustStage.position;
