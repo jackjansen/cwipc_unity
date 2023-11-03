@@ -239,7 +239,8 @@ public class ViewAdjust : LocomotionProvider
                 // We apparently have captured a pointcloud.
                 //
 
-                Vector3 pcPosition = (Vector3)_pcPosition;
+                Vector3 pcLocalPosition = (Vector3)_pcPosition;
+                Vector3 pcPosition = pointCloudGO.transform.TransformPoint(pcLocalPosition);
                 if (cameraCount < 0)
                 {
                     // Determine number of cameras.
@@ -254,13 +255,14 @@ public class ViewAdjust : LocomotionProvider
                 }
                 if (pointCloudCenterOfGravityIndicator != null)
                 {
-                    pointCloudCenterOfGravityIndicator.localPosition = pcPosition;
+                    pointCloudCenterOfGravityIndicator.position = pcPosition;
                 }
                 if (!tempCameraMoveDone)
                 {
                     // We move the camera to the first point cloud position. We do this only 
                     // once otherwise it will induce motion sickness.
                     tempCameraMoveDone = true;
+                    // xxxjack the next line depends on PointCloudGO having an identity transform
                     tempCameraOffset = pcPosition - playerCamera.transform.position;
                     tempCameraYRotation = (player.transform.rotation.eulerAngles.y - playerCamera.transform.rotation.eulerAngles.y);
                     tempCameraOffset.y = 0;
@@ -269,10 +271,10 @@ public class ViewAdjust : LocomotionProvider
                 }
                
                 // Finally we tell the user how far and where they should move
-                float distance = pcPosition.magnitude;
+                float distance = pcLocalPosition.magnitude;
                 int distanceCm = (int)(distance * 100);
 
-                float angle = Vector3.SignedAngle(Vector3.forward, pcPosition, Vector3.up) - 180;
+                float angle = Vector3.SignedAngle(Vector3.forward, pcLocalPosition, Vector3.up) - 180;
                 int dir = (int)(angle / 30);
                 if (dir <= 0) dir += 12;
 
