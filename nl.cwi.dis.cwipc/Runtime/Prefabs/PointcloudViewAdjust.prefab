@@ -51,7 +51,7 @@ MonoBehaviour:
   pointCloudGO: {fileID: 0}
   pointCloudCenterOfGravityIndicator: {fileID: 4625708138126744661}
   playerCamera: {fileID: 0}
-  cameraZFudgeFactor: -0.1
+  cameraZFudgeFactor: -0.17
   singleCameraCoGForwardMove: 0.1
   heightFactor: 0.001
   viewAdjusted:
