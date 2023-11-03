@@ -189,16 +189,22 @@ public class ViewAdjust : LocomotionProvider
         }
         else
         {
+            //
             // We are a pointcloud.
-            Vector3 tempCameraOffset = Vector3.zero;
-            float tempCameraYRotation = 0;
-#if xxxjack_bad
-            // We start by resetting the cameraOffset to known values (for height)
-            cameraOffset.transform.Translate(0, -cameraOffset.transform.localPosition.y, 0);
-#else
+            //
+          
+            // We start by resetting the cameraOffset to known values.
             cameraOffset.transform.localPosition = Vector3.zero;
             cameraOffset.transform.localRotation = Quaternion.identity;
-#endif
+            //
+            // During calibration, we are going to move the camera once, to coincide with the
+            // pointcloud center of gravity. We undo this move later, before recording calibration
+            // values.
+            //
+            bool tempCameraMoveDone = false;
+            Vector3 tempCameraOffset = Vector3.zero;
+            float tempCameraYRotation = 0;
+
             //
             // Now we want to ensure that a camera Y angle of 0 (note: camera, not cameraOffset)
             // corresponds to t world angle of 0 (note: world, not player).
@@ -210,16 +216,6 @@ public class ViewAdjust : LocomotionProvider
             // Rotate the whole player so it is facing in the (virtual) world Z axis direction
             //
             cameraOffset.transform.Rotate(0, -cameraAngle - playerAngle, 0);
-#if xxxjack_bad
-            if (forwardIndicator != null)
-            {
-                // Rotate the forwardIndicator so it is in the direction of the real-world capture Z axis
-                cameraAngle = playerCamera.transform.rotation.eulerAngles.y;
-                float forwardIndicatorAngle = forwardIndicator.transform.rotation.eulerAngles.y;
-                float pointCloudAngle = pointCloudGO.transform.rotation.eulerAngles.y;
-                forwardIndicator.transform.Rotate(0, 0, 0);
-            }
-#endif
 
             // now instruct the user position correctly.
             stage = ViewAdjustStage.position;
@@ -240,7 +236,7 @@ public class ViewAdjust : LocomotionProvider
                     continue;
                 }
                 //
-                // We apparently have a pointcloud.
+                // We apparently have captured a pointcloud.
                 //
 
                 Vector3 pcPosition = (Vector3)_pcPosition;
@@ -260,12 +256,19 @@ public class ViewAdjust : LocomotionProvider
                 {
                     pointCloudCenterOfGravityIndicator.localPosition = pcPosition;
                 }
-                tempCameraOffset = pcPosition - playerCamera.transform.position;
-                tempCameraYRotation = (player.transform.rotation.eulerAngles.y - playerCamera.transform.rotation.eulerAngles.y);
-                tempCameraOffset.y = 0;
-                cameraOffset.transform.position += tempCameraOffset;
-                cameraOffset.transform.Rotate(0, tempCameraYRotation, 0);
-
+                if (!tempCameraMoveDone)
+                {
+                    // We move the camera to the first point cloud position. We do this only 
+                    // once otherwise it will induce motion sickness.
+                    tempCameraMoveDone = true;
+                    tempCameraOffset = pcPosition - playerCamera.transform.position;
+                    tempCameraYRotation = (player.transform.rotation.eulerAngles.y - playerCamera.transform.rotation.eulerAngles.y);
+                    tempCameraOffset.y = 0;
+                    cameraOffset.transform.position += tempCameraOffset;
+                    cameraOffset.transform.Rotate(0, tempCameraYRotation, 0);
+                }
+               
+                // Finally we tell the user how far and where they should move
                 float distance = pcPosition.magnitude;
                 int distanceCm = (int)(distance * 100);
 
