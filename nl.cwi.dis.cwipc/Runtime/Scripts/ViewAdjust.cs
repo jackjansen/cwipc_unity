@@ -190,6 +190,8 @@ public class ViewAdjust : LocomotionProvider
         else
         {
             // We are a pointcloud.
+            Vector3 tempCameraOffset = Vector3.zero;
+            float tempCameraYRotation = 0;
 #if xxxjack_bad
             // We start by resetting the cameraOffset to known values (for height)
             cameraOffset.transform.Translate(0, -cameraOffset.transform.localPosition.y, 0);
@@ -258,6 +260,10 @@ public class ViewAdjust : LocomotionProvider
                 {
                     pointCloudCenterOfGravityIndicator.localPosition = pcPosition;
                 }
+                tempCameraOffset = pcPosition - playerCamera.transform.position;
+                tempCameraOffset.y = 0;
+                cameraOffset.transform.position += tempCameraOffset;
+
                 float distance = pcPosition.magnitude;
                 int distanceCm = (int)(distance * 100);
 
@@ -288,7 +294,7 @@ public class ViewAdjust : LocomotionProvider
                 yield return new WaitForSeconds(0.3f);
             }
             stage = ViewAdjustStage.done;
-            
+            cameraOffset.transform.position -= tempCameraOffset;
         }
 
         if (BeginLocomotion())
