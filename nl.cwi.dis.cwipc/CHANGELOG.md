@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.20.0] - 2023-11-04
+
+Self-calibration fixes
+
 ## [0.19.0] - 2023-10-30
 
 Self-calibration fix for use without HMD 
