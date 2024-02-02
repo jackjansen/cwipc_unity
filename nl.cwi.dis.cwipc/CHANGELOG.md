@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.21.0] - 2024-02-02
+
+More self-calibration fixes.
+Added get_centroid() method to cwipc.pointcloud.
+
 ## [0.20.0] - 2023-11-04
 
 Self-calibration fixes

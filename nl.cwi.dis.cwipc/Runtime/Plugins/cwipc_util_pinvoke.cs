@@ -524,6 +524,45 @@ namespace Cwipc
 
                 return rv;
             }
+            
+            /// <summary>
+            /// Get the centroid of the point cloud.
+            /// NOTE: this is a fairly expensive operation, use only when absolutely necessary.
+            /// By providing a sampleSize the operation will be cheaper (but less precise)
+            /// </summary>
+            /// <returns>A vector with all the points</returns>
+            public Vector3 get_centroid(int sampleSize=0)
+            {
+                Vector3 rv = Vector3.zero;
+                int npoint = count();
+                int actualPointCount = 0;
+                unsafe
+                {
+                    int nbytes = get_uncompressed_size();
+                    var pointBuffer = new Unity.Collections.NativeArray<point>(npoint, Unity.Collections.Allocator.Temp);
+                    System.IntPtr pointBufferPointer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(pointBuffer);
+                    int ret = copy_uncompressed(pointBufferPointer, nbytes);
+                    if (ret * 16 != nbytes || ret != npoint)
+                    {
+                        throw new Exception("cwipc.pointcloud.get_points unexpected point count");
+                    }
+                    int stepSize = 1;
+                    if (sampleSize> 0)
+                    {
+                        stepSize = (npoint/sampleSize)+1;
+                    }
+                    for (int i = 0; i < npoint; i+=stepSize)
+                    {
+                        rv.x += pointBuffer[i].x;
+                        rv.y += pointBuffer[i].y;
+                        rv.z += pointBuffer[i].z;
+                        actualPointCount++;
+
+                    }
+                }
+
+                return rv / actualPointCount;
+            }
 
             internal IntPtr _intptr()
             {

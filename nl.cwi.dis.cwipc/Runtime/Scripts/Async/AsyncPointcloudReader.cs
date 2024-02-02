@@ -256,42 +256,14 @@ namespace Cwipc
 
         protected bool AnalysePointcloud(cwipc.pointcloud pc, out Vector3 corner1, out Vector3 corner2, out Vector3 centroid)
         {
+            // xxxjack we only compute the centroid, based on a random sample of 300 points.
+            // Otherwise things become far too expensive.
             const int minPointsForAnalysis = 3000; // xxxjack This should probably be a configurable parameter
-            cwipc.PointCloudPoint[] points = pc.get_points();
-            if (points == null || points.Length < minPointsForAnalysis)
-            {
-                corner1 = Vector3.zero;
-                corner2 = Vector3.zero;
-                centroid = Vector3.zero;
-                return false;
-            }
-            float minx = points[0].point.x;
-            float maxx = points[0].point.x;
-            float miny = points[0].point.y;
-            float maxy = points[0].point.y;
-            float minz = points[0].point.z;
-            float maxz = points[0].point.z;
-            float sumx = 0;
-            float sumy = 0;
-            float sumz = 0;
-            foreach(var p in points)
-            {
-                Vector3 point = p.point;
-                if (point.x < minx) minx = point.x;
-                if (point.x > maxx) maxx = point.x;
-                if (point.y < miny) miny = point.y;
-                if (point.y > maxy) maxy = point.y;
-                if (point.z < minz) minz = point.z;
-                if (point.z > maxz) maxz = point.z;
-                sumx += point.x;
-                sumy += point.y;
-                sumz += point.z;
-            }
-            corner1 = new Vector3(minx, miny, minz);
-            corner2 = new Vector3(maxx, maxy, maxz);
-            int nPoints = points.Length;
-            centroid = new Vector3(sumx / nPoints, sumy / nPoints, sumz / nPoints);
-            return true;
+            
+            corner1 = Vector3.zero;
+            corner2 = Vector3.zero;
+            centroid = pc.get_centroid(minPointsForAnalysis);
+            return pc.count() >= minPointsForAnalysis;
         }
 
 #if VRT_WITH_STATS
