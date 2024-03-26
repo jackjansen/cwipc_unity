@@ -3,8 +3,9 @@
 This repository, <https://github.com/cwi-dis/cwipc_unity>, contains a Unity package `nl.cwi.dis.cwipc` that allows capture and display of
 point clouds and various operations such as compression for transmission, reading and writing to disk, etc.
 
-It is part of the <https://github.com/cwi-dis/cwipc> cwipc pointcloud suite.
+It is part of the <https://github.com/cwi-dis/cwipc> cwipc pointcloud suite, and it depends on the native libraries from `cwipc` installed on your machine.
 
+Checking out this repository is only useful if you want to **modify** the `cwipc_unity` package.
 See the [README for nl.cwi.dis.cwipc](nl.cwi.dis.cwipc/README.md) for more details on **using** the cwipc package in your own Unity projects.
 
 If you want to **develop** on the package (i.e. modify it) you should check out this whole repository, and open the `cwipc_unity_develop` Unity project. That project includes the `nl.cwi.dis.cwipc` package using symbolic links, so any changes you make to it can be committed to git.

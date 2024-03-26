@@ -23,7 +23,7 @@ pointcloud suite.
 
 - You must first install the `cwipc` libraries, utilities and
   dependencies onto your computer. Follow the instructions on
-  <https://github.com/cwi-dis/cwipc
+  <https://github.com/cwi-dis/cwipc>
   - When developing for the Oculus Quest you do _not_ have to install the
     cwipc libraries for the Quest: those are already included in this 
 	package. But you probably want to install the libraries for your
