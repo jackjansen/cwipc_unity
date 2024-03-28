@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.5.0] - 2024-03-26
+## [7.5.1] - 2024-03-28
 
 - First official release.
 - Version numbers now match cwipc version numbering scheme.
