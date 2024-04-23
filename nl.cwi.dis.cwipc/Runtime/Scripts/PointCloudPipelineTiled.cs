@@ -23,7 +23,9 @@ namespace Cwipc
         public enum SourceType
         {
             TCP,
+#if CWIPC_WITH_WEBRTC
             WebRTC
+#endif
         };
         [Tooltip("Type of source to create")]
         [SerializeField] public SourceType sourceType;
@@ -132,11 +134,13 @@ namespace Cwipc
             //
             // Create the receiver
             //
+#if CWIPC_WITH_WEBRTC
             if (sourceType == SourceType.WebRTC)
             {
                 PCreceiver = new AsyncWebRTCPCReader(inputUrl, fourcc, tileDescription);
             }
             else
+#endif
             {
                 PCreceiver = new AsyncTCPPCReader(inputUrl, fourcc, tileDescription);
             }

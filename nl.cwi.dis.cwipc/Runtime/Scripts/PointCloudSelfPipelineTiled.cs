@@ -54,11 +54,13 @@ namespace Cwipc
 
            string fourcc = compressedInputStream ? "cwi1" : "cwi0";
             RendererInputQueue = new QueueThreadSafe("DecoderOutputQueue", 2, false);
+#if CWIPC_WITH_WEBRTC
             if (isWebRTC)
             {
                 PCreceiver = new AsyncWebRTCReader(inputUrl, fourcc, ReaderRenderQueue);
             }
             else
+#endif
             {
                 PCreceiver = new AsyncTCPReader(inputUrl, fourcc, ReaderRenderQueue);
             }

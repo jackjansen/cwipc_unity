@@ -62,12 +62,14 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
         PointCloudSelfPipelineTiled pipeline = selfPipeline.GetComponentInChildren<PointCloudSelfPipelineTiled>();
         AbstractPointCloudSink transmitter = pipeline?.transmitter;
         if (transmitter == null) Debug.LogError($"SampleTowUserSessionController: transmitter is null for {selfPipeline}");
+#if CWIPC_WITH_WEBRTC
         if (useWebRTC)
         {
             transmitter.sinkType = AbstractPointCloudSink.SinkType.WebRTC;
             transmitter.outputUrl = webRTCURL;
         }
         else
+#endif
         {
             transmitter.sinkType = AbstractPointCloudSink.SinkType.TCP;
             transmitter.outputUrl = $"tcp://{firstHost}:4303";
@@ -110,12 +112,14 @@ public class SampleTwoUserTilingSessionController : SampleTwoUserSessionControll
 
         PointCloudPipelineTiled receiver = otherPipeline.GetComponentInChildren<PointCloudPipelineTiled>();
         if (receiver == null) Debug.LogError($"SampleTowUserSessionController: receiver is null for {otherPipeline}");
+#if CWIPC_WITH_WEBRTC
         if (useWebRTC)
         {
             receiver.sourceType = PointCloudPipelineTiled.SourceType.WebRTC;
             receiver.inputUrl = webRTCURL;
         }
         else
+#endif
         {
             receiver.sourceType = PointCloudPipelineTiled.SourceType.TCP;
             receiver.inputUrl = $"tcp://{secondHost}:4303";

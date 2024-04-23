@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.5.2] - 2024-04-23
+## [7.5.3] - 2024-04-23
 
 - Removed WetRTC files that should not have been there and are unused.
 

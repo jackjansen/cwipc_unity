@@ -17,7 +17,9 @@ namespace Cwipc
         public enum SinkType
         {
             TCP,
+#if CWIPC_WITH_WEBRTC
             WebRTC
+#endif
         }
         [Tooltip("Type of output sink (protocol)")]
         [SerializeField] public SinkType sinkType;
