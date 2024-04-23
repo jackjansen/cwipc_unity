@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.5.2] - 2024-04-23
+
+- Removed WetRTC files that should not have been there and are unused.
+
 ## [7.5.1] - 2024-03-28
 
 - First official release.
