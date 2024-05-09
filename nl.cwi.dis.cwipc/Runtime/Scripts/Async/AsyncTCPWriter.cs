@@ -24,7 +24,8 @@ namespace Cwipc
     /// </summary>
     public class AsyncTCPWriter : AsyncWriter
     {
-   
+        protected bool initialized = false;
+
 
         protected struct TCPStreamDescription
         {
@@ -233,7 +234,11 @@ namespace Cwipc
         /// <param name="_url">Where the server should ser on</param>
         /// <param name="fourcc">4CC media type</param>
         /// <param name="_descriptions">Array of stream descriptions</param>
-        public AsyncTCPWriter(string _url, string fourcc, OutgoingStreamDescription[] _descriptions) : base()
+        public AsyncTCPWriter(string _url, string fourcc, OutgoingStreamDescription[] _descriptions) : this()
+        {
+            Init(_url, fourcc, _descriptions);
+        }
+        public void Init(string _url, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
             NoUpdateCallsNeeded();
             if (_descriptions == null || _descriptions.Length == 0)
@@ -272,6 +277,7 @@ namespace Cwipc
             }
             descriptions = ourDescriptions;
             Start();
+            initialized = true;
         }
 
         protected override void Start()

@@ -10,9 +10,18 @@ namespace Cwipc
 
     public class AsyncTCPPCReader : AsyncTCPReader
     {
-        public AsyncTCPPCReader(string _url, string fourcc, IncomingTileDescription[] _tileDescriptors)
-        : base(_url)
+        public AsyncTCPPCReader() : base()
         {
+        }
+        public AsyncTCPPCReader(string _url, string fourcc, IncomingTileDescription[] _tileDescriptors)
+        : this()
+        {
+            Init(_url, fourcc, _tileDescriptors);
+        }
+
+        public void Init(string _url, string fourcc, IncomingTileDescription[] _tileDescriptors)
+        {
+            Init(_url);
             lock (this)
             {
                 int nTiles = _tileDescriptors.Length;
@@ -31,6 +40,7 @@ namespace Cwipc
                     receivers[ti] = ri;
                 }
                 Start();
+                initialized = true;
             }
         }
 

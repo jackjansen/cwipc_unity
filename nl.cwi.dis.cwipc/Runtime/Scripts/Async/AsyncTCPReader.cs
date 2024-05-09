@@ -22,7 +22,7 @@ namespace Cwipc
     /// </summary>
     public class AsyncTCPReader : AsyncReader
     {
-
+        protected bool initialized = false;
         protected Uri url;
         protected class ReceiverInfo
         {
@@ -248,6 +248,12 @@ namespace Cwipc
         TCPPullThread[] threads;
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
+        /// <summary>
+        /// Constructor that needs a separate Init() call later.
+        /// </summary>
+        protected AsyncTCPReader() : base()
+        {
+        }
 
         /// <summary>
         /// Constructor that can be used by subclasses to create a multi-tile receiver.
@@ -255,7 +261,12 @@ namespace Cwipc
         /// The subclass could initialize the receivers array and call Start().
         /// </summary>
         /// <param name="_url">The base URL for the streams</param>
-        protected AsyncTCPReader(string _url) : base()
+        protected AsyncTCPReader(string _url) : this()
+        {
+            Init(_url);
+        }
+
+        protected void Init(string _url)
         {
             NoUpdateCallsNeeded();
             lock (this)
@@ -276,7 +287,6 @@ namespace Cwipc
                     Debug.LogError($"{Name()}: configuration error: url misses host or port");
                     throw new System.Exception($"{Name()}: configuration error: url misses host or port");
                 }
-
             }
         }
 
@@ -287,8 +297,14 @@ namespace Cwipc
         /// <param name="_url">The server to connect to</param>
         /// <param name="fourcc">The 4CC of the frames expected on the stream</param>
         /// <param name="outQueue">The queue into which received frames will be deposited</param>
-        public AsyncTCPReader(string _url, string fourcc, QueueThreadSafe outQueue) : this(_url)
+        public AsyncTCPReader(string _url, string fourcc, QueueThreadSafe outQueue) : this()
         {
+            Init(_url, fourcc, outQueue);
+        }
+
+        public void Init(string _url, string fourcc, QueueThreadSafe outQueue)
+        {
+            Init(_url);
             lock (this)
             {
                 receivers = new ReceiverInfo[]
@@ -302,7 +318,7 @@ namespace Cwipc
                     },
                 };
                 Start();
-
+                initialized = true;
             }
         }
 
