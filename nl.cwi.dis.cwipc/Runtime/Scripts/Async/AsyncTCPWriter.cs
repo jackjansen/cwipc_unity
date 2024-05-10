@@ -238,7 +238,7 @@ namespace Cwipc
         {
             Init(_url, fourcc, _descriptions);
         }
-        public void Init(string _url, string fourcc, OutgoingStreamDescription[] _descriptions)
+        public AsyncTCPWriter Init(string _url, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
             NoUpdateCallsNeeded();
             if (_descriptions == null || _descriptions.Length == 0)
@@ -278,6 +278,7 @@ namespace Cwipc
             descriptions = ourDescriptions;
             Start();
             initialized = true;
+            return this;
         }
 
         protected override void Start()

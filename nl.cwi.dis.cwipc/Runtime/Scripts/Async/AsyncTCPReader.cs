@@ -266,7 +266,7 @@ namespace Cwipc
             Init(_url);
         }
 
-        protected void Init(string _url)
+        protected AsyncTCPReader Init(string _url)
         {
             NoUpdateCallsNeeded();
             lock (this)
@@ -288,6 +288,7 @@ namespace Cwipc
                     throw new System.Exception($"{Name()}: configuration error: url misses host or port");
                 }
             }
+            return this;
         }
 
         /// <summary>
@@ -302,7 +303,7 @@ namespace Cwipc
             Init(_url, fourcc, outQueue);
         }
 
-        public void Init(string _url, string fourcc, QueueThreadSafe outQueue)
+        public AsyncTCPReader Init(string _url, string fourcc, QueueThreadSafe outQueue)
         {
             Init(_url);
             lock (this)
@@ -320,6 +321,7 @@ namespace Cwipc
                 Start();
                 initialized = true;
             }
+            return this;
         }
 
         public override void Stop()

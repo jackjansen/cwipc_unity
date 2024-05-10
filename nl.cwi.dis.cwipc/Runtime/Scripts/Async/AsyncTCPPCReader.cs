@@ -19,7 +19,7 @@ namespace Cwipc
             Init(_url, fourcc, _tileDescriptors);
         }
 
-        public void Init(string _url, string fourcc, IncomingTileDescription[] _tileDescriptors)
+        public AsyncTCPPCReader Init(string _url, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
             Init(_url);
             lock (this)
@@ -42,6 +42,7 @@ namespace Cwipc
                 Start();
                 initialized = true;
             }
+            return this;
         }
 
         public void setTileQualityIndex(int tileIndex, int qualityIndex)
