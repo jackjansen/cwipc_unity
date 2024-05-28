@@ -1,5 +1,10 @@
 # Changelog
 
+## [7.5.4] - 2024-05-28
+
+- Fixed PrerecordedPointCloudReader issue (#33)
+- TCP protocol constructor signatures added (#32)
+
 ## [7.5.3] - 2024-04-23
 
 - Removed WetRTC files that should not have been there and are unused.
