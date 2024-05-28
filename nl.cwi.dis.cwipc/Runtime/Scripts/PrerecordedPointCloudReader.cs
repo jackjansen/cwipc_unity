@@ -55,7 +55,7 @@ namespace Cwipc
             }
         }
 
-        private void Start()
+        private void Awake()
         {
             myQueue = new QueueThreadSafe($"{Name()}.queue");
             if(dirName != null && dirName != "") InitReader();
