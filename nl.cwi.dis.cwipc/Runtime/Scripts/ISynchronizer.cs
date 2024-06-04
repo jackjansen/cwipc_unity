@@ -32,7 +32,7 @@ namespace Cwipc
         /// reported by all users of this synchronizer during the current frame.
         /// </summary>
         /// <returns>Timestamp in milliseconds</returns>
-        public Timestamp GetBestTimestampForCurrentFrame();
+        public Timestamp GetBestTimestampForCurrentFrame(bool isAudio=false);
         /// <summary>
         /// True if the synchronizer is in debug mode, clients should print out information on synchronization decisions.
         /// </summary>
