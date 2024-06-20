@@ -393,7 +393,7 @@ namespace Cwipc
             Timedelta encoderQueuedDuration = 0;
             if (outQueue == null || outQueue.IsClosed())
             {
-                Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
+                // This is not an error, we are probably closing. Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
                 didDropSelfView = true;
             }
             else

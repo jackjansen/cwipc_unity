@@ -1479,7 +1479,6 @@ namespace Cwipc
             internal extern static IntPtr cwipc_new_decoder(ref IntPtr errorMessage, ulong apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
         }
 
-        static bool cwipc_codec_loaded = false;
 #endif
         private delegate IntPtr delegate_cwipc_synthetic(int fps, int npoints, ref IntPtr errorMessage, ulong apiVersion);
         private delegate IntPtr delegate_cwipc_realsense2(string filename, ref IntPtr errorMessage, ulong apiVersion);
