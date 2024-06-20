@@ -931,7 +931,7 @@ namespace Cwipc
                 {
                     throw new CwipcException("cwipc.capturer: returned null without setting error message");
                 }
-                throw new CwipcException($"cwipc.capturer: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.capturer: {Marshal.PtrToStringAnsi(errorPtr)}. This may be a cwipc installation issue, see https://github.com/cwi-dis/cwipc .");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -995,7 +995,7 @@ namespace Cwipc
                 {
                     throw new CwipcException("cwipc.realsense2: returned null without setting error message");
                 }
-                throw new CwipcException($"cwipc.realsense2: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.realsense2: {Marshal.PtrToStringAnsi(errorPtr)}. This may be a cwipc installation issue, see https://github.com/cwi-dis/cwipc . ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -1027,7 +1027,7 @@ namespace Cwipc
                 {
                     throw new CwipcException("cwipc.kinect: returned null without setting error message");
                 }
-                throw new CwipcException($"cwipc.kinect: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.kinect: {Marshal.PtrToStringAnsi(errorPtr)}. This may be a cwipc installation issue, see https://github.com/cwi-dis/cwipc . ");
             }
             if (errorPtr != IntPtr.Zero)
             {
