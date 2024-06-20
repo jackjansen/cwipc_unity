@@ -1552,10 +1552,9 @@ namespace Cwipc
             }
             catch (System.TypeLoadException e)
             {
-                UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_util DLL.");
-                UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
-                UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
+                UnityEngine.Debug.Log($"cwipc: cannot load cwipc_util DLL.");
+                UnityEngine.Debug.Log($"cwipc: Exception while loading cwipc_util: {e.ToString()}");
+                throw new CwipcException("cwipc: Native DLLs not installed correctly. See https://github.com/cwi-dis/cwipc for instructions on installing the native cwipc package.");
             }
 #endif
         }
@@ -1610,10 +1609,9 @@ namespace Cwipc
             catch (System.TypeLoadException e)
             {
                 if (!required) return;
-                UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_realsense2 DLL.");
-                UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
-                UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
+                UnityEngine.Debug.Log($"cwipc: cannot load cwipc_realsense2 DLL.");
+                UnityEngine.Debug.Log($"cwipc: Exception while loading cwipc_realsense2: {e.ToString()}");
+                throw new CwipcException("cwipc: Native DLLs not installed correctly. See https://github.com/cwi-dis/cwipc for instructions on installing the native cwipc package.");
             }
 #endif
         }
@@ -1668,10 +1666,9 @@ namespace Cwipc
             catch (System.TypeLoadException e)
             {
                 if (!required) return;
-                UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_kinect DLL.");
-                UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
-                UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
+                UnityEngine.Debug.Log($"cwipc: cannot load cwipc_kinect DLL.");
+                UnityEngine.Debug.Log($"cwipc: Exception while loading cwipc_kinect: {e.ToString()}");
+                throw new CwipcException("cwipc: Native DLLs not installed correctly. See https://github.com/cwi-dis/cwipc for instructions on installing the native cwipc package.");
             }
 #endif
         }
@@ -1724,10 +1721,9 @@ namespace Cwipc
             }
             catch (System.TypeLoadException e)
             {
-                UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_codec DLL.");
-                UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
-                UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
+                UnityEngine.Debug.Log($"cwipc: cannot load cwipc_codec DLL.");
+                UnityEngine.Debug.Log($"cwipc: Exception while loading cwipc_codec: {e.ToString()}");
+                throw new CwipcException("cwipc: Native DLLs not installed correctly. See https://github.com/cwi-dis/cwipc for instructions on installing the native cwipc package.");
             }
 #endif
         }
