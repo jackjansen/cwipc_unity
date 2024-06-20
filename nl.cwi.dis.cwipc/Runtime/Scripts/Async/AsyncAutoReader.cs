@@ -14,26 +14,14 @@ namespace Cwipc
             {
                 frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
             }
-            try
+            reader = cwipc.capturer(_configFilename);
+            if (reader == null)
             {
-                reader = cwipc.capturer(_configFilename);
-                if (reader != null)
-                {
-                    Start();
-                    Debug.Log("{Name()}: Started.");
-                }
-                else
-                    throw new System.Exception($"{Name()}: cwipc_capturer could not be created"); // Should not happen, should throw exception
+                throw new System.Exception($"{Name()}: cwipc_capturer could not be created, but no CwipcException raised?"); // Should not happen, should throw exception
             }
-            catch (System.DllNotFoundException e)
-            {
-                throw new System.Exception($"{Name()}: support for generic grabber not installed on this computer. Missing DLL {e.Message}.");
-            }
-            catch (System.Exception e)
-            {
-                Debug.Log($"{Name()}: caught System.exception {e.Message}");
-                throw;
-            }
+            Start();
+            Debug.Log("{Name()}: Started.");
+
         }
-	}
+    }
 }

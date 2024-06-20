@@ -43,6 +43,7 @@ namespace Cwipc
         public UnityEvent finished;
         private bool started_emitted = false;
         private bool finished_emitted = false;
+        private bool warned_about_preparer_missing = false;
 
         [Header("Introspection (for debugging)")]
         [Tooltip("Renderer name (logging and statistics)")]
@@ -133,8 +134,12 @@ namespace Cwipc
         private void Update()
         {
             if (preparer == null) {
-            	Debug.Log($"{Name()}: Update() called but no preparer set");
-            	return;
+                if (!warned_about_preparer_missing)
+                {
+                    Debug.LogWarning($"{Name()}: Update() called but no preparer set");
+                    warned_about_preparer_missing = true;
+                }
+                return;
 			}
             _PreparerName = preparer.Name();
             preparer.Synchronize();
