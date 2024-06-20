@@ -8,6 +8,25 @@ namespace Cwipc
     using Timedelta = System.Int64;
 
     /// <summary>
+    /// Exception for cwipc-related errors.
+    /// </summary>
+    public class CwipcException : Exception
+    {
+        public CwipcException()
+        {
+        }
+
+        public CwipcException(string message)
+            : base(message)
+        {
+        }
+
+        public CwipcException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
+    }
+    /// <summary>
     /// C# interface to cwipc dynamic libraries. 
     /// </summary>
     public class cwipc
@@ -293,7 +312,7 @@ namespace Cwipc
             protected IntPtr _pointer;
             internal cwipc_auxiliary_data(IntPtr pointer)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata created with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc_auxdata created with NULL pointer argument");
                 _pointer = pointer;
             }
 #if CWIPC_UNUSED
@@ -310,33 +329,33 @@ namespace Cwipc
 
             public int count()
             {
-                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.count called with NULL pointer argument");
+                if (_pointer == IntPtr.Zero) throw new CwipcException("cwipc_auxdata.count called with NULL pointer argument");
                 return _API_cwipc_util.cwipc_auxiliary_data_count(_pointer);
             }
 
             public string name(int idx)
             {
-                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.name called with NULL pointer argument");
+                if (_pointer == IntPtr.Zero) throw new CwipcException("cwipc_auxdata.name called with NULL pointer argument");
                 IntPtr aux_name = _API_cwipc_util.cwipc_auxiliary_data_name(_pointer, idx);
                 return Marshal.PtrToStringAnsi(aux_name);
             }
 
             public string description(int idx)
             {
-                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.description called with NULL pointer argument");
+                if (_pointer == IntPtr.Zero) throw new CwipcException("cwipc_auxdata.description called with NULL pointer argument");
                 IntPtr aux_description = _API_cwipc_util.cwipc_auxiliary_data_description(_pointer, idx);
                 return Marshal.PtrToStringAnsi(aux_description);
             }
 
             public IntPtr pointer(int idx)
             {
-                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.pointer called with NULL pointer argument");
+                if (_pointer == IntPtr.Zero) throw new CwipcException("cwipc_auxdata.pointer called with NULL pointer argument");
                 return _API_cwipc_util.cwipc_auxiliary_data_pointer(_pointer, idx);
             }
 
             public int size(int idx)
             {
-                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.size called with NULL pointer argument");
+                if (_pointer == IntPtr.Zero) throw new CwipcException("cwipc_auxdata.size called with NULL pointer argument");
                 return _API_cwipc_util.cwipc_auxiliary_data_size(_pointer, idx);
             }
 
@@ -358,7 +377,7 @@ namespace Cwipc
             internal pointcloud(IntPtr _pointer) : base(_pointer)
             {
                 if (_pointer == IntPtr.Zero)
-                    throw new Exception("cwipc.pointcloud called with NULL pointer argument");
+                    throw new CwipcException("cwipc.pointcloud called with NULL pointer argument");
                 // This is a hack. We copy the timestamp from the cwipc data to our info structure.
                 metadata.timestamp = timestamp();
             }
@@ -370,7 +389,7 @@ namespace Cwipc
 
             protected override void onfree()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.onfree called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.onfree called with NULL pointer");
                 _API_cwipc_util.cwipc_free(pointer);
             }
 
@@ -380,7 +399,7 @@ namespace Cwipc
             /// <returns>millisecond timestamp</returns>
             public Timestamp timestamp()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.timestamp called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.timestamp called with NULL pointer");
                 return _API_cwipc_util.cwipc_timestamp(pointer);
             }
 
@@ -390,7 +409,7 @@ namespace Cwipc
             /// <param name="timestamp">timestamp in milliseconds</param>
             public void _set_timestamp(Timestamp timestamp)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_timestamp called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud._set_timestamp called with NULL pointer");
                 _API_cwipc_util.cwipc__set_timestamp(pointer, timestamp);
                 metadata.timestamp = timestamp;
             }
@@ -401,7 +420,7 @@ namespace Cwipc
             /// <returns>Number of points</returns>
             public int count()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.count called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.count called with NULL pointer");
                 return _API_cwipc_util.cwipc_count(pointer);
 
             }
@@ -412,7 +431,7 @@ namespace Cwipc
             /// <returns>edge size (meters)</returns>
             public float cellsize()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.cellsize called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.cellsize called with NULL pointer");
                 return _API_cwipc_util.cwipc_cellsize(pointer);
             }
 
@@ -422,7 +441,7 @@ namespace Cwipc
             /// <param name="cellsize">edge size in meters</param>
             public void _set_cellsize(float cellsize)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_cellsize called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud._set_cellsize called with NULL pointer");
                 _API_cwipc_util.cwipc__set_cellsize(pointer, cellsize);
             }
 
@@ -432,7 +451,7 @@ namespace Cwipc
             /// <returns>size in bytes</returns>
             public int get_uncompressed_size()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.get_uncompressed_size called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.get_uncompressed_size called with NULL pointer");
                 return (int)_API_cwipc_util.cwipc_get_uncompressed_size(pointer);
             }
 
@@ -444,7 +463,7 @@ namespace Cwipc
             /// <returns>number of points copied</returns>
             public int copy_uncompressed(IntPtr data, int size)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.copy_uncompressed called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.copy_uncompressed called with NULL pointer");
                 return _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (IntPtr)size);
             }
 
@@ -458,7 +477,7 @@ namespace Cwipc
             /// <returns>Number of bytes copied</returns>
             public int copy_packet(IntPtr data, int size)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.copy_uncompressed called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.copy_uncompressed called with NULL pointer");
                 return (int)_API_cwipc_util.cwipc_copy_packet(pointer, data, (IntPtr)size);
             }
 
@@ -480,7 +499,7 @@ namespace Cwipc
                 }
                 if (actualSize != size)
                 {
-                    throw new System.Exception($"cwipc.get_packet: size={actualSize} after promising {size}");
+                    throw new CwipcException($"cwipc.get_packet: size={actualSize} after promising {size}");
                 }
                 return rv;
             }
@@ -491,7 +510,7 @@ namespace Cwipc
             /// <returns></returns>
             public cwipc_auxiliary_data access_auxiliary_data()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.access_auxiliary_data called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.access_auxiliary_data called with NULL pointer");
                 return new cwipc_auxiliary_data(_API_cwipc_util.cwipc_access_auxiliary_data(pointer));
             }
 
@@ -512,7 +531,7 @@ namespace Cwipc
                     int ret = copy_uncompressed(pointBufferPointer, nbytes);
                     if (ret * 16 != nbytes || ret != npoint)
                     {
-                        throw new Exception("cwipc.pointcloud.get_points unexpected point count");
+                        throw new CwipcException("cwipc.pointcloud.get_points unexpected point count");
                     }
                     for (int i = 0; i < npoint; i++)
                     {
@@ -544,7 +563,7 @@ namespace Cwipc
                     int ret = copy_uncompressed(pointBufferPointer, nbytes);
                     if (ret * 16 != nbytes || ret != npoint)
                     {
-                        throw new Exception("cwipc.pointcloud.get_points unexpected point count");
+                        throw new CwipcException("cwipc.pointcloud.get_points unexpected point count");
                     }
                     int stepSize = 1;
                     if (sampleSize> 0)
@@ -577,12 +596,12 @@ namespace Cwipc
         {
             internal source(IntPtr _pointer) : base(_pointer)
             {
-                if (_pointer == IntPtr.Zero) throw new Exception("cwipc.source called with NULL pointer argument");
+                if (_pointer == IntPtr.Zero) throw new CwipcException("cwipc.source called with NULL pointer argument");
             }
 
             protected override void onfree()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.onfree called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.source.onfree called with NULL pointer");
                 _API_cwipc_util.cwipc_source_free(pointer);
             }
 
@@ -593,7 +612,7 @@ namespace Cwipc
             /// <returns>The pointcloud (or null if none could be produced)</returns>
             public pointcloud get()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.get called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.source.get called with NULL pointer");
                 IntPtr pc = _API_cwipc_util.cwipc_source_get(pointer);
                 if (pc == IntPtr.Zero) return null;
                 return new pointcloud(pc);
@@ -605,7 +624,7 @@ namespace Cwipc
             /// <returns>True if at end of pointclouds</returns>
             public bool eof()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.eof called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.source.eof called with NULL pointer");
                 return _API_cwipc_util.cwipc_source_eof(pointer);
             }
 
@@ -616,7 +635,7 @@ namespace Cwipc
             /// <returns>True if a subsequent call to <see cref="get"/> will return a valid pointcloud</returns>
             public bool available(bool wait)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.available called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.source.available called with NULL pointer");
                 return _API_cwipc_util.cwipc_source_available(pointer, wait);
             }
 
@@ -628,7 +647,7 @@ namespace Cwipc
             /// <returns>True if the named auxiliary data is available from this capturer</returns>
             public bool request_auxiliary_data(string name)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.request_auxiliary_data called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.source.request_auxiliary_data called with NULL pointer");
                 return _API_cwipc_util.cwipc_source_request_auxiliary_data(pointer, name);
             }
 
@@ -638,7 +657,7 @@ namespace Cwipc
             /// <param name="name"></param>
             public void auxiliary_data_requested(string name)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.auxiliary_data_requested called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.source.auxiliary_data_requested called with NULL pointer");
                 _API_cwipc_util.cwipc_source_auxiliary_data_requested(pointer, name);
             }
 
@@ -650,7 +669,7 @@ namespace Cwipc
             /// <returns>tile information array</returns>
             public tileinfo[] get_tileinfo()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.get_tileinfo called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.source.get_tileinfo called with NULL pointer");
                 int maxTile = _API_cwipc_util.cwipc_tiledsource_maxtile(pointer);
                 if (maxTile == 0) return null;
                 tileinfo[] rv = new tileinfo[maxTile];
@@ -670,7 +689,7 @@ namespace Cwipc
         {
             internal decoder(IntPtr _obj) : base(_obj)
             {
-                if (_obj == IntPtr.Zero) throw new Exception("cwipc.decoder: constructor called with null pointer");
+                if (_obj == IntPtr.Zero) throw new CwipcException("cwipc.decoder: constructor called with null pointer");
             }
 
 
@@ -681,7 +700,7 @@ namespace Cwipc
             /// <param name="len">Size in bytes of <c>compFrame</c></param>
             public void feed(IntPtr compFrame, int len)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.decoder.feed called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.decoder.feed called with NULL pointer");
                 _API_cwipc_codec.cwipc_decoder_feed(pointer, compFrame, len);
             }
 
@@ -691,7 +710,7 @@ namespace Cwipc
             /// </summary>
             public void close()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.decoder.close called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.decoder.close called with NULL pointer");
                 _API_cwipc_codec.cwipc_decoder_close(pointer);
             }
 
@@ -710,12 +729,12 @@ namespace Cwipc
         {
             internal encoder(IntPtr _obj) : base(_obj)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder called with NULL pointer argument");
             }
 
             protected override void onfree()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.onfree called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.onfree called with NULL pointer");
                 _API_cwipc_codec.cwipc_encoder_free(pointer);
             }
 
@@ -726,7 +745,7 @@ namespace Cwipc
             /// <param name="pc">The pointcloud</param>
             public void feed(pointcloud pc)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.feed called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder.feed called with NULL pointer argument");
                 _API_cwipc_codec.cwipc_encoder_feed(pointer, pc.pointer);
             }
 
@@ -736,7 +755,7 @@ namespace Cwipc
             /// </summary>
             public void close()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.close called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder.close called with NULL pointer argument");
                 _API_cwipc_codec.cwipc_encoder_close(pointer);
             }
 
@@ -746,7 +765,7 @@ namespace Cwipc
             /// <returns>True if at end of pointclouds</returns>
             public bool eof()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.eof called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder.eof called with NULL pointer argument");
                 return _API_cwipc_codec.cwipc_encoder_eof(pointer);
             }
 
@@ -757,7 +776,7 @@ namespace Cwipc
             /// <returns>True if a data buffer is available</returns>
             public bool available(bool wait)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.available called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder.available called with NULL pointer argument");
                 return _API_cwipc_codec.cwipc_encoder_available(pointer, wait);
             }
 
@@ -767,7 +786,7 @@ namespace Cwipc
             /// <returns>Size in bytes</returns>
             public int get_encoded_size()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.get_encoded_size called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder.get_encoded_size called with NULL pointer argument");
                 return (int)_API_cwipc_codec.cwipc_encoder_get_encoded_size(pointer);
             }
 
@@ -779,7 +798,7 @@ namespace Cwipc
             /// <returns></returns>
             public bool copy_data(IntPtr data, int size)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.copy_data called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder.copy_data called with NULL pointer argument");
                 return _API_cwipc_codec.cwipc_encoder_copy_data(pointer, data, (IntPtr)size);
             }
 
@@ -790,7 +809,7 @@ namespace Cwipc
             /// <returns>True when at a GOP boundary</returns>
             public bool at_gop_boundary()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encoder.at_gop_boundary called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encoder.at_gop_boundary called with NULL pointer argument");
                 return _API_cwipc_codec.cwipc_encoder_at_gop_boundary(pointer);
             }
 
@@ -806,12 +825,12 @@ namespace Cwipc
         {
             internal encodergroup(IntPtr _obj) : base(_obj)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encodergroup called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encodergroup called with NULL pointer argument");
             }
 
             protected override void onfree()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.onfree called with NULL pointer");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.pointcloud.onfree called with NULL pointer");
                 _API_cwipc_codec.cwipc_encodergroup_free(pointer);
             }
 
@@ -823,7 +842,7 @@ namespace Cwipc
             /// <param name="pc">The pointcloud</param>
             public void feed(pointcloud pc)
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encodergroup.feed called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encodergroup.feed called with NULL pointer argument");
                 _API_cwipc_codec.cwipc_encodergroup_feed(pointer, pc.pointer);
             }
 
@@ -833,7 +852,7 @@ namespace Cwipc
             /// </summary>
             public void close()
             {
-                if (pointer == IntPtr.Zero) throw new Exception("cwipc.encodergroup.close called with NULL pointer argument");
+                if (pointer == IntPtr.Zero) throw new CwipcException("cwipc.encodergroup.close called with NULL pointer argument");
                 _API_cwipc_codec.cwipc_encodergroup_close(pointer);
             }
 
@@ -850,9 +869,9 @@ namespace Cwipc
                 {
                     if (errorPtr == IntPtr.Zero)
                     {
-                        throw new Exception("cwipc.encodergroup.addencoder: returned null without setting error message");
+                        throw new CwipcException("cwipc.encodergroup.addencoder: returned null without setting error message");
                     }
-                    throw new Exception($"cwipc_encoder_addencoder: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                    throw new CwipcException($"cwipc_encoder_addencoder: {Marshal.PtrToStringAnsi(errorPtr)} ");
                 }
                 if (errorPtr != IntPtr.Zero)
                 {
@@ -883,9 +902,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.synthetic: returned null without setting error message");
+                    throw new CwipcException("cwipc.synthetic: returned null without setting error message");
                 }
-                throw new Exception($"cwipc.synthetic: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.synthetic: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -910,9 +929,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.capturer: returned null without setting error message");
+                    throw new CwipcException("cwipc.capturer: returned null without setting error message");
                 }
-                throw new Exception($"cwipc.capturer: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.capturer: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -942,9 +961,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.proxy: returned null without setting error message");
+                    throw new CwipcException("cwipc.proxy: returned null without setting error message");
                 }
-                throw new Exception($"cwipc.proxy: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.proxy: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -974,9 +993,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.realsense2: returned null without setting error message");
+                    throw new CwipcException("cwipc.realsense2: returned null without setting error message");
                 }
-                throw new Exception($"cwipc.realsense2: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.realsense2: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -1006,9 +1025,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.kinect: returned null without setting error message");
+                    throw new CwipcException("cwipc.kinect: returned null without setting error message");
                 }
-                throw new Exception($"cwipc.kinect: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc.kinect: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -1034,9 +1053,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.new_decoder: returned null without setting error message");
+                    throw new CwipcException("cwipc.new_decoder: returned null without setting error message");
                 }
-                throw new Exception($"cwipc_new_decoder: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_new_decoder: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -1064,9 +1083,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.new_encoder: returned null without setting error message");
+                    throw new CwipcException("cwipc.new_encoder: returned null without setting error message");
                 }
-                throw new Exception($"cwipc_new_encoder: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_new_encoder: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -1094,9 +1113,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.new_encodergroup: returned null without setting error message");
+                    throw new CwipcException("cwipc.new_encodergroup: returned null without setting error message");
                 }
-                throw new Exception($"cwipc_new_encodergroup: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_new_encodergroup: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -1246,9 +1265,9 @@ namespace Cwipc
             {
                 if (errorPtr == IntPtr.Zero)
                 {
-                    throw new Exception("cwipc.from_certh: returned null without setting error message");
+                    throw new CwipcException("cwipc.from_certh: returned null without setting error message");
                 }
-                throw new Exception($"cwipc_from_certh: {Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_from_certh: {Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             if (errorPtr != IntPtr.Zero)
             {
@@ -1277,9 +1296,9 @@ namespace Cwipc
             {
                 if (errorPtr == System.IntPtr.Zero)
                 {
-                    throw new System.Exception("cwipc.read: returned null without setting error message");
+                    throw new CwipcException("cwipc.read: returned null without setting error message");
                 }
-                throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             return new pointcloud(rvPtr);
         }
@@ -1304,9 +1323,9 @@ namespace Cwipc
             {
                 if (errorPtr == System.IntPtr.Zero)
                 {
-                    throw new System.Exception("cwipc.read: returned null without setting error message");
+                    throw new CwipcException("cwipc.read: returned null without setting error message");
                 }
-                throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             return new pointcloud(rvPtr);
         }
@@ -1333,9 +1352,9 @@ namespace Cwipc
             {
                 if (errorPtr == System.IntPtr.Zero)
                 {
-                    throw new System.Exception("cwipc.from_packet: returned null without setting error message");
+                    throw new CwipcException("cwipc.from_packet: returned null without setting error message");
                 }
-                throw new System.Exception($"cwipc_from_packet: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_from_packet: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             return new pointcloud(rvPtr);
         }
@@ -1384,9 +1403,9 @@ namespace Cwipc
             {
                 if (errorPtr == System.IntPtr.Zero)
                 {
-                    throw new System.Exception("cwipc.from_points: returned null without setting error message");
+                    throw new CwipcException("cwipc.from_points: returned null without setting error message");
                 }
-                throw new System.Exception($"cwipc_from_points: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+                throw new CwipcException($"cwipc_from_points: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             return new pointcloud(rvPtr);
         }
@@ -1536,7 +1555,7 @@ namespace Cwipc
                 UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_util DLL.");
                 UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
                 UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new Exception("cwipc: DLLs not installed correctly. See log.");
+                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
             }
 #endif
         }
@@ -1594,7 +1613,7 @@ namespace Cwipc
                 UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_realsense2 DLL.");
                 UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
                 UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new Exception("cwipc: DLLs not installed correctly. See log.");
+                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
             }
 #endif
         }
@@ -1652,7 +1671,7 @@ namespace Cwipc
                 UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_kinect DLL.");
                 UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
                 UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new Exception("cwipc: DLLs not installed correctly. See log.");
+                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
             }
 #endif
         }
@@ -1708,7 +1727,7 @@ namespace Cwipc
                 UnityEngine.Debug.LogError($"cwipc: cannot load cwipc_codec DLL.");
                 UnityEngine.Debug.LogError($"cwipc: Exception: {e.ToString()}");
                 UnityEngine.Debug.LogError($"cwipc: see https://github.com/cwi-dis/cwipc for installation instructions.");
-                throw new Exception("cwipc: DLLs not installed correctly. See log.");
+                throw new CwipcException("cwipc: DLLs not installed correctly. See log.");
             }
 #endif
         }
