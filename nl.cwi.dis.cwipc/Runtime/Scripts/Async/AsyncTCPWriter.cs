@@ -292,7 +292,7 @@ namespace Cwipc
                 int stream_number = i;
                 pusherThreads[i] = new TCPPushThread(this, descriptions[i]);
 #if VRT_WITH_STATS
-                Statistics.Output(base.Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, port={descriptions[i].port}");
+                Statistics.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, port={descriptions[i].port}");
 #endif
             }
             foreach (var t in pusherThreads)
