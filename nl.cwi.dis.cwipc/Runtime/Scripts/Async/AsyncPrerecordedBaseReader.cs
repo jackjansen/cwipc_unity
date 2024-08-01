@@ -57,7 +57,14 @@ namespace Cwipc
         // Next variables are shared (readonly) among _SingleDirectoryReader children.
         // I don't think C# has a way to say this without using public.
         public bool newTimestamps = false;
-        public bool readPlyFiles;
+        [Serializable]
+        public enum Format {
+            unknown,
+            ply,
+            cwipcdump,
+            cwicpc
+        };
+        public Format format;
         public float frameRate;
         public int remainingLoopCount = -1;
         public bool multireader = false;
@@ -91,15 +98,26 @@ namespace Cwipc
                 Debug.LogWarning($"{Name()}: {configFilename} does not exist. Guessing defaults.");
                 bool hasPly = System.IO.Directory.GetFiles(directory, "*.ply").Length != 0;
                 bool hasCwipcdump = System.IO.Directory.GetFiles(directory, "*.cwipcdump").Length != 0;
-                if (!hasPly && !hasCwipcdump)
-                {
-                    Debug.LogWarning($"{Name()}: {directory} contains neither .ply nor .cwipcdump files");
+                bool hasCwicpc = System.IO.Directory.GetFiles(directory, "*.cwicpc").Length != 0;
+                if (hasPly) {
+                    format = Format.ply;
                 }
-                if (hasPly && hasCwipcdump)
-                {
-                    Debug.LogWarning($"{Name()}: {directory} contains both .ply and .cwipcdump files, showing .ply");
+                if (hasCwipcdump) {
+                    if (format != Format.unknown) {
+                        Debug.LogError($"{Name()}: {directory} contains multiple types (.ply, .cwipcdump, .cwicpc)");
+                    }
+                    format = Format.cwipcdump;
                 }
-                readPlyFiles = hasPly;
+                if (hasCwicpc) {
+                    if (format != Format.unknown) {
+                        Debug.LogError($"{Name()}: {directory} contains multiple types (.ply, .cwipcdump, .cwicpc)");
+                    }
+                    format = Format.cwicpc;
+                }
+                if (format == Format.unknown)
+                {
+                    Debug.LogError($"{Name()}: {directory} contains neither .ply nor .cwipcdump nor .cwicpc files");
+                }
                 return;
             }
             var file = System.IO.File.ReadAllText(configFilename);
@@ -115,7 +133,7 @@ namespace Cwipc
                     cameraMask = 0
                 }
             };
-            readPlyFiles = config.ply;
+            format = config.ply ? Format.ply : Format.cwipcdump;
         }
 
         /// <summary>
@@ -240,7 +258,10 @@ namespace Cwipc
             thread_index = _index;
             outQueue = _outQueue;
             out2Queue = _out2Queue;
-            string pattern = parent.readPlyFiles ? "*.ply" : "*.cwipcdump";
+            string pattern = parent.format == AsyncPrerecordedBaseReader.Format.ply ? "*.ply" : 
+                parent.format == AsyncPrerecordedBaseReader.Format.cwipcdump ? "*.cwipcdump" :
+                parent.format == AsyncPrerecordedBaseReader.Format.cwicpc ? "*.cwicpc" :
+                "nomatch";
             filenames = System.IO.Directory.GetFileSystemEntries(System.IO.Path.Combine(dirname, subdir), pattern);
             // Remove path, keep only filename 
             for(int i=0; i<filenames.Length; i++)
@@ -353,15 +374,20 @@ namespace Cwipc
 
             parent.ReportCurrentTimestamp(curIndex);
 
-            cwipc.pointcloud pc;
-            if (parent.readPlyFiles)
-            {
+            cwipc.pointcloud pc = null;
+            switch(parent.format) {
+            case AsyncPrerecordedBaseReader.Format.unknown:
+                break;
+            case AsyncPrerecordedBaseReader.Format.ply:
                 Timestamp timestamp = 0;
                 pc = cwipc.read(nextFilename, timestamp);
-            }
-            else
-            {
+                break;
+            case AsyncPrerecordedBaseReader.Format.cwipcdump:
                 pc = cwipc.readdump(nextFilename);
+                break;
+            case AsyncPrerecordedBaseReader.Format.cwicpc:
+                Debug.LogWarning($"xxxjack cwicpc not yet supported for {nextFilename}");
+                break;
             }
             if (pc == null) return;
             pc.metadata.filename = nextFilename;
