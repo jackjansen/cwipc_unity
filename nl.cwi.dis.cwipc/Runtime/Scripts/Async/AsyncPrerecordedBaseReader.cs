@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
@@ -68,6 +69,7 @@ namespace Cwipc
         public float frameRate;
         public int remainingLoopCount = -1;
         public bool multireader = false;
+
         
         public AsyncPrerecordedBaseReader(string directory, float _voxelSize, float _frameRate, int loopCount=0) : base(null)
         {
@@ -240,6 +242,9 @@ namespace Cwipc
         int thread_index;
         AsyncPrerecordedBaseReader parent;
 
+        protected cwipc.decoder decoder = null;
+
+
         public _SingleDirectoryReader(AsyncPrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             dirname = _dirname;
@@ -258,6 +263,10 @@ namespace Cwipc
             thread_index = _index;
             outQueue = _outQueue;
             out2Queue = _out2Queue;
+
+            if (parent.format == AsyncPrerecordedBaseReader.Format.cwicpc) {
+                decoder = cwipc.new_decoder();
+            }
             string pattern = parent.format == AsyncPrerecordedBaseReader.Format.ply ? "*.ply" : 
                 parent.format == AsyncPrerecordedBaseReader.Format.cwipcdump ? "*.cwipcdump" :
                 parent.format == AsyncPrerecordedBaseReader.Format.cwicpc ? "*.cwicpc" :
@@ -323,6 +332,8 @@ namespace Cwipc
             outQueue = null;
             if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
             out2Queue = null;
+            decoder?.free();
+            decoder = null;
         }
 
         public override void AsyncOnStop() {
@@ -386,7 +397,25 @@ namespace Cwipc
                 pc = cwipc.readdump(nextFilename);
                 break;
             case AsyncPrerecordedBaseReader.Format.cwicpc:
-                Debug.LogWarning($"xxxjack cwicpc not yet supported for {nextFilename}");
+                // First see if there is a pointcloud available (from a previous feed())
+                if (decoder.available(false)) {
+                    //Debug.Log("xxxjack getting point cloud before feed()");
+                    pc = decoder.get();
+                }
+                if (true) {
+                    //Debug.Log($"xxxjack feed({nextFilename})");
+                    byte[] compressedData = File.ReadAllBytes(nextFilename);
+                    unsafe {
+                        fixed (byte *dataPtr = compressedData) {
+                            IntPtr dataIntPtr = (IntPtr)dataPtr;
+                            decoder.feed(dataIntPtr, compressedData.Length);
+                        }
+                    }
+                }
+                if (pc == null && decoder.available(false)) {
+                    //Debug.Log("xxxjack getting point cloud after feed()");
+                    pc = decoder.get();
+                }
                 break;
             }
             if (pc == null) return;
