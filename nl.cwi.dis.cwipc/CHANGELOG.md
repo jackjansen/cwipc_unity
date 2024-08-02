@@ -1,5 +1,10 @@
 # Changelog
 
+## [7.5.5] - 2024-07-02
+
+- Better exception messages when cwipc is not installed correctly (#35)
+- Allow compressed point cloud streams to be used for prerecoded reader (#20)
+
 ## [7.5.4] - 2024-05-28
 
 - Fixed PrerecordedPointCloudReader issue (#33)
