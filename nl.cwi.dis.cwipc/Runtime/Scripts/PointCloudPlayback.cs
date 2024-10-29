@@ -12,7 +12,7 @@ namespace Cwipc
     public class PointCloudPlayback : MonoBehaviour
     {
         [Tooltip("Point cloud reader prefab")]
-        public PrerecordedPointCloudReader reader_prefab;
+        public AbstractPointCloudSource reader_prefab;
         [Tooltip("Point cloud renderer prefab")]
         public PointCloudRenderer renderer_prefab;
         [Tooltip("If true start playback on Start")]
@@ -32,7 +32,7 @@ namespace Cwipc
         [Tooltip("Invoked when playback finishes")]
         public UnityEvent finished;
         [Tooltip("(introspection) point cloud reader")]
-        public PrerecordedPointCloudReader cur_reader;
+        public AbstractPointCloudSource cur_reader;
         [Tooltip("(introspection) point cloud renderer")]
         public PointCloudRenderer cur_renderer;
 
@@ -83,8 +83,11 @@ namespace Cwipc
             {
                 yield return null;
             }
-            cur_reader.dirName = dirName;
-            cur_reader.loopCount = loopCount;
+            PrerecordedPointCloudReader rdr = cur_reader as PrerecordedPointCloudReader;
+            if (rdr != null) {
+                rdr.dirName = dirName;
+                rdr.loopCount = loopCount;
+            }
             cur_reader.gameObject.SetActive(true);
             cur_renderer.gameObject.SetActive(true);
             if (fadeIn > 0)

@@ -6,14 +6,12 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class PrerecordedPointCloudReader : AbstractPointCloudPreparer
+    public class PrerecordedPointCloudReader : AbstractPointCloudSource
     {
-        private AsyncPrerecordedReader reader;
+        new private AsyncPrerecordedReader reader;
         private QueueThreadSafe myQueue;
         private cwipc.pointcloud currentPointCloud;
         Unity.Collections.NativeArray<byte> byteArray;
-        [Tooltip("If non-zero, voxelize each point cloud to this voxel size")]
-        [SerializeField] private float voxelSize = 0;
         [Tooltip("Frame rate at which to read point clouds")]
         public float frameRate = 15;
         [Tooltip("How often the point cloud stream is looped (0 for infinite)")]
@@ -61,7 +59,12 @@ namespace Cwipc
             if(dirName != null && dirName != "") InitReader();
         }
 
-        public void Stop()
+        new public void Start()
+        {
+
+        }
+
+        new public void Stop()
         {
             reader?.Stop();
             reader = null;
@@ -77,7 +80,7 @@ namespace Cwipc
             reader = new AsyncPrerecordedReader(dirName, voxelSize, frameRate, myQueue, loopCount: loopCount);
         }
 
-        private void OnDestroy()
+        new private void OnDestroy()
         {
             Stop();
             if (byteArray.IsCreated)

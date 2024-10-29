@@ -515,6 +515,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4185435951314378605, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
+      propertyPath: dirName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4185435951314378605, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
+      propertyPath: preload
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4185435951314378605, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
+      propertyPath: reader_prefab
+      value: 
+      objectReference: {fileID: 5533925090184069727}
     - target: {fileID: 4959389652948005155, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
       propertyPath: m_Name
       value: cwipc_playback_stream
@@ -559,11 +571,42 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9041217257744950073, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2482358467410990832, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5533925090184069727}
   m_SourcePrefab: {fileID: 100100000, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
+--- !u!1 &5533925090184069726 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2482358467410990832, guid: 25fc1a028c42f4143a01c91fa550b937, type: 3}
+  m_PrefabInstance: {fileID: 5533925090184069725}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5533925090184069727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533925090184069726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6fe34575d5cc4213ac993a48e381069, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentSize: 0
+  _currentTimestamp: 0
+  currentCellSize: 0
+  nRead: 0
+  nDropped: 0
+  voxelSize: 0
+  defaultCellSize: 0.01
+  cellSizeFactor: 1
+  url: tcp://192.16.197.145:8089/
+  defaultPointSize: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

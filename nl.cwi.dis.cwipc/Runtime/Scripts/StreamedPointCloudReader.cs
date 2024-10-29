@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Resources;
 using UnityEngine;
 
 namespace Cwipc
@@ -6,32 +7,18 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class StreamedPointCloudReader : AbstractPointCloudPreparer
+    public class StreamedPointCloudReader : AbstractPointCloudSource
     {
-        private AsyncPrerecordedReader reader;
-        private QueueThreadSafe myQueue;
+        new private AsyncTCPReader reader;
+        private AsyncPCDecoder decoder;
+        private QueueThreadSafe myReaderQueue;
+        private QueueThreadSafe myDecoderQueue;
         private cwipc.pointcloud currentPointCloud;
         Unity.Collections.NativeArray<byte> byteArray;
-        [Tooltip("If non-zero, voxelize each point cloud to this voxel size")]
-        [SerializeField] private float voxelSize = 0;
-        [Tooltip("Frame rate at which to read point clouds")]
-        public float frameRate = 15;
-        [Tooltip("How often the point cloud stream is looped (0 for infinite)")]
-        public int loopCount = 0;
-        [Tooltip("Directory name (or file name) where point clouds and/or tileconfig.json or are stored.")]
-        [SerializeField] private string _dirName;
-        public string dirName
-        {
-            get => _dirName;
-            set {
-                _dirName = value;
-                if (myQueue != null)
-                {
-                    // We have already started.
-                    InitReader();
-                }
-            }
-        }
+
+        [Tooltip("URL to play back compressed point clouds from")]
+        public string url;
+        
         [Tooltip("Point size to use if a point cloud does not contain a pointsize")]
         [SerializeField] float defaultPointSize = 0;
 
@@ -57,24 +44,52 @@ namespace Cwipc
 
         private void Awake()
         {
-            myQueue = new QueueThreadSafe($"{Name()}.queue");
-            if(dirName != null && dirName != "") InitReader();
+            myReaderQueue = new QueueThreadSafe($"{Name()}.readerQueue");
+            myDecoderQueue = new QueueThreadSafe($"{Name()}.decoderQueue");
         }
 
-        public void Stop()
+        new public void Start()
         {
+            InitReader();
+        }
+
+        new public void Stop()
+        {
+            decoder?.Stop();
+            decoder = null;
             reader?.Stop();
             reader = null;
+            if (myDecoderQueue != null) {
+                BaseMemoryChunk chunk;
+                do {
+                    chunk = myDecoderQueue.TryDequeue(0);
+                    if (chunk != null) {
+                        chunk.free();
+                    }
+                } while(chunk != null);
+                myDecoderQueue = null;
+            }
+            if (myReaderQueue != null) {
+                BaseMemoryChunk chunk;
+                do {
+                    chunk = myReaderQueue.TryDequeue(0);
+                    if (chunk != null) {
+                        chunk.free();
+                    }
+                } while(chunk != null);
+                myReaderQueue = null;
+            }
         }
 
         private void InitReader()
         {
-            if (reader != null)
+            if (reader != null || decoder != null)
             {
-                Debug.LogError($"{Name()}: cannot restart with a new dirName");
-                return;
+                Stop();
             }
-            reader = new AsyncPrerecordedReader(dirName, voxelSize, frameRate, myQueue, loopCount: loopCount);
+            string fourcc = "cwi1";
+            reader = new AsyncTCPReader(url, fourcc, myReaderQueue);
+            decoder = new AsyncPCDecoder(myReaderQueue, myDecoderQueue);
         }
 
         private void OnDestroy()
@@ -141,7 +156,7 @@ namespace Cwipc
 
         public override long getQueueDuration()
         {
-            return myQueue.QueuedDuration();
+            return myDecoderQueue.QueuedDuration();
         }
 
         public override bool LatchFrame()
@@ -151,7 +166,7 @@ namespace Cwipc
                 currentPointCloud.free();
                 currentPointCloud = null;
             }
-            currentPointCloud = (cwipc.pointcloud)myQueue.TryDequeue(0);
+            currentPointCloud = (cwipc.pointcloud)myDecoderQueue.TryDequeue(0);
             return currentPointCloud != null;
         }
 
@@ -167,7 +182,7 @@ namespace Cwipc
 
         public override bool EndOfData()
         {
-            return myQueue == null || (myQueue.IsClosed() && myQueue.Count() == 0);
+            return myDecoderQueue == null || (myDecoderQueue.IsClosed() && myDecoderQueue.Count() == 0);
         }
 
     }
