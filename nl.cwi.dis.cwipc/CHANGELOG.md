@@ -1,5 +1,9 @@
 # Changelog
 
+## [unreleased]
+
+- Compatible with Meta Quest (#21)
+- 
 ## [7.5.5] - 2024-07-02
 
 - Better exception messages when cwipc is not installed correctly (#35)
