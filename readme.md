@@ -7,6 +7,7 @@ It is part of the <https://github.com/cwi-dis/cwipc> cwipc pointcloud suite, and
 
 Checking out this repository is only useful if you want to **modify** the `cwipc_unity` package.
 See the [README for nl.cwi.dis.cwipc](nl.cwi.dis.cwipc/README.md) for more details on **using** the cwipc package in your own Unity projects.
+But TL;DR: You could clone <https://github.com/cwi-dis/cwipc_unity_sample> to get started.
 
 If you want to **develop** on the package (i.e. modify it) you should check out this whole repository, and open the `cwipc_unity_develop` Unity project. That project includes the `nl.cwi.dis.cwipc` package using symbolic links, so any changes you make to it can be committed to git.
 

@@ -1,9 +1,10 @@
 # Changelog
 
-## [unreleased]
+## [7.5.6] - 2024-10-30
 
 - Compatible with Meta Quest (#21)
-- 
+- Added point cloud streaming prefab and sample scene (#36)
+
 ## [7.5.5] - 2024-07-02
 
 - Better exception messages when cwipc is not installed correctly (#35)
