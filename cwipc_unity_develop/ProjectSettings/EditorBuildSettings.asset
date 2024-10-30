@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Samples/CWI Point Cloud Support/Current/VR point cloud extensions/Scenes/VRStreamingPointcloudViewer.unity
+    guid: f8a696ffd4a1a493993ff38bba6a1aba
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 8a23a23eee458477d801d927fad0d9ce, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 18b3929a6ed546749aaa3a4533bd6b28, type: 2}
