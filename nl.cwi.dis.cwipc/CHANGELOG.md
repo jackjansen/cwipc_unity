@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.5.7] - 2024-11-05
+
+- Include Quest native libraries (from git lfs) in zip distribution (#37)
+
 ## [7.5.6] - 2024-10-30
 
 - Compatible with Meta Quest (#21)
