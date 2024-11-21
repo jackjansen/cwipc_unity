@@ -13,11 +13,20 @@ namespace Cwipc
     {
         /// <summary>
         /// Store pointcloud data of frame locked by LatchFrame in a ComputeBuffer.
-        /// ComputBuffer must be pre-allocated and will be increased in size to make the data fit.
+        /// ComputeBuffer must be pre-allocated and will be increased in size to make the data fit.
         /// </summary>
         /// <param name="computeBuffer">Where the pointcloud data is stored.</param>
         /// <returns>Number of points in the pointcloud</returns>
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer);
+
+        /// <summary>
+        /// Store pointcloud data of frame locked by LatchFrame in two arrays.
+        /// Arrays will be re-allocated if they are not the correct size.
+        /// </summary>
+        /// <param name="positions">Where the pointcloud X, Y, Z data is stored.</param>
+        /// <param name="colors">Where the pointcloud color data is stored.</param>
+        /// <returns>Number of points in the pointcloud</returns>
+        public int GetPositionsAndColors(ref Vector3[] positions, ref Color[] colors);
 
         /// <summary>
         /// Return size (in meters) of a single cell/point in the current pointcloud.
@@ -51,6 +60,10 @@ namespace Cwipc
         abstract public void Synchronize();
         abstract public bool LatchFrame();
         abstract public int GetComputeBuffer(ref ComputeBuffer computeBuffer);
+
+        public int GetPositionsAndColors(ref Vector3[] positions, ref Color[] colors) {
+            throw new System.Exception($"{Name()}: GetPositionsAndColors: not implemented");
+        }
         abstract public float GetPointSize();
         abstract public Timedelta getQueueDuration();
         abstract public bool EndOfData();

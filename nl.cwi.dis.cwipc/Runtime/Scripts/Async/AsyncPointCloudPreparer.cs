@@ -165,6 +165,10 @@ namespace Cwipc
             return nPoints;
         }
 
+        public int GetPositionsAndColors(ref Vector3[] positions, ref Color[] colors)
+        {
+            throw new System.Exception($"{Name()}: GetPositionsAndColors: not implemented");
+        }
         public float GetPointSize()
         {
             if (currentCellSize > 0.0000f) return currentCellSize * cellSizeFactor;

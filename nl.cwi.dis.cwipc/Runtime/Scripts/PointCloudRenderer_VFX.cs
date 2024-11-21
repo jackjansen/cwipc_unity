@@ -117,15 +117,9 @@ namespace Cwipc
                     started.Invoke();
                 }
 
-                pointCount = preparer.GetComputeBuffer(ref pointBuffer);
-                if (pointBuffer == null || !pointBuffer.IsValid())
-                {
-                    Debug.LogError($"{Name()}: Invalid pointBuffer");
-                    return;
-                }
+                pointCount = preparer.GetPositionsAndColors(ref positions, ref colors);
                 pointSize = preparer.GetPointSize();
 
-                pointCount = ExtractDataFromComputeBuffer(pointBuffer, ref positions, ref colors);
                 Debug.Log($"{Name()}: Pass to VFX : {pointCount} points, ts={preparer.currentTimestamp}");
                 pc_VFX.PassToVFX(positions, colors);
             }
