@@ -188,12 +188,13 @@ namespace Cwipc
                 float x = BitConverter.ToSingle(bufferData, i * sizeofPoint);
                 float y = BitConverter.ToSingle(bufferData, i * sizeofPoint + sizeof(float));
                 float z = BitConverter.ToSingle(bufferData, i * sizeofPoint + 2 * sizeof(float));
+                float w = BitConverter.ToSingle(bufferData, i * sizeofPoint + 3 * sizeof(float));
 
                 // Extract packed color data (RGBA)
                 uint packedColor = BitConverter.ToUInt32(bufferData, i * sizeofPoint + 3 * sizeof(float));
 
                 // Populate the position array
-                pointPositions[i] = new Vector4(x, y, z, 0);
+                pointPositions[i] = new Vector4(x, y, z, w);
 
                 // Decode and populate the color array
                 float r = ((packedColor >> 16) & 0xFF) / 255.0f;
