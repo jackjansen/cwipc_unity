@@ -115,7 +115,7 @@ namespace Cwipc
                         int ret = currentPointCloud.copy_uncompressed(currentBuffer, currentSize);
                         if (ret * 16 != currentSize)
                         {
-                            Debug.Log($"PointCloudPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                            Debug.Log($"PointCloudPreparer decompress size problem: currentSizeInBytes={currentSize}, copySize={ret * 16}, #points={ret}");
                             Debug.LogError("Programmer error while rendering a participant.");
                         }
                     }

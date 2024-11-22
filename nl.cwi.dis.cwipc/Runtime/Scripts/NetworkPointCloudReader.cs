@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Cwipc
@@ -13,7 +14,7 @@ namespace Cwipc
         private QueueThreadSafe decoderQueue;
         private QueueThreadSafe myQueue;
         private cwipc.pointcloud currentPointCloud;
-        Unity.Collections.NativeArray<byte> byteArray;
+        Unity.Collections.NativeArray<cwipc.point> currentNativePointArray;
         [Tooltip("URL for pointcloud source server (tcp://host:port)")]
         public string url;
         [Tooltip("If true the pointclouds received are compressed")]
@@ -84,9 +85,9 @@ namespace Cwipc
         private void OnDestroy()
         {
             Stop();
-            if (byteArray.IsCreated)
+            if (currentNativePointArray.IsCreated)
             {
-                byteArray.Dispose();
+                currentNativePointArray.Dispose();
             }
         }
 
@@ -100,23 +101,23 @@ namespace Cwipc
                     //
                     // Get the point cloud data into an unsafe native array.
                     //
-                    int currentSize = currentPointCloud.get_uncompressed_size();
+                    int currentSizeInBytes = currentPointCloud.get_uncompressed_size();
                     const int sizeofPoint = sizeof(float) * 4;
-                    int nPoints = currentSize / sizeofPoint;
+                    int nPoints = currentSizeInBytes / sizeofPoint;
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
-                    if (currentSize > byteArray.Length)
+                    if (nPoints > currentNativePointArray.Length)
                     {
-                        if (byteArray.Length != 0) byteArray.Dispose();
-                        byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.Persistent);
+                        if (currentNativePointArray.Length != 0) currentNativePointArray.Dispose();
+                        currentNativePointArray = new Unity.Collections.NativeArray<cwipc.point>(currentSizeInBytes, Unity.Collections.Allocator.Persistent);
                     }
-                    if (currentSize > 0)
+                    if (currentSizeInBytes > 0)
                     {
-                        System.IntPtr currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
+                        System.IntPtr currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(currentNativePointArray);
 
-                        int ret = currentPointCloud.copy_uncompressed(currentBuffer, currentSize);
-                        if (ret * 16 != currentSize)
+                        int ret = currentPointCloud.copy_uncompressed(currentBuffer, currentSizeInBytes);
+                        if (ret * sizeofPoint != currentSizeInBytes)
                         {
-                            Debug.Log($"PointCloudPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                            Debug.Log($"PointCloudPreparer decompress size problem: currentSizeInBytes={currentSizeInBytes}, copySize={ret * 16}, #points={ret}");
                             Debug.LogError("Programmer error while rendering a participant.");
                         }
                     }
@@ -129,10 +130,68 @@ namespace Cwipc
                         if (computeBuffer != null) computeBuffer.Release();
                         computeBuffer = new ComputeBuffer(dampedSize, sizeofPoint);
                     }
-                    computeBuffer.SetData(byteArray, 0, 0, currentSize);
+                    computeBuffer.SetData(currentNativePointArray, 0, 0, nPoints);
                     return nPoints;
                 }
             }
+        }
+        override public int GetPositionsAndColors(ref Vector3[] pointPositions, ref Color[] pointColors)
+        {
+            if (currentPointCloud == null) return 0;
+            int nPoints;
+            unsafe
+            {
+                //
+                // Get the point cloud data into an unsafe native array.
+                //
+                int currentSizeInBytes = currentPointCloud.get_uncompressed_size();
+                const int sizeofPoint = sizeof(float) * 4;
+                nPoints = currentSizeInBytes / sizeofPoint;
+                // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
+                if (nPoints != currentNativePointArray.Length)
+                {
+                    if (currentNativePointArray.Length != 0) currentNativePointArray.Dispose();
+                    currentNativePointArray = new Unity.Collections.NativeArray<cwipc.point>(nPoints, Unity.Collections.Allocator.Persistent);
+                }
+                if (currentSizeInBytes > 0)
+                {
+                    System.IntPtr currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(currentNativePointArray);
+
+                    int ret = currentPointCloud.copy_uncompressed(currentBuffer, currentSizeInBytes);
+                    if (ret * sizeofPoint != currentSizeInBytes)
+                    {
+                        Debug.Log($"PointCloudPreparer decompress size problem: currentSizeInBytes={currentSizeInBytes}, copySize={ret * 16}, #points={ret}");
+                        Debug.LogError("Programmer error while rendering a participant.");
+                    }
+                }
+            }
+
+            NativeArray<cwipc.point> points = currentNativePointArray;
+            if (points == null || points.Length == 0)
+            {
+                return 0;
+            }
+            nPoints = points.Length;
+            // Ensure arrays are correctly sized
+            if (pointPositions == null || pointPositions.Length != nPoints)
+            {
+                pointPositions = new Vector3[nPoints];
+            }
+            if (pointColors == null || pointColors.Length != nPoints)
+            {
+                pointColors = new Color[nPoints];
+            }
+            for (int i = 0; i < nPoints; i++)
+            {
+                pointPositions[i].x = points[i].x;
+                pointPositions[i].y = points[i].y;
+                pointPositions[i].z = points[i].z;
+                pointColors[i].r = points[i].r / 255.0f;
+                pointColors[i].g = points[i].g / 255.0f;
+                pointColors[i].b = points[i].b / 255.0f;
+                pointColors[i].a = 1;
+            }
+            return nPoints;
         }
 
         public override float GetPointSize()

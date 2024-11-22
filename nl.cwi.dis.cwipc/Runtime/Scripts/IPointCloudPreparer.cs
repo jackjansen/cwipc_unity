@@ -1,3 +1,4 @@
+using Unity.Collections;
 using UnityEngine;
 
 namespace Cwipc
@@ -61,9 +62,7 @@ namespace Cwipc
         abstract public bool LatchFrame();
         abstract public int GetComputeBuffer(ref ComputeBuffer computeBuffer);
 
-        public int GetPositionsAndColors(ref Vector3[] positions, ref Color[] colors) {
-            throw new System.Exception($"{Name()}: GetPositionsAndColors: not implemented");
-        }
+        abstract public int GetPositionsAndColors(ref Vector3[] positions, ref Color[] colors);
         abstract public float GetPointSize();
         abstract public Timedelta getQueueDuration();
         abstract public bool EndOfData();

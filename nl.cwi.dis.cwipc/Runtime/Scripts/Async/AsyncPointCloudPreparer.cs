@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cwipc;
+using Unity.Collections;
+
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -106,7 +108,7 @@ namespace Cwipc
                         int ret = pc.copy_uncompressed(currentBuffer, currentSize);
                         if (ret * 16 != currentSize)
                         {
-                            Debug.Log($"PointCloudPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                            Debug.Log($"PointCloudPreparer decompress size problem: currentSizeInBytes={currentSize}, copySize={ret * 16}, #points={ret}");
                             Debug.LogError("Programmer error while rendering a participant.");
                         }
                     }
@@ -165,10 +167,36 @@ namespace Cwipc
             return nPoints;
         }
 
-        public int GetPositionsAndColors(ref Vector3[] positions, ref Color[] colors)
+        public int GetPositionsAndColors(ref Vector3[] pointPositions, ref Color[] pointColors)
         {
-            throw new System.Exception($"{Name()}: GetPositionsAndColors: not implemented");
+            NativeArray<cwipc.point> points = byteArray.Reinterpret<cwipc.point>(16);
+            if (points == null)
+            {
+                return 0;
+            }
+            int nPoints = points.Length;
+            // Ensure arrays are correctly sized
+            if (pointPositions == null || pointPositions.Length != nPoints)
+            {
+                pointPositions = new Vector3[nPoints];
+            }
+            if (pointColors == null || pointColors.Length != nPoints)
+            {
+                pointColors = new Color[nPoints];
+            }
+            for (int i = 0; i < nPoints; i++)
+            {
+                pointPositions[i].x = points[i].x;
+                pointPositions[i].y = points[i].y;
+                pointPositions[i].z = points[i].z;
+                pointColors[i].r = points[i].r / 255.0f;
+                pointColors[i].g = points[i].g / 255.0f;
+                pointColors[i].b = points[i].b / 255.0f;
+                pointColors[i].a = 1;
+            }
+            return nPoints;
         }
+
         public float GetPointSize()
         {
             if (currentCellSize > 0.0000f) return currentCellSize * cellSizeFactor;
