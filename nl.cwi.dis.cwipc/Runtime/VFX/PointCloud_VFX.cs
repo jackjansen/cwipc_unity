@@ -13,7 +13,7 @@ public class PointCloud_VFX : MonoBehaviour
     public GraphicsBuffer positionBuffer;
     public GraphicsBuffer colorBuffer;
 
-    public void PassToVFX(Vector3[] positions, Color[] colors)
+    public void PassToVFX(Vector4[] positions, Color[] colors)
     {
         if (positions == null || colors == null || positions.Length == 0 || colors.Length == 0)
         {
@@ -24,7 +24,7 @@ public class PointCloud_VFX : MonoBehaviour
         if (positionBuffer == null || positionBuffer.count != positions.Length)
         {
             positionBuffer?.Release();
-            positionBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, positions.Length, sizeof(float) * 3);
+            positionBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, positions.Length, sizeof(float) * 4);
             vfxGraph.SetGraphicsBuffer(positionParameterName, positionBuffer);
         }
 

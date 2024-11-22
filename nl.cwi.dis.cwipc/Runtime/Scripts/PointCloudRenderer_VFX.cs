@@ -39,7 +39,7 @@ namespace Cwipc
         [Tooltip("Renderer temporarily paused by a script")]
         [SerializeField] bool paused = false;
 
-        private Vector3[] positions = null;
+        private Vector4[] positions = null;
         private Color[] colors = null;
 
 
@@ -151,11 +151,11 @@ namespace Cwipc
             }
         }
 
-        private int ExtractDataFromComputeBuffer(ComputeBuffer computeBuffer, ref Vector3[] pointPositions, ref Color[] pointColors)
+        private int ExtractDataFromComputeBuffer(ComputeBuffer computeBuffer, ref Vector4[] pointPositions, ref Color[] pointColors)
         {
             if (computeBuffer == null || computeBuffer.count == 0)
             {
-                pointPositions = new Vector3[0];
+                pointPositions = new Vector4[0];
                 pointColors = new Color[0];
                 return 0;
             }
@@ -166,7 +166,7 @@ namespace Cwipc
             // Ensure arrays are correctly sized
             if (pointPositions == null || pointPositions.Length != nPoints)
             {
-                pointPositions = new Vector3[nPoints];
+                pointPositions = new Vector4[nPoints];
             }
             if (pointColors == null || pointColors.Length != nPoints)
             {
@@ -193,7 +193,7 @@ namespace Cwipc
                 uint packedColor = BitConverter.ToUInt32(bufferData, i * sizeofPoint + 3 * sizeof(float));
 
                 // Populate the position array
-                pointPositions[i] = new Vector3(x, y, z);
+                pointPositions[i] = new Vector4(x, y, z, 0);
 
                 // Decode and populate the color array
                 float r = ((packedColor >> 16) & 0xFF) / 255.0f;
